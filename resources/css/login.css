@@ -1,0 +1,9 @@
+.btn-login {
+    background-color: white !important;
+    color: rgb(145, 144, 144) !important;
+    border: 2px solid #ccc;
+    font-weight: bold;
+}
+.btn-forgot{
+    color: #ffffff !important;
+}

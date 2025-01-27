@@ -8,6 +8,7 @@ export default defineConfig({
                 'resources/css/styles.css',
                 'resources/js/home.js',
                 'resources/css/home.css',
+                'resources/css/login.css',
                 'resources/css/dashboard.css',
                 'resources/css/settings.css',
                 'resources/js/dashboard.js',
