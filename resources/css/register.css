@@ -1,9 +1,6 @@
-.btn-login {
+.btn-register{
     background-color: white !important;
     color: rgb(22, 22, 22) !important;
     border: 2px solid #ccc;
     font-weight: bold;
-}
-.btn-forgot{
-    color: #ffffff !important;
 }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -25,7 +27,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -36,5 +38,32 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
+    }
+
+    /**
+     * Redirect users after successful login based on their role and status.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param mixed $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->hasRole('user')) {
+            if ($user->status === 'freezed') {
+                Auth::logout();
+                return redirect()->route('login')->withErrors([
+                    'error' => 'Your account is currently frozen. Please contact support.',
+                ]);
+            }else return redirect()->route('home');
+        }
+
+        if ($user->hasRole('admin')) {
+            dd("you are admin");
+            //return redirect()->route('admin.dashboard');
+        }
+
+        // Перенаправление по умолчанию
+        return redirect()->route('home');
     }
 }
