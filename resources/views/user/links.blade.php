@@ -59,6 +59,7 @@
                     <th data-priority="2">Short URL</th>
                     <th class="d-none d-md-table-cell">Destination</th>
                     <th data-priority="3">Clicks</th>
+                    <th class="d-none d-sm-table-cell">Status</th>
                     <th class="d-none d-sm-table-cell">Created</th>
                     <th data-priority="4">Actions</th>
                 </tr>
@@ -121,6 +122,18 @@
                         </div>
                     </td>
 
+                    <!-- Status -->
+                    <td class="align-middle d-none d-sm-table-cell">
+                        @if ($link->available)
+                        <span class="badge rounded-pill bg-success text-white px-3 py-2 shadow-sm" style="font-size: 0.875rem; transition: all 0.3s ease;">
+                            Active
+                        </span>
+                        @else
+                        <span class="badge rounded-pill bg-danger text-white px-3 py-2 shadow-sm" style="font-size: 0.875rem; transition: all 0.3s ease;">
+                            Inactive
+                        </span>
+                        @endif
+                    </td>
 
                     <!-- Date Column (hidden on mobile) -->
                     <td class="align-middle d-none d-sm-table-cell">
