@@ -308,4 +308,21 @@ class Links extends Domains
             return null;
         }
     }
+
+    /**
+     * Retrieve the link by its domain and short name.
+     * 
+     * This method searches for a link by matching the domain name and short name.
+     * If no link is found, it returns null.
+     *
+     * @param string $domain The domain name associated with the link.
+     * @param string $short_name The short name (or slug) of the link.
+     * @return Link|null The link object if found, or null if no matching link exists.
+     */
+    protected function getLinkByDomainAndShortName(string $domain, string $short_name): ?Link
+    {
+        return Link::whereHas('domain', function ($query) use ($domain) {
+            $query->where('name', $domain);
+        })->where('short_name', $short_name)->first();
+    }
 }

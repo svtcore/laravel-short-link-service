@@ -12,7 +12,10 @@ use App\Http\Traits\LogsErrors;
 use App\Http\Requests\User\Links\StoreRequest;
 use App\Http\Requests\User\Links\ShowRequest;
 use App\Http\Requests\User\Links\EditRequest;
+use App\Http\Requests\User\Links\RedirectRequest;
 use App\Http\Requests\User\Links\UpdateRequest;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Validator;
 
 class LinkController extends Controller
 {
@@ -23,7 +26,7 @@ class LinkController extends Controller
 
     public function __construct(Links $links_obj, LinkHistories $links_obj_hist)
     {
-        $this->middleware('role:user')->except(['store']);
+        $this->middleware('role:user')->except(['store', 'redirect']);
         $this->links_obj = $links_obj;
         $this->links_obj_hist = $links_obj_hist;
     }
@@ -245,6 +248,46 @@ class LinkController extends Controller
         } catch (\Exception $e) {
             $this->logError('Error deleting link', $e, ['link_id' => $id, 'user_id' => Auth::id()]);
             return redirect()->route('user.links.index')->withErrors(['error' => 'An unexpected error occurred while deleting the link.']);
+        }
+    }
+
+    /**
+     * Handle the redirect process for the given request.
+     * 
+     * This method validates the incoming request data (host, path, user-agent, and IP address),
+     * processes the redirect based on the validation results, and either redirects the user to
+     * the destination URL or aborts with a 404 if no link is found. In case of validation errors,
+     * it aborts with a 404 status code, while unexpected errors are logged, and a 500 status code is returned.
+     *
+     * @param Request $request The incoming HTTP request containing the necessary data for the redirect.
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response A redirect response to the destination URL
+     *         or an abort response (404 or 500) in case of errors.
+     */
+    public function redirect(Request $request)
+    {
+        try {
+            $data = [
+                'host' => $request->getHost(),
+                'path' => $request->path(),
+                'user-agent' => $request->header('User-Agent'),
+                'ip' => $request->ip(),
+            ];
+
+            $validated = Validator::make($data, (new RedirectRequest())->rules())->validate();
+
+            $result = $this->links_obj_hist->processRedirect($validated);
+
+            if ($result && isset($result['link'])) {
+                return redirect()->to($result['link']);
+            }
+            return abort(404);
+        } catch (ValidationException $e) {
+            return abort(404);
+        } catch (Exception $e) {
+            $this->logError('Unexpected error during redirect', $e, [
+                'data' => $data,
+            ]);
+            return abort(500);
         }
     }
 }

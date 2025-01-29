@@ -10,7 +10,7 @@ class LinkHistory extends Model
     /** @use HasFactory<\Database\Factories\LinkHistoryFactory> */
     use HasFactory;
 
-    protected $fillabble = [
+    protected $fillable  = [
         'link_id',
         'country_name',
         'ip_address',

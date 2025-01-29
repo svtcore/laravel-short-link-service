@@ -12,10 +12,6 @@ use App\Http\Controllers\User\UserController;
 
 Auth::routes();
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/test', [HomeController::class, 'test'])->name('test');
-Route::post('/links/store', [LinkController::class, 'store'])->name('links.store');
-
 Route::middleware(['role:user'])->group(function () {
     Route::namespace('App\Http\Controllers\User')->group(function () {
         Route::prefix('user')->group(function () {
@@ -37,3 +33,7 @@ Route::middleware(['role:user'])->group(function () {
         });
     });
 });
+Route::post('/links/store', [LinkController::class, 'store'])->name('links.store');
+Route::get('/{link}', [LinkController::class, 'redirect'])->name('links.redirect');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+

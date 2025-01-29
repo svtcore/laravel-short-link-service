@@ -8,6 +8,8 @@ use App\Models\LinkHistory;
 use Carbon\Carbon;
 use InvalidArgumentException;
 use App\Http\Traits\LogsErrors;
+use Illuminate\Support\Facades\Http;
+use Jenssegers\Agent\Agent;
 
 class LinkHistories extends Links
 {
@@ -317,11 +319,11 @@ class LinkHistories extends Links
      * @param string $groupBy The metric by which to group the results (e.g., 'country_name', 'os', 'browser').
      * @return \Illuminate\Support\Collection|null A collection of metrics with their unique click counts, or null in case of error.
      */
-    public function getTopMetricsByLinkId(int $link_id, ?string $start_date, ?string $end_date, string $groupBy): ?iterable {
-        try 
-        {
+    public function getTopMetricsByLinkId(int $link_id, ?string $start_date, ?string $end_date, string $groupBy): ?iterable
+    {
+        try {
             $limit = 5;
-            
+
             $startDate = $start_date ? Carbon::parse($start_date)->startOfDay() : now()->startOfDay();
             $endDate = $end_date ? Carbon::parse($end_date)->endOfDay() : now()->endOfDay();
 
@@ -364,8 +366,7 @@ class LinkHistories extends Links
      */
     public function getDailyClicksByLinkId(int $link_id, ?string $start_date, ?string $end_date): ?array
     {
-        try 
-        {
+        try {
             $startDate = $start_date ? Carbon::parse($start_date)->startOfDay() : now()->startOfDay();
             $endDate = $end_date ? Carbon::parse($end_date)->endOfDay() : now()->endOfDay();
 
@@ -406,4 +407,125 @@ class LinkHistories extends Links
         }
     }
 
+
+    /**
+     * Process the redirect by validating and tracking analytics data for a specific link.
+     * 
+     * This method checks if the provided data (host, path, user-agent, IP) matches an existing 
+     * link in the database. It also tracks analytics data, such as the user's browser, platform, 
+     * and country, before redirecting to the destination link.
+     *
+     * @param array $data An array of data containing the host, path, user-agent, and IP address.
+     * @return array|null The destination URL in the form of an associative array with the key 'link', 
+     *         or null if the link could not be found or analytics data is missing.
+     */
+    private function trackAnalytics(array $trackingData): array
+    {
+        try {
+            $agent = new Agent();
+            $ip = $trackingData['ip'];
+            $user_agent = $trackingData['user-agent'];
+
+            $agent->setUserAgent($user_agent);
+
+            return [
+                'country_name' => $this->getCountryName($ip),
+                'browser' => $agent->browser(),
+                'platform' => $agent->platform(),
+                'device' => $agent->device(),
+                'ip_address' => $ip,
+                'user_agent' => $user_agent,
+            ];
+        } catch (Exception $e) {
+            $this->logError('Error tracking analytics', $e, [
+                'tracking_data' => $trackingData,
+            ]);
+            return [];
+        }
+    }
+
+
+    /**
+     * Process the redirect by validating and tracking analytics data for a specific link.
+     * 
+     * This method checks if the provided data (host, path, user-agent, IP) matches an existing 
+     * link in the database. It also tracks analytics data, such as the user's browser, platform, 
+     * and country, before redirecting to the destination link.
+     *
+     * @param array $data An array of data containing the host, path, user-agent, and IP address.
+     * @return array|null The destination URL in the form of an associative array with the key 'link', 
+     *         or null if the link could not be found or analytics data is missing.
+     */
+    public function processRedirect(array $data): ?array
+    {
+        try {
+            $ip = $data['ip'];
+            $domain = $data['host'];
+            $short_name = $data['path'];
+            $user_agent = $data['user-agent'];
+
+            $analytics_data = $this->trackAnalytics($data);
+
+            if (empty($analytics_data)) {
+                return null;
+            }
+            $link = $this->getLinkByDomainAndShortName($domain, $short_name);
+
+            if (!$link) {
+                return null;
+            }
+
+            $this->createLinkHistory($link, $analytics_data, $ip, $user_agent);
+
+            return ['link' => $link->destination];
+        } catch (Exception $e) {
+            $this->logError('Error during redirection process', $e, ['data' => $data]);
+            return null;
+        }
+    }
+
+    /**
+     * Create a history record for the given link and analytics data.
+     * 
+     * This method stores a new history record for the provided link, capturing 
+     * information such as the user's IP address, browser, OS, and country name.
+     *
+     * @param Link $link The link object to create the history for.
+     * @param array $analytics_data An array containing analytics data like browser, platform, and country.
+     * @param string $ip The IP address of the user.
+     * @param string $user_agent The user agent string of the browser.
+     * @return void
+     */
+    private function createLinkHistory(Link $link, array $analytics_data, string $ip, string $user_agent): void
+    {
+        $link->link_histories()->create([
+            'country_name' => $analytics_data['country_name'],
+            'ip_address' => $ip,
+            'user_agent' => $user_agent,
+            'browser' => $analytics_data['browser'],
+            'os' => $analytics_data['platform'],
+        ]);
+    }
+
+
+    private function getCountryName($ip)
+    {
+        $test_ip = "195.1.1.1";
+        $response = Http::get("http://ipinfo.io/" . $test_ip . "/json");
+
+        if ($response->successful()) {
+            $data = $response->json();
+            $countryName = $data['country'] ?? 'Unknown';
+            return  $countryName;
+        } else {
+            $countryName = 'Other';
+            return $countryName;
+        }
+
+        /*$countries = [
+            'US' => 'United States',
+            'UA' => 'Ukraine',
+        ];*/
+        //return $countries[$countryCode] ?? 'Unknown';
+    }
 }
