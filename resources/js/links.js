@@ -1,3 +1,41 @@
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.color = "#6c757d";
+Chart.defaults.borderColor = "rgba(0, 0, 0, 0.05)";
+
+const CHART_COLORS = {
+    primary: "rgba(0, 123, 255, 0.8)",
+    secondary: "rgba(100, 181, 246, 0.8)",
+    warning: "rgba(247, 184, 48, 0.8)",
+    success: "rgba(40, 167, 69, 0.8)",
+    danger: "rgba(220, 53, 69, 0.8)",
+    gradientFill: "rgba(100, 181, 246, 0.15)"
+};
+
+const commonChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            position: 'top',
+            labels: {
+                padding: 15,
+                boxWidth: 15,
+                font: { size: 13 }
+            }
+        },
+        tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            titleColor: '#212529',
+            bodyColor: '#6c757d',
+            borderColor: 'rgba(0, 0, 0, 0.1)',
+            borderWidth: 1,
+            padding: 12,
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.05)',
+            usePointStyle: true
+        }
+    }
+};
+
 $("#linksTable").DataTable({
     responsive: true,
     lengthChange: false,
@@ -7,201 +45,175 @@ $("#linksTable").DataTable({
     ordering: true,
     info: false,
     order: [[5, "desc"]],
+    language: {
+        search: "_INPUT_",
+        searchPlaceholder: "Search links..."
+    }
 });
-
-const CHART_COLORS = {
-    border: "rgba(54, 162, 235, 1)",
-    background: "rgba(54, 162, 235, 0.2)",
-    countryColors: ["#007bff", "#28a745", "#ffc107", "#dc3545", "#6f42c1"],
-    deviceColors: ["#007bff", "#28a745", "#ffc107", "#dc3545", "#6f42c1"],
-    browserColors: ["#007bff", "#28a745", "#ffc107", "#dc3545", "#6f42c1"],
-};
-
 
 const activityDaysChartConfig = {
     type: "line",
     data: {
         labels: [],
-        datasets: [
-            {
-                label: "Activity",
-                data: [],
-                borderColor: CHART_COLORS.border,
-                backgroundColor: CHART_COLORS.background,
-                tension: 0.4,
-                fill: true,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-            },
-        ],
+        datasets: [{
+            label: "Clicks per day",
+            data: [],
+            borderColor: CHART_COLORS.primary,
+            backgroundColor: CHART_COLORS.gradientFill,
+            borderWidth: 3,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            pointBackgroundColor: "#fff",
+            pointBorderColor: CHART_COLORS.primary,
+            tension: 0.4,
+            fill: { target: "origin", above: CHART_COLORS.gradientFill }
+        }]
     },
     options: {
-        responsive: true,
+        ...commonChartOptions,
         scales: {
             y: {
                 beginAtZero: true,
                 title: { display: true, text: "Clicks" },
+                ticks: { stepSize: 1 }
             },
             x: {
                 title: { display: true, text: "Date" },
-                ticks: {
-                    autoSkip: true,
-                    maxTicksLimit: 12,
-                },
-            },
-        },
-        plugins: { legend: { display: true } },
-        interaction: {
-            mode: "nearest",
-            intersect: false,
-        },
-    },
+                ticks: { autoSkip: true, maxTicksLimit: 12 }
+            }
+        }
+    }
 };
 
 const activityChartConfig = {
     type: "line",
     data: {
-        labels: Array.from(
-            { length: 24 },
-            (_, i) => `${String(i).padStart(2, "0")}:00`
-        ),
-        datasets: [
-            {
-                label: "Activity",
-                data: Array(24).fill(0),
-                borderColor: CHART_COLORS.border,
-                backgroundColor: CHART_COLORS.background,
-                tension: 0.4,
-                fill: true,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-            },
-        ],
+        labels: Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, "0")}:00`),
+        datasets: [{
+            label: "Clicks per hour",
+            data: Array(24).fill(0),
+            borderColor: CHART_COLORS.primary,
+            backgroundColor: CHART_COLORS.gradientFill,
+            borderWidth: 3,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            pointBackgroundColor: "#fff",
+            pointBorderColor: CHART_COLORS.primary,
+            tension: 0.4,
+            fill: { target: "origin", above: CHART_COLORS.gradientFill }
+        }]
     },
     options: {
-        responsive: true,
+        ...commonChartOptions,
         scales: {
-            y: {
-                beginAtZero: false,
-                title: { display: true, text: "Clicks" },
-                ticks: {
-                    callback: (value) => (value % 1 === 0 ? value : null),
-                },
+            y: { 
+                beginAtZero: true,
+                ticks: { callback: (value) => (value % 1 === 0 ? value : null) }
             },
-            x: {
-                title: { display: true, text: "Time (hours)" },
-            },
-        },
-        plugins: { legend: { display: true } },
-    },
+            x: { title: { display: true, text: "Time (hours)" } }
+        }
+    }
 };
 
 const countryChartConfig = {
     type: "bar",
     data: {
         labels: [],
-        datasets: [
-            {
-                label: "Amount of unique clicks",
-                data: [],
-                backgroundColor: CHART_COLORS.countryColors,
-            },
-        ],
+        datasets: [{
+            label: "Clicks",
+            data: [],
+            backgroundColor: Object.values(CHART_COLORS),
+            borderColor: "rgba(255, 255, 255, 0.3)",
+            borderWidth: 1,
+            borderRadius: 8,
+            borderSkipped: false,
+            maxBarThickness: 40
+        }]
     },
     options: {
+        ...commonChartOptions,
         indexAxis: "y",
-        responsive: true,
-        maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-            x: {
-                beginAtZero: true,
-                ticks: { stepSize: 1 },
-            },
-        },
-    },
+            x: { beginAtZero: true, ticks: { stepSize: 1 } },
+            y: { grid: { display: false } }
+        }
+    }
 };
 
 const deviceChartConfig = {
     type: "doughnut",
     data: {
         labels: [],
-        datasets: [
-            {
-                label: "Device Distribution",
-                data: [],
-                backgroundColor: CHART_COLORS.deviceColors,
-            },
-        ],
+        datasets: [{
+            label: "Clicks",
+            data: [],
+            backgroundColor: Object.values(CHART_COLORS),
+            borderColor: "rgba(255, 255, 255, 0.3)",
+            borderWidth: 2,
+            spacing: 5,
+            hoverOffset: 15
+        }]
     },
     options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: true,
-                position: "top",
-            },
-        },
-    },
+        ...commonChartOptions,
+        cutout: "60%",
+        plugins: { legend: { position: "right" } }
+    }
 };
 
 const browserChartConfig = {
     type: "pie",
     data: {
         labels: [],
-        datasets: [
-            {
-                label: "Browser Distribution",
-                data: [],
-                backgroundColor: CHART_COLORS.browserColors,
-            },
-        ],
+        datasets: [{
+            label: "Clicks",
+            data: [],
+            backgroundColor: Object.values(CHART_COLORS),
+            borderColor: "rgba(255, 255, 255, 0.3)",
+            borderWidth: 2,
+            spacing: 5,
+            hoverOffset: 15
+        }]
     },
     options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: true,
-                position: "top",
-            },
-        },
-    },
+        ...commonChartOptions,
+        plugins: { legend: { position: "right" } }
+    }
 };
 
-function createChart(ctx, config) {
-    return new Chart(ctx, config);
-}
 
-const activityDaysChart = createChart(
-    $("#activityDaysChart")[0].getContext("2d"),
-    activityDaysChartConfig
-);
-const activityChart = createChart(
-    $("#activityChart")[0].getContext("2d"),
-    activityChartConfig
-);
-const countryChart = createChart(
-    $("#countryChart")[0].getContext("2d"),
-    countryChartConfig
-);
-const deviceChart = createChart(
-    $("#deviceChart")[0].getContext("2d"),
-    deviceChartConfig
-);
-const browserChart = createChart(
-    $("#browserChart")[0].getContext("2d"),
-    browserChartConfig
-);
+//init charts
+const charts = {
+    activityDaysChart: new Chart(
+        document.getElementById('activityDaysChart').getContext('2d'), 
+        activityDaysChartConfig
+    ),
+    activityChart: new Chart(
+        document.getElementById('activityChart').getContext('2d'), 
+        activityChartConfig
+    ),
+    countryChart: new Chart(
+        document.getElementById('countryChart').getContext('2d'), 
+        countryChartConfig
+    ),
+    deviceChart: new Chart(
+        document.getElementById('deviceChart').getContext('2d'), 
+        deviceChartConfig
+    ),
+    browserChart: new Chart(
+        document.getElementById('browserChart').getContext('2d'), 
+        browserChartConfig
+    )
+};
 
 function updateActivityChart(activeHours) {
-    const nonZeroData = activeHours.filter((val) => val > 0);
+    const nonZeroData = activeHours.filter(val => val > 0);
     const minValue = nonZeroData.length ? Math.min(...nonZeroData) - 1 : 0;
 
-    activityChart.options.scales.y.min = minValue;
-    activityChart.data.datasets[0].data = activeHours;
-    activityChart.update();
+    charts.activityChart.options.scales.y.min = minValue;
+    charts.activityChart.data.datasets[0].data = activeHours;
+    charts.activityChart.update();
 }
 
 function updateActivityDaysChart(data) {
@@ -210,136 +222,92 @@ function updateActivityDaysChart(data) {
 
     if (labels.length > 30) {
         const groupedData = groupByMonth(labels, chartData);
-        activityDaysChart.data.labels = Object.keys(groupedData);
-        activityDaysChart.data.datasets[0].data = Object.values(groupedData);
+        charts.activityDaysChart.data.labels = Object.keys(groupedData);
+        charts.activityDaysChart.data.datasets[0].data = Object.values(groupedData);
     } else {
-        activityDaysChart.data.labels = labels;
-        activityDaysChart.data.datasets[0].data = chartData;
+        charts.activityDaysChart.data.labels = labels;
+        charts.activityDaysChart.data.datasets[0].data = chartData;
     }
 
-    activityDaysChart.update();
+    charts.activityDaysChart.update();
 }
 
 function groupByMonth(dates, data) {
     const months = {};
-
     dates.forEach((date, index) => {
-        const month = new Date(date).toLocaleString("default", {
-            month: "short",
-            year: "numeric",
+        const month = new Date(date).toLocaleString('default', { 
+            month: 'short', 
+            year: 'numeric' 
         });
-        if (!months[month]) {
-            months[month] = 0;
-        }
-        months[month] += data[index];
+        months[month] = (months[month] || 0) + data[index];
     });
-
     return months;
 }
 
-function updateChart(chart, data, labelKey, dataKey) {
-    const labels = data.map((item) => item[labelKey]);
-    const chartData = data.map((item) => item[dataKey]);
-
-    chart.data.labels = labels;
-    chart.data.datasets[0].data = chartData;
-
-    if (chart.options.plugins.annotation) {
-        delete chart.options.plugins.annotation.annotations.noData;
-    }
-
+function updateChart(chartName, data, labelKey, dataKey) {
+    const chart = charts[chartName];
+    chart.data.labels = data.map(item => item[labelKey]);
+    chart.data.datasets[0].data = data.map(item => item[dataKey]);
     chart.update();
 }
 
-function updateChartZeroData(inputChart) {
-    inputChart.data.labels = [];
-    inputChart.data.datasets[0].data = [];
-
-    if (inputChart != countryChart) {
-        inputChart.options.plugins.annotation = {
+function updateChartZeroData(chartName) {
+    const chart = charts[chartName];
+    chart.data.labels = [];
+    chart.data.datasets[0].data = [];
+    
+    if (chartName !== 'countryChart') {
+        chart.options.plugins.annotation = {
             annotations: {
                 noData: {
                     type: "label",
-                    xValue: 0,
-                    yValue: 0,
-                    backgroundColor: "rgba(252, 252, 252, 0.33)",
-                    content: "No data has been found",
-                    font: {
-                        size: 16,
-                        weight: "bold",
-                    },
-                    textAlign: "center",
-                    textBaseline: "middle",
-                    padding: 10,
-                    borderRadius: 4,
-                },
-            },
+                    content: "No data available",
+                    font: { size: 16, weight: 'bold' },
+                    color: '#6c757d',
+                    textAlign: 'center',
+                    position: 'center'
+                }
+            }
         };
     }
-
-    inputChart.update();
+    chart.update();
 }
 
-async function fetchData(dataId, route, start_date, end_date) {
+async function fetchData(dataId, route, startDate, endDate) {
     try {
         const response = await $.ajax({
-            headers: {
-                "X-CSRF-TOKEN": $('input[name="_token"]').val(),
-            },
+            headers: { 'X-CSRF-TOKEN': $('input[name="_token"]').val() },
             url: route,
             type: "GET",
-            data: { id: dataId, startDate: start_date, endDate: end_date },
+            data: { id: dataId, startDate, endDate }
         });
 
         if (response) {
-            if (
-                response.active_days &&
-                typeof response.active_days === "object"
-            ) {
+            if (response.active_days) {
                 updateActivityDaysChart(response.active_days);
-                const activeDaysKeys = Object.keys(response.active_days).sort();
-                const startDate = activeDaysKeys[0];
-                const endDate = activeDaysKeys[activeDaysKeys.length - 1];
-                $("#startDate").val(startDate);
-                $("#endDate").val(endDate);
+                const dates = Object.keys(response.active_days).sort();
+                if (dates.length) {
+                    $("#startDate").val(dates[0]);
+                    $("#endDate").val(dates[dates.length - 1]);
+                }
             }
 
-            if (
-                Array.isArray(response.active_hours) &&
-                response.active_hours.length === 24
-            ) {
+            if (response.active_hours?.length === 24) {
                 updateActivityChart(response.active_hours);
             }
 
-            if (Array.isArray(response.top_countries)) {
-                updateChart(
-                    countryChart,
-                    response.top_countries,
-                    "country_name",
-                    "click_count"
-                );
+            if (response.top_countries) {
+                updateChart('countryChart', response.top_countries, 'country_name', 'click_count');
             }
-            if (Array.isArray(response.top_devices)) {
-                updateChart(
-                    deviceChart,
-                    response.top_devices,
-                    "os",
-                    "click_count"
-                );
+            if (response.top_devices) {
+                updateChart('deviceChart', response.top_devices, 'os', 'click_count');
             }
-            if (Array.isArray(response.top_browsers)) {
-                updateChart(
-                    browserChart,
-                    response.top_browsers,
-                    "browser",
-                    "click_count"
-                );
+            if (response.top_browsers) {
+                updateChart('browserChart', response.top_browsers, 'browser', 'click_count');
             }
-        } else {
-            console.error("Empty response received");
         }
     } catch (error) {
-        console.error("AJAX error:", error);
+        console.error("AJAX Error:", error);
     }
 }
 
@@ -368,7 +336,7 @@ async function getLinkData(link_id, route) {
                 $("#editShortNameDisplay").text(
                     "https://" + domainName + "/" + shortNameText
                 );
-
+                $("#editLinkModalCopyButton").data('link', "https://" + domainName + "/" + shortNameText);
                 if (response.link_data.available === 1) {
                     $("#editAvailable").val("1");
                 } else {
@@ -383,22 +351,22 @@ async function getLinkData(link_id, route) {
     }
 }
 
-$(".view-stats").on("click", function () {
+
+$(".view-stats").on("click", function() {
     const dataId = $(this).data("id");
     const route = $(this).data("url");
-    $("#selected-link").attr("data-id", dataId);
-    $("#startDate").val("");
-    $("#endDate").val("");
+    $("#selected-link").data("id", dataId).data("url", route);
     fetchData(dataId, route, null, null);
 });
 
-$("#startDate, #endDate").on("change", function () {
+$("#startDate, #endDate").on("change", function() {
     const dataId = $("#selected-link").data("id");
-    const route = $(".view-stats").data("url");
-    const startDate = $("#startDate").val() || null;
-    const endDate = $("#endDate").val() || null;
+    const route = $("#selected-link").data("url");
+    const startDate = $("#startDate").val();
+    const endDate = $("#endDate").val();
     fetchData(dataId, route, startDate, endDate);
 });
+
 
 $(".edit-link").on("click", function () {
     const link_id = $(this).data("id");
@@ -476,12 +444,8 @@ $(".copy-button").on('click', function() {
 
     navigator.clipboard.writeText(link).then(() => {
         $icon.removeClass('bi-clipboard').addClass('bi-check-lg');
-
-        $button.addClass('btn-success').removeClass('btn-outline-secondary');
-
         setTimeout(() => {
             $icon.removeClass('bi-check-lg').addClass('bi-clipboard');
-            $button.removeClass('btn-success').addClass('btn-outline-secondary');
         }, 10000);
     }).catch(err => {
         console.error('Copy error: ', err);

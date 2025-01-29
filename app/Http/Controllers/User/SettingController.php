@@ -61,9 +61,9 @@ class SettingController extends Controller
             $result =  $this->user_obj->requestUserData(Auth::id(), 'data');
 
             if ($result) {
-                return redirect()->route('user.settings.index')->with('success', 'Link successfully deleted.');
+                return redirect()->route('user.settings.index')->with('success', 'Link successfully has been sent.');
             } else {
-                return redirect()->route('user.settings.index')->withErrors(['error' => 'Oops! Something went wrong and we couldn\'t delete the link.']);
+                return redirect()->route('user.settings.index')->withErrors(['error' => 'Oops! Something went wrong and we couldn\'t send your request.']);
             }
         } catch (Exception $e) {
             $this->logError('Error processing user data request', $e, ['user_id' => Auth::id()]);

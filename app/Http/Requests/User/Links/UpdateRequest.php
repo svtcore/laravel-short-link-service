@@ -14,7 +14,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'custom_name' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_ \-]+$/'],
+            'custom_name' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\- ]+$/'],
             'destination' => ['required', 'string', 'url', 'max:2048'],
             'access' => ['required', 'boolean'],
         ];        

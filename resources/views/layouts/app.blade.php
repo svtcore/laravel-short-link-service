@@ -14,45 +14,70 @@
     <!-- Navigation Menu -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="#">URL Shortening Service</a>
+            <a class="navbar-brand" href="{{ route('home') }}">URL Shortening Service</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     @role('user|admin')
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('user.dashboard') }}">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('user.links.index') }}">My Links</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('user.settings.index') }}">Settings</a>
-                        </li>
-                        <li class="nav-item">
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button class="btn btn-outline-custom" type="submit">Log Out</button>
-                            </form>
-                        </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('user.dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('user.links.index') }}">My Links</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('user.settings.index') }}">Settings</a>
+                    </li>
+                    <li class="nav-item">
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button class="btn" type="submit">Log Out</button>
+                        </form>
+                    </li>
                     @else
-                        <li class="nav-item">
-                            <a class="btn btn-outline-custom" href="{{ route('login') }}">Sign In</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn btn-custom" href="{{ route('register') }}">Register</a>
-                        </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-custom" href="{{ route('login') }}">Sign In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-custom" href="{{ route('register') }}">Register</a>
+                    </li>
                     @endrole
                 </ul>
             </div>
         </div>
     </nav>
+
     @yield('content')
 
     <!-- Footer Section -->
-    <footer class="footer">
-        <p>&copy; 2025 URL Shortening Service. All rights reserved.</p>
+    <footer class="footer py-1 mt-4 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mt-2">
+                        &copy; {{ date('Y') }} URL Shortening Service. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <ul class="nav justify-content-center justify-content-md-end">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="#">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="#">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="#">Privacy Policy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="#">Terms of Service</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </footer>
 
     <!-- jQuery -->

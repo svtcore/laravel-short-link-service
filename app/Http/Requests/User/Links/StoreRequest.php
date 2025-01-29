@@ -17,7 +17,8 @@ class StoreRequest extends FormRequest
     {
         return [
             'url' => ['required', 'string', 'url', 'max:2048'],
-            'custom_name' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_- ]+$/'],
-        ];
+            'custom_name' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\- ]+$/'],
+            'from_modal' => ['nullable', 'boolean']
+        ];        
     }
 }

@@ -1,9 +1,59 @@
-.btn-login {
-    background-color: white !important;
-    color: rgb(22, 22, 22) !important;
-    border: 2px solid #ccc;
-    font-weight: bold;
+.alert {
+	border-radius: 0.5rem;
+	padding: 1rem 1.25rem;
 }
-.btn-forgot{
-    color: #ffffff !important;
+
+.alert-danger {
+	background-color: #ffebee;
+	border-color: #ffcdd2;
+	color: #c62828;
+}
+
+.alert-success {
+	background-color: #e8f5e9;
+	border-color: #c8e6c9;
+	color: #2e7d32;
+}
+
+.auth-card {
+	animation: fadeInBounce 0.6s ease-in-out;
+	border: 2px dashed rgba(100,181,246,0.3);
+}
+
+.auth-icon {
+	animation: pulse 2s infinite;
+	color: #64b5f6;
+	opacity: 0.8;
+}
+
+.auth-section {
+	align-items: center;
+	background: linear-gradient(145deg,#f8f9fa 0%,#ffffff 100%);
+	display: flex;
+	min-height: 100vh;
+	padding: 4rem 0;
+}
+
+.btn-primary {
+	background-color: #64b5f6;
+	border-color: #64b5f6;
+	padding: 0.75rem;
+	transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+	background-color: #42a5f5;
+	border-color: #42a5f5;
+	transform: translateY(-1px);
+}
+
+.form-control-lg {
+	border: 1px solid #e3eaf2;
+	padding: 0.75rem 1.25rem;
+	transition: all 0.3s ease;
+}
+
+.form-control-lg:focus {
+	border-color: #64b5f6;
+	box-shadow: 0 0 0 3px rgba(100,181,246,0.15);
 }

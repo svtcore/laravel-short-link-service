@@ -10,34 +10,42 @@
 @section('content')
 <!-- Hero Section (URL shortening block) -->
 <section class="hero-section">
-    <div class="container">
+    <div class="container text-center">
         <h1 class="display-4 mb-3">Welcome back, {{ $username }}</h1>
         <p class="lead mb-4">Shorten URLs quickly and manage your links.</p>
 
+        <!-- Input group for URL shortening -->
         <div class="input-group input-group-custom">
             @csrf
-            <input type="url" class="form-control" data-route="{{ route('links.store') }}" name="url" placeholder="Enter URL to shorten" id="url-input" required title="Only links starts with http:// or https://">
-            <button class="btn btn-light" id="shorten-btn">Shorten</button>
+            <input type="url" class="form-control" data-route="{{ route('links.store') }}" name="url" placeholder="Enter URL to shorten" id="url-input" required
+                maxlength="2048" pattern="https?://.+|http://.+" title="Only links starts with http:// or https://">
+            <button class="btn btn-primary" id="shorten-btn">Shorten</button>
         </div>
 
-        <div id="result-block" class="container mt-4" style="display: none;">
+        <!-- Block to display the shortened URL -->
+        <div id="result-block" class="container mt-4">
             <div class="result-container">
                 <span id="shortened-link" class="result-link">https://short.url/example</span>
-                <button class="copy-btn">Copy</button>
+                <button class="copy-btn" id="copy-btn">Copy</button>
             </div>
         </div>
     </div>
 </section>
 
 <!-- User Dashboard Section -->
-<section class="container user-dashboard">
-    <h2 class="text-center mb-4">Your Dashboard</h2>
-
+<section class="container user-dashboard mt-4">
     @if ($links_count == 0)
     <!-- Empty Links Placeholder Block -->
-    <div class="empty-links-placeholder text-center">
+    <div class="empty-links-placeholder shadow-lg bg-white rounded-3 p-4 text-center mb-4">
+        <div class="empty-stats-icon mb-3">
+            <i class="bi bi-link-45deg fs-1 text-primary"></i>
+        </div>
         <h4 class="mb-3">No Links Yet</h4>
-        <p class="mb-4">It looks like you haven’t shortened any URLs yet. Start by entering a URL above to create your first shortened link!</p>
+        <p class="text-muted mb-0">
+            It looks like you haven't shortened any URLs yet. Start by entering a URL above to create your first shortened link!
+            <br>
+            <small>Your new link will appear here immediately after creation</small>
+        </p>
     </div>
     @else
     <!-- Statistics Cards -->
@@ -68,8 +76,16 @@
         </div>
     </div>
     @if ($clicks_count == 0)
-    <div class="empty-links-placeholder text-center">
-        <p class="mb-4 mt-4">More detailed statistics will appear as the link gets more clicks.</p>
+    <div class="empty-stats-card shadow-lg bg-white rounded-3 p-4 text-center mb-4">
+        <div class="empty-stats-icon mb-3">
+            <i class="bi bi-bar-chart fs-1 text-primary"></i>
+        </div>
+        <h4 class="mb-3">No Data Available Yet</h4>
+        <p class="text-muted mb-0">
+            Detailed statistics will appear here once your link starts receiving clicks.
+            <br>
+            <small>Share your link to generate traffic!</small>
+        </p>
     </div>
     @endif
 

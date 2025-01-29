@@ -59,11 +59,17 @@ class LinkController extends Controller
         try {
             $url = $request->validated()['url'];
             $custom_name = $request->validated()['custom_name'] ?? null;
+            $from_modal = $request->validated()['from_modal'] ?? false;
 
             // Check if the user is authenticated. If so, associate the link with the user, otherwise set user_id to null.
             $user_id = Auth::check() ? Auth::id() : null;
 
-            return $this->links_obj->generateShortName($url, $custom_name, $user_id);
+            $destinationUrl = $this->links_obj->generateShortName($url, $custom_name, $user_id) ?? null;
+            if (isset($destinationUrl['short_name'])) {
+                if ($from_modal != "1")
+                    return $destinationUrl;
+                else return redirect()->route('user.links.index')->with('success', "Link successfuly shorted");
+            }
         } catch (Exception $e) {
             $this->logError("Error while creating short link", $e, ['url' => $url, 'user_id' => $user_id ?? 'guest']);
             return response()->json(['error' => 'An error occurred while creating the link.'], 500);

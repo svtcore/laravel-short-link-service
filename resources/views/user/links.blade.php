@@ -23,8 +23,15 @@
 
 <!-- Statistics Section -->
 <section class="statistics-section">
-    <div class="links-block">
-        <h2 class="text-center mb-4 mt-1">Detailed Link Statistics</h2>
+    <div class="links-block shadow-lg bg-white rounded-3">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Your Shortened Links</h2>
+            <div class="d-flex gap-2">
+                <button class="btn btn-custom btn-sm" data-bs-toggle="modal" data-bs-target="#createLinkModal">
+                    <i class="bi bi-plus-lg me-1"></i>New Link
+                </button>
+            </div>
+        </div>
         @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 12px; padding: 20px; background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724;">
             <strong>Success!</strong> {{ session('success') }}
@@ -45,92 +52,116 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         @endif
-        <table id="linksTable" class="table table-striped w-100">
-            <thead>
+        <table id="linksTable" class="table table-hover" style="border-collapse: separate; border-spacing: 0 1rem;">
+            <thead class="bg-light">
                 <tr>
-                    <th class="text-center">Name</th>
-                    <th class="text-center align-middle w-25">Short Link</th>
-                    <th class="text-center align-middle w-25">Source Link</th>
-                    <th class="text-center">Clicks</th>
-                    <th class="text-center">Unique</th>
-                    <th class="text-center">Date</th>
-                    <th class="text-center">Statistics</th>
-                    <th class="text-center">Actions</th>
+                    <th data-priority="1">Name</th>
+                    <th data-priority="2">Short URL</th>
+                    <th class="d-none d-md-table-cell">Destination</th>
+                    <th data-priority="3">Clicks</th>
+                    <th class="d-none d-sm-table-cell">Created</th>
+                    <th data-priority="4">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($links as $link)
-                <tr>
-                    <td class="text-center align-middle w-25 text-truncate" style="max-width: 150px;" title="{{ $link->custom_name }}">
-                        {{ $link->custom_name }}
+                <tr class="bg-white rounded shadow-sm">
+                    <!-- Name Column -->
+                    <td class="align-middle">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-link-45deg me-2 text-primary"></i>
+                            <span class="text-truncate" style="max-width: 120px;"
+                                title="{{ $link->custom_name }}">
+                                {{ $link->custom_name }}
+                            </span>
+                        </div>
                     </td>
 
-                    <!-- Short Link Display -->
-                    <td class="text-center align-middle w-25">
-                        @isset($link->short_name)
-                        <div class="d-flex align-items-center justify-content-start border rounded p-2 bg-light text-truncate">
+                    <!-- Short URL Column -->
+                    <td class="align-middle">
+                        <div class="d-flex align-items-center gap-2">
                             <a href="https://{{ $link->domain->name }}/{{ $link->short_name }}"
-                                class="text-primary fw-bold text-decoration-none"
-                                target="_blank"
-                                title="https://{{ $link->domain->name }}/{{ $link->short_name }}">
+                                class="text-truncate text-primary"
+                                style="max-width: 180px;"
+                                target="_blank">
                                 {{ $link->domain->name }}/{{ $link->short_name }}
                             </a>
-                            <button type="button"
-                                class="btn btn-outline-secondary btn-sm ms-auto copy-button"
-                                title="Copy Link"
-                                data-link="https://{{ $link->domain->name }}/{{ $link->short_name }}">
-                                <i class="bi bi-clipboard"></i>
-                            </button>
-                        </div>
-                        @endisset
-                    </td>
-
-                    <td class="text-center align-middle w-25">
-                        <div class="d-flex align-items-center border rounded p-2 bg-light" style="max-width: 250px;">
-                            <!-- Container link -->
-                            <div class="text-truncate" style="flex-grow: 1; overflow: hidden;">
-                                <a href="{{ $link->destination }}"
-                                    class="text-dark text-decoration-none"
-                                    target="_blank"
-                                    title="{{ $link->destination }}">
-                                    {{ $link->destination }}
-                                </a>
-                            </div>
-                            <!-- Copy button -->
-                            <button type="button"
-                                class="btn btn-outline-secondary btn-sm ms-2 flex-shrink-0 copy-button"
-                                title="Copy Link"
-                                data-link="{{ $link->destination }}">
-                                <i class="bi bi-clipboard"></i>
+                            <button class="btn btn-link btn-sm text-secondary copy-button p-0"
+                                data-link="https://{{ $link->domain->name }}/{{ $link->short_name }}"
+                                title="Copy Short URL">
+                                <i class="bi bi-clipboard fs-6"></i>
                             </button>
                         </div>
                     </td>
 
-
-                    <td class="text-center align-middle">{{ $link->total_clicks }}</td>
-                    <td class="text-center align-middle">{{ $link->unique_clicks }}</td>
-                    <td class="text-center">{{ \Carbon\Carbon::parse($link->created_at)->format('d.m.Y') }}</td>
-                    <td class="text-center">
-                        @if ($link->total_clicks > 0)
-                        @csrf
-                        <button class="btn btn-custom btn-sm view-stats" data-bs-toggle="modal" data-bs-target="#statsModal" data-id="{{ $link->id }}" data-url="{{ route('user.links.show') }}">View</button>
-                        @else
-                        <p class="text-center">No data</p>
-                        @endif
+                    <!-- Destination Column (hidden on mobile) -->
+                    <td class="align-middle d-none d-md-table-cell">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-truncate" style="max-width: 200px;"
+                                title="{{ $link->destination }}">
+                                {{ parse_url($link->destination, PHP_URL_HOST) }}
+                            </span>
+                            <button class="btn btn-link btn-sm text-secondary copy-button p-0"
+                                data-link="{{ $link->destination }}"
+                                title="Copy Destination URL">
+                                <i class="bi bi-clipboard fs-6"></i>
+                            </button>
+                        </div>
                     </td>
-                    <td class="text-center">
-                        <form action="{{ route('user.links.destroy', $link->id) }}" method="POST" id="delete-form-{{ $link->id }}">
-                            @csrf
-                            @method('DELETE')
-                            <div class="btn-group mr-2" role="group" aria-label="First group">
-                                <a href="#" type="button" class="btn btn-warning edit-link" data-bs-toggle="modal" data-bs-target="#editLinkModal" data-id="{{ $link->id }}" data-url="{{ route('user.links.edit', $link->id) }}">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <button type="button" class="btn btn-danger delete-button" data-id="{{ $link->id }}">
-                                    <i class="bi bi-trash3"></i>
+
+                    <!-- Clicks Column -->
+                    <td class="align-middle">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary rounded-pill fs-6 px-3 py-2">
+                                {{ $link->total_clicks }}
+                            </span>
+                            <small class="text-muted d-none d-sm-inline fs-6">
+                                / {{ $link->unique_clicks }}
+                            </small>
+                        </div>
+                    </td>
+
+
+                    <!-- Date Column (hidden on mobile) -->
+                    <td class="align-middle d-none d-sm-table-cell">
+                        <span class="text-muted small">
+                            {{ \Carbon\Carbon::parse($link->created_at)->format('M d, Y') }}
+                        </span>
+                    </td>
+
+                    <td class="align-middle">
+                        <div class="d-flex gap-2">
+                            @if ($link->total_clicks > 0)
+                            <button class="btn btn-icon btn-lg btn-outline-secondary view-stats"
+                                data-bs-toggle="modal"
+                                data-bs-target="#statsModal"
+                                data-id="{{ $link->id }}"
+                                data-url="{{ route('user.links.show') }}"
+                                title="Statistics">
+                                <i class="bi bi-graph-up"></i>
+                            </button>
+                            @endif
+
+                            <button class="btn btn-icon btn-lg btn-outline-secondary edit-link"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editLinkModal"
+                                data-id="{{ $link->id }}"
+                                data-url="{{ route('user.links.edit', $link->id) }}"
+                                title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+
+                            <form action="{{ route('user.links.destroy', $link->id) }}" method="POST" id="delete-form-{{ $link->id }}">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-icon btn-lg btn-outline-danger delete-button"
+                                    type="button"
+                                    data-id="{{ $link->id }}"
+                                    title="Delete">
+                                    <i class="bi bi-trash"></i>
                                 </button>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @endforeach
@@ -248,7 +279,7 @@
                         <h6 class="form-label">Short Link</h6>
                         <div class="d-flex align-items-center border rounded p-2 bg-light">
                             <p class="mb-0 text-primary fw-bold" id="editShortNameDisplay" style="flex: 1;"></p>
-                            <button type="button" class="btn btn-outline-secondary btn-sm ms-2" title="Copy Link" onclick="navigator.clipboard.writeText(document.getElementById('editShortNameDisplay').textContent);">
+                            <button type="button" class="btn btn-outline-secondary btn-sm ms-2 copy-button" id="editLinkModalCopyButton" title="Copy Link">
                                 <i class="bi bi-clipboard"></i>
                             </button>
                         </div>
@@ -275,6 +306,48 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-custom">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Creating Links -->
+<div class="modal fade" id="createLinkModal" tabindex="-1" aria-labelledby="createLinkModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <form method="POST" id="createLinkForm" action="{{ route('links.store') }}">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createLinkModalLabel">Create New Link</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="createLinkErrors" class="alert alert-danger d-none">
+                        <ul class="mb-0" id="createLinkErrorsList"></ul>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="createCustomName" class="form-label">Custom Name (optional)</label>
+                        <input type="text" class="form-control" id="createCustomName" name="custom_name"
+                            placeholder="Enter custom name for tracking"
+                            minlength="3" maxlength="255"
+                            title="Only letters, numbers, spaces, and hyphens are allowed">
+                        <small class="text-muted">Leave blank to auto-generate a name</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="createDestination" class="form-label">Destination URL</label>
+                        <input type="hidden" id="from_modal" name="from_modal" value="1" />
+                        <input type="url" class="form-control" id="createDestination" name="url"
+                            placeholder="https://example.com"
+                            required
+                            title="Only links starting with http:// or https://">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-custom">Shorten Link</button>
                 </div>
             </form>
         </div>
