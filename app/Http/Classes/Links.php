@@ -323,6 +323,9 @@ class Links extends Domains
     {
         return Link::whereHas('domain', function ($query) use ($domain) {
             $query->where('name', $domain);
-        })->where('short_name', $short_name)->first();
+        })
+        ->where('short_name', $short_name)
+        ->where('available', true)
+        ->first();
     }
 }
