@@ -59,11 +59,8 @@ class LoginController extends Controller
         }
 
         if ($user->hasRole('admin')) {
-            dd("you are admin");
-            //return redirect()->route('admin.dashboard');
+            return redirect()->route('home');
         }
-
-        // Перенаправление по умолчанию
         return redirect()->route('home');
     }
 }

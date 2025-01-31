@@ -9,6 +9,7 @@ use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\LinkController;
 use App\Http\Controllers\User\SettingController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
 Auth::routes();
 
@@ -30,6 +31,14 @@ Route::middleware(['role:user'])->group(function () {
                 Route::post('/request', [SettingController::class, 'request_data'])->name('user.settings.data');
                 Route::post('/deletion', [SettingController::class, 'request_deletion'])->name('user.settings.deletion');
             });
+        });
+    });
+});
+Route::middleware(['role:admin'])->group(function () {
+    Route::namespace('App\Http\Controllers\Admin')->group(function () {
+        Route::prefix('admin')->group(function () {
+            Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+            Route::get('/dashboard/show', [AdminDashboardController::class, 'show'])->name('admin.dashboard.show');
         });
     });
 });

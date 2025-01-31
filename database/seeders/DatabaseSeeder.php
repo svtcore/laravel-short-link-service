@@ -20,9 +20,9 @@ class DatabaseSeeder extends Seeder
     {
         $config = [
             'users' => 10,
-            'links' => 30,
+            'links' => 100,
             'domains' => 10,
-            'link_history' => 200,
+            'link_history' => 2000,
         ];
 
         // Creating roles in a loop to avoid repetition
@@ -32,7 +32,8 @@ class DatabaseSeeder extends Seeder
         }
 
         // Creating specific users with roles
-        $this->createUser('John Doe', 'admin@admin.com', 'admin', Hash::make("password"));
+        $admin = $this->createUser('John Doe', 'admin@admin.com', 'admin', Hash::make("password"));
+        $admin->assignRole('user');
         $this->createUser('Test user', 'user@user.com', 'user', Hash::make("password"));
 
         // Generating random users and assigning roles

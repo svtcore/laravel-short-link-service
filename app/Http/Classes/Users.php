@@ -148,14 +148,13 @@ class Users
     public function freezeAccount(int $user_id): ?bool
     {
         DB::beginTransaction();
-        try{
+        try {
             $result = User::where('id', $user_id)->update([
                 'status' => 'freezed',
             ]);
             DB::commit();
             if ($result) return $result ? true : false;
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             DB::rollBack();
             $this->logError("Failed to freeze user account", $e, [
                 'user_id' => $user_id,
