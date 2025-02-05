@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     @yield('styles')
@@ -13,13 +14,16 @@
 <body>
     <nav class="sidebar">
         <div class="logo">Shortener Admin</div>
-        <a href="#" class="nav-item active">
+
+        <a href="{{ route('admin.dashboard') }}"
+            class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <i class="fas fa-chart-line"></i> Dashboard
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('admin.domains.index') }}"
+            class="nav-item {{ request()->routeIs('admin.domains.*') ? 'active' : '' }}">
             <i class="fas fa-globe"></i> Domains
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('admin.links.index') }}" class="nav-item nav-item {{ request()->routeIs('admin.links.*') ? 'active' : '' }}">
             <i class="fas fa-link"></i> Links
         </a>
         <a href="#" class="nav-item">
@@ -54,7 +58,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-    @yield('custom_scripts')
+    @yield('scripts')
 </body>
 
 </html>

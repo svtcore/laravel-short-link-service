@@ -161,4 +161,16 @@ class Users
             ]);
         }
     }
+
+    public function getUserByEmail(string $email): ?User
+    {
+        try{
+            $user = User::where('email', $email)->first();
+            return (isset($user->id)) ? $user : null; 
+        }
+        catch(Exception $e){
+            $this->logError("Error while retriving user data from email", $e);
+            return null;
+        }
+    }
 }

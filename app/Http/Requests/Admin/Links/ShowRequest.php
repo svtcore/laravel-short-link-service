@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\User\Links;
+namespace App\Http\Requests\Admin\Links;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -11,7 +11,7 @@ class ShowRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user() && $this->user()->hasRole('user');
+        return $this->user() && $this->user()->hasRole('admin');
     }
 
     /**

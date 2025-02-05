@@ -88,31 +88,36 @@
 
 
 <div class="charts-container">
-    <div class="full-width-chart">
-        <h2 class="chart-block-title">Click Activity Over Days</h2>
+    <div class="full-width-chart chart-last-container">
+        <h3 class="chart-block-title">Click Activity Over Days</h3>
+        <hr>
         <textarea id="chartDaysActivityData" hidden>@json($chart_days_activity_data)</textarea>
         <canvas id="activityDaysChart" style="max-height:300px;"></canvas>
     </div>
 
-    <div class="full-width-chart">
-        <h2 class="chart-block-title">Click Activity Over Time</h2>
+    <div class="full-width-chart chart-last-container">
+        <h3 class="chart-block-title">Click Activity Over Time</h3>
+        <hr>
         <textarea id="chartTimeActivityData" hidden>@json($chart_time_activity_data)</textarea>
         <canvas id="activityTimeChart" style="max-height:300px;"></canvas>
     </div>
 </div>
 <div class="chart-last-container-wrapper">
     <div class="chart-last-container">
-        <h2 class="chart-block-title">Countries</h2>
+        <h3 class="chart-block-title">Countries</h3>
+        <hr>
         <textarea id="chartGeoData" hidden>@json($chart_geo_data)</textarea>
         <canvas id="geoChart" style="height:100% !important;"></canvas>
     </div>
     <div class="chart-last-container">
-        <h2 class="chart-block-title">Platform</h2>
+        <h3 class="chart-block-title">Platform</h3>
+        <hr>
         <textarea id="chartPlatformData" hidden>@json($chart_platform_data)</textarea>
         <canvas id="platformChart"></canvas>
     </div>
     <div class="chart-last-container">
-        <h2 class="chart-block-title">Browsers</h2>
+        <h3 class="chart-block-title">Browsers</h3>
+        <hr>
         <textarea id="chartBrowserData" hidden>@json($chart_browser_data)</textarea>
         <canvas id="browserChart"></canvas>
     </div>
@@ -120,7 +125,7 @@
 
 @endsection
 
-@section('custom_scripts')
+@section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 @vite(['resources/js/admin/dashboard.js'])
 @endsection

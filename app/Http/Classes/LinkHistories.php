@@ -35,6 +35,37 @@ class LinkHistories extends Links
         }
     }
 
+    public function getTotalClicksByLinkId(int $link_id, ?string $startDate, ?string $endDate): ?int
+    {
+        try {
+            $startDate = $startDate ? Carbon::parse($startDate)->startOfDay() : now()->startOfDay();
+            $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : now()->endOfDay();
+
+            return LinkHistory::where('link_id', $link_id)
+            ->whereBetween('created_at',[$startDate, $endDate])
+            ->count();
+        } catch (Exception $e) {
+            $this->logError("Invalid user ID provided", $e, ['user_id' => $link_id]);
+            return null;
+        }
+    }
+
+    public function getUniqueIpsByLinkId(int $link_id, ?string $startDate, ?string $endDate): ?int
+    {
+        try {
+            $startDate = $startDate ? Carbon::parse($startDate)->startOfDay() : now()->startOfDay();
+            $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : now()->endOfDay();
+
+            return LinkHistory::where('link_id', $link_id)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->distinct('ip_address')
+            ->count('ip_address');
+        } catch (Exception $e) {
+            $this->logError("Error fetching unique IPs", $e, ['user_id' => $link_id]);
+            return null;
+        }
+    }
+
 
 
     /**

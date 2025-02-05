@@ -1,3 +1,10 @@
+:root {
+	--accent: #f7b830;
+	--light: #f8f9fa;
+	--primary: #007bff;
+	--secondary: #64b5f6;
+}
+
 * {
     margin: 0;
     padding: 0;

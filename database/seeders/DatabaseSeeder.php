@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             'users' => 10,
             'links' => 100,
             'domains' => 10,
-            'link_history' => 2000,
+            'link_history' => 200,
         ];
 
         // Creating roles in a loop to avoid repetition

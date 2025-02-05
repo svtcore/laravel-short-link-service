@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\User\Links;
+namespace App\Http\Requests\Admin\Domains;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ShowRequest extends FormRequest
+class DestroyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user() && $this->user()->hasRole('user');
+        return $this->user() && $this->user()->hasRole('admin');
     }
 
     /**
@@ -22,9 +22,7 @@ class ShowRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'numeric', 'min:1', 'max:999999999', 'exists:links,id'],
-            'startDate' => ['nullable', 'date', 'before_or_equal:endDate', 'before_or_equal:today'],
-            'endDate' => ['nullable', 'date', 'after_or_equal:startDate'],
+            'id' => ['required', 'numeric', 'min:1', 'max:999999999', 'exists:domains,id'],
         ];
     }
 }

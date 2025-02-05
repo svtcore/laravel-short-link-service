@@ -17,6 +17,7 @@ class LinkFactory extends Factory
     public function definition(): array
     {
         return [
+            'ip_address' => $this->faker->ipv4(),
             'custom_name' => $this->faker->optional()->bothify('??-???-??'),
             'destination' => $this->faker->url(),
             'short_name' => $this->faker->unique()->regexify('[A-Za-z0-9]{7}'),

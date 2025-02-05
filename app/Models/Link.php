@@ -19,6 +19,7 @@ class Link extends Model
     protected $fillable = [
         'user_id',
         'domain_id',
+        'ip_address',
         'custom_name',
         'destination',
         'short_name',

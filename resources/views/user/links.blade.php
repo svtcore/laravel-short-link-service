@@ -145,7 +145,7 @@
                     <td class="align-middle">
                         <div class="d-flex gap-2">
                             @if ($link->total_clicks > 0)
-                            <button class="btn btn-icon btn-lg btn-outline-secondary view-stats"
+                            <button class="btn btn-icon btn-md btn-outline-secondary view-stats"
                                 data-bs-toggle="modal"
                                 data-bs-target="#statsModal"
                                 data-id="{{ $link->id }}"
@@ -155,7 +155,7 @@
                             </button>
                             @endif
 
-                            <button class="btn btn-icon btn-lg btn-outline-secondary edit-link"
+                            <button class="btn btn-icon btn-md btn-outline-secondary edit-link"
                                 data-bs-toggle="modal"
                                 data-bs-target="#editLinkModal"
                                 data-id="{{ $link->id }}"
@@ -167,7 +167,7 @@
                             <form action="{{ route('user.links.destroy', $link->id) }}" method="POST" id="delete-form-{{ $link->id }}">
                                 @csrf
                                 @method('DELETE')
-                                <button class="btn btn-icon btn-lg btn-outline-danger delete-button"
+                                <button class="btn btn-icon btn-md btn-outline-danger delete-button"
                                     type="button"
                                     data-id="{{ $link->id }}"
                                     title="Delete">
@@ -211,57 +211,94 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <div class="d-flex justify-content-between mb-3">
+                    <!-- Date Filters -->
+                    <div class="row mb-4 date-filters">
                         <input type="hidden" id="selected-link" data-id="" />
-                        <div class="input-group input-group-custom w-50">
-                            <label class="mt-1">From Date:</label>
-                            <input type="date" id="startDate" class="form-control" placeholder="Select start date" required max="{{ now()->toDateString() }}">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="startDate" class="form-label">From Date:</label>
+                                <div class="input-group date-input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-calendar"></i>
+                                    </span>
+                                    <input type="date" id="startDate" class="form-control form-control-lg"
+                                        placeholder="Select start date" required
+                                        max="{{ now()->toDateString() }}" value="{{ now()->toDateString() }}">
+                                </div>
+                            </div>
                         </div>
-                        <div class="input-group input-group-custom w-50">
-                            <label class="mt-1">To Date:</label>
-                            <input type="date" id="endDate" class="form-control" placeholder="Select end date" required max="{{ now()->toDateString() }}">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="endDate" class="form-label">To Date:</label>
+                                <div class="input-group date-input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-calendar"></i>
+                                    </span>
+                                    <input type="date" id="endDate" class="form-control form-control-lg"
+                                        placeholder="Select end date" required
+                                        max="{{ now()->toDateString() }}" value="{{ now()->toDateString() }}">
+                                </div>
+                            </div>
                         </div>
                     </div>
+
                     <hr class="mb-4" />
 
                     <!-- Activity Block -->
-                    <div class="row mb-4">
-                        <h5 class="text-center">Click Activity Over Days</h5>
-                        <div class="d-flex align-items-start">
-                            <div style="flex: 1;">
-                                <canvas id="activityDaysChart" style="max-width: 100%; max-height: 300px;"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-4">
-                        <h5 class="text-center">Click Activity Over Time</h5>
-                        <div class="d-flex align-items-start">
-                            <div style="flex: 1;">
-                                <canvas id="activityChart" style="max-width: 100%; max-height: 300px;"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <hr />
+
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <h5 class="text-center">Country Distribution</h5>
-                            <div class="chart-container">
-                                <canvas id="countryChart"></canvas>
+                            <div class="chart-card">
+                                <h3>Click Activity Over Days</h3>
+                                <hr>
+                                <div class="chart-wrapper">
+                                    <canvas id="activityDaysChart"></canvas>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <h5 class="text-center">Device Distribution</h5>
-                            <div class="chart-container">
-                                <canvas id="deviceChart"></canvas>
+                            <div class="chart-card">
+                                <h3>Click Activity Over Time</h3>
+                                <hr>
+                                <div class="chart-wrapper">
+                                    <canvas id="activityChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <hr />
+
+                    <hr class="mb-4" />
+
+                    <!-- Distribution Blocks -->
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <h5 class="text-center">Browser Distribution</h5>
-                            <div class="chart-container">
-                                <canvas id="browserChart"></canvas>
+                            <div class="chart-card">
+                                <h3>Country Distribution</h3>
+                                <hr>
+                                <div class="chart-wrapper">
+                                    <canvas id="countryChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="chart-card">
+                                <h3>Device Distribution</h3>
+                                <hr>
+                                <div class="chart-wrapper">
+                                    <canvas id="deviceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="mb-4" />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="chart-card">
+                                <h3>Browser Distribution</h3>
+                                <hr>
+                                <div class="chart-wrapper">
+                                    <canvas id="browserChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -325,41 +362,49 @@
     </div>
 </div>
 
-<!-- Modal for Creating Links -->
+<!-- Add Create Link Modal -->
 <div class="modal fade" id="createLinkModal" tabindex="-1" aria-labelledby="createLinkModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <form method="POST" id="createLinkForm" action="{{ route('links.store') }}">
+            <form method="POST" action="{{ route('links.store') }}">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createLinkModalLabel">Create New Link</h5>
+                    <h5 class="modal-title" id="createLinkModalLabel">Shorten New Link</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div id="createLinkErrors" class="alert alert-danger d-none">
-                        <ul class="mb-0" id="createLinkErrorsList"></ul>
+                <div class="modal-body bg-light">
+                    <div id="createLinkErrors" class="alert alert-danger d-none border-radius-8 border-2 p-3">
+                        <ul class="mb-0" id="createLinkErrorsList" style="color: #f56565; font-size: 0.9rem;"></ul>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="createCustomName" class="form-label">Custom Name (optional)</label>
-                        <input type="text" class="form-control" id="createCustomName" name="custom_name"
-                            placeholder="Enter custom name for tracking"
-                            minlength="3" maxlength="255"
+                    <!-- Custom Name Field -->
+                    <div class="mb-4">
+                        <label for="custom_name" class="form-label">Custom Name</label>
+                        <input type="text"
+                            class="form-control border-radius-8 border-2 p-3"
+                            id="custom_name"
+                            name="custom_name"
+                            placeholder="My Special Link"
+                            minlength="3"
+                            maxlength="255"
                             title="Only letters, numbers, spaces, and hyphens are allowed">
-                        <small class="text-muted">Leave blank to auto-generate a name</small>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="createDestination" class="form-label">Destination URL</label>
-                        <input type="hidden" id="from_modal" name="from_modal" value="1" />
-                        <input type="url" class="form-control" id="createDestination" name="url"
+                    <!-- Destination URL Field -->
+                    <div class="mb-4">
+                        <label for="destination" class="form-label">Destination URL</label>
+                        <input type="url"
+                            class="form-control border-radius-8 border-2 p-3"
+                            id="url"
+                            name="url"
                             placeholder="https://example.com"
-                            required
-                            title="Only links starting with http:// or https://">
+                            title="Only links starting with http:// or https://"
+                            required>
                     </div>
+                    <input type="hidden" name="from_modal" value="1" />
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+                <div class="modal-footer bg-white border-top border-light p-3">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-custom">Shorten Link</button>
                 </div>
             </form>

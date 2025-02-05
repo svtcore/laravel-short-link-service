@@ -22,13 +22,13 @@ class LinkController extends Controller
     use LogsErrors;
 
     private $links_obj = null;
-    private $links_obj_hist = null;
+    private $links_hist_obj = null;
 
-    public function __construct(Links $links_obj, LinkHistories $links_obj_hist)
+    public function __construct(Links $links_obj, LinkHistories $links_hist_obj)
     {
         $this->middleware('role:user')->except(['store', 'redirect']);
         $this->links_obj = $links_obj;
-        $this->links_obj_hist = $links_obj_hist;
+        $this->links_hist_obj = $links_hist_obj;
     }
 
 
@@ -63,11 +63,12 @@ class LinkController extends Controller
             $url = $request->validated()['url'];
             $custom_name = $request->validated()['custom_name'] ?? null;
             $from_modal = $request->validated()['from_modal'] ?? false;
+            $ip = $request->ip();
 
             // Check if the user is authenticated. If so, associate the link with the user, otherwise set user_id to null.
             $user_id = Auth::check() ? Auth::id() : null;
 
-            $destinationUrl = $this->links_obj->generateShortName($url, $custom_name, $user_id) ?? null;
+            $destinationUrl = $this->links_obj->generateShortName($url, $custom_name, $user_id, $ip) ?? null;
             if (isset($destinationUrl['short_name'])) {
                 if ($from_modal != "1")
                     return $destinationUrl;
@@ -132,11 +133,11 @@ class LinkController extends Controller
     protected function getLinkMetrics(int $link_id, ?string $start_date, ?string $end_date): array
     {
         return [
-            'active_days' => $this->links_obj_hist->getDailyClicksByLinkId($link_id, $start_date, $end_date),
-            'active_hours' => $this->links_obj_hist->getHourlyClicksByLinkId($link_id, $start_date, $end_date),
-            'top_countries' => $this->links_obj_hist->getTopMetricsByLinkId($link_id, $start_date, $end_date, 'country_name'),
-            'top_devices' => $this->links_obj_hist->getTopMetricsByLinkId($link_id, $start_date, $end_date, 'os'),
-            'top_browsers' => $this->links_obj_hist->getTopMetricsByLinkId($link_id, $start_date, $end_date, 'browser'),
+            'active_days' => $this->links_hist_obj->getDailyClicksByLinkId($link_id, $start_date, $end_date),
+            'active_hours' => $this->links_hist_obj->getHourlyClicksByLinkId($link_id, $start_date, $end_date),
+            'top_countries' => $this->links_hist_obj->getTopMetricsByLinkId($link_id, $start_date, $end_date, 'country_name'),
+            'top_devices' => $this->links_hist_obj->getTopMetricsByLinkId($link_id, $start_date, $end_date, 'os'),
+            'top_browsers' => $this->links_hist_obj->getTopMetricsByLinkId($link_id, $start_date, $end_date, 'browser'),
         ];
     }
 
@@ -192,7 +193,7 @@ class LinkController extends Controller
                 ], 403);
             }
 
-            $result = $this->links_obj->update(
+            $result = $this->links_obj->updateLink(
                 $request->validated('custom_name'),
                 $request->validated('destination'),
                 $request->validated('access'),
@@ -238,7 +239,7 @@ class LinkController extends Controller
                 ], 403);
             }
 
-            $result = $this->links_obj->destroy($id);
+            $result = $this->links_obj->destroyLink($id);
 
             if ($result) {
                 return redirect()->route('user.links.index')->with('success', 'Link successfully deleted.');
@@ -275,7 +276,7 @@ class LinkController extends Controller
 
             $validated = Validator::make($data, (new RedirectRequest())->rules())->validate();
 
-            $result = $this->links_obj_hist->processRedirect($validated);
+            $result = $this->links_hist_obj->processRedirect($validated);
 
             if ($result && isset($result['link'])) {
                 return redirect()->to($result['link']);

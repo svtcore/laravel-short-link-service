@@ -26,7 +26,7 @@ class Links extends Domains
      * @param int|null $user_id The ID of the user creating the link (nullable for guests).
      * @return array|null The link data in the required format or null if creation failed.
      */
-    public function store(string $url, object $randomDomain, string $shortPath, ?string $custom_name, ?int $user_id): ?array
+    public function storeLink(string $url, object $randomDomain, string $shortPath, ?string $custom_name, ?int $user_id, string $ip): ?array
     {
         DB::beginTransaction();
 
@@ -34,6 +34,7 @@ class Links extends Domains
             $newLink = Link::create([
                 'user_id' => $user_id,
                 'domain_id' => $randomDomain->id,
+                'ip_address' => $ip,
                 'custom_name' => $custom_name,
                 'destination' => $url,
                 'short_name' => $shortPath,
@@ -78,7 +79,7 @@ class Links extends Domains
      * @param int|null $user_id The ID of the user creating the link (nullable for guests).
      * @return array|null The generated short link in the required format or null on failure.
      */
-    public function generateShortName(string $url, ?string $custom_name, ?int $user_id): ?array
+    public function generateShortName(string $url, ?string $custom_name, ?int $user_id, string $ip): ?array
     {
         DB::beginTransaction();
         try {
@@ -92,7 +93,7 @@ class Links extends Domains
                     ->exists();
                 if (!$isDuplicate) {
                     DB::commit();
-                    return $this->store($url, $randomDomain, $shortPath, $custom_name, $user_id);
+                    return $this->storeLink($url, $randomDomain, $shortPath, $custom_name, $user_id, $ip);
                 }
             } else {
                 DB::rollBack();
@@ -254,7 +255,7 @@ class Links extends Domains
      * @param int $id The ID of the link to update.
      * @return int|null The number of affected rows, or null if an error occurs.
      */
-    public function update(?string $name, string $destination, bool $availability, int $id): ?int
+    public function updateLink(?string $name, string $destination, bool $availability, int $id): ?int
     {
         DB::beginTransaction();
         try {
@@ -289,7 +290,7 @@ class Links extends Domains
      * @return bool|null Returns true if the deletion was successful, false otherwise. 
      *                   Returns null in case of an error.
      */
-    public function destroy(int $id): ?bool
+    public function destroyLink(int $id): ?bool
     {
         DB::beginTransaction();
 
@@ -327,5 +328,26 @@ class Links extends Domains
             ->where('short_name', $short_name)
             ->where('available', true)
             ->first();
+    }
+
+    public function getLinksList(): ?iterable
+    {
+        try {
+            $limit = 50;
+            $links = Link::with('domain')
+                ->with('user')
+                ->withCount('link_histories')
+                ->withCount(['link_histories as unique_ip_count' => function ($query) {
+                    $query->distinct('ip_address');
+                }])
+                ->orderBy('id', 'desc')
+                ->limit($limit)
+                ->get();
+
+            return is_iterable($links) ? $links : [];
+        } catch (Exception $e) {
+            $this->logError("Error retrieving links list", $e);
+            return null;
+        }
     }
 }

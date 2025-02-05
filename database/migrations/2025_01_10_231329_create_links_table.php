@@ -12,6 +12,7 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id')->nullable()->index();
             $table->unsignedInteger('domain_id')->nullable()->index();
+            $table->string('ip_address', 45);
             $table->string('custom_name', 255)->nullable();
             $table->string('destination', 2048);
             $table->string('short_name', 255)->unique();

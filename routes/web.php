@@ -10,6 +10,8 @@ use App\Http\Controllers\User\LinkController;
 use App\Http\Controllers\User\SettingController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\LinkController as AdminLinkController;
+use App\Http\Controllers\Admin\DomainController;
 
 Auth::routes();
 
@@ -37,8 +39,23 @@ Route::middleware(['role:user'])->group(function () {
 Route::middleware(['role:admin'])->group(function () {
     Route::namespace('App\Http\Controllers\Admin')->group(function () {
         Route::prefix('admin')->group(function () {
-            Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-            Route::get('/dashboard/show', [AdminDashboardController::class, 'show'])->name('admin.dashboard.show');
+            Route::prefix('dashboard')->group(function () {
+                Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+                Route::get('/show', [AdminDashboardController::class, 'show'])->name('admin.dashboard.show');
+            });
+            Route::prefix('domains')->group(function () {
+                Route::get('/', [DomainController::class, 'index'])->name('admin.domains.index');
+                Route::post('/', [DomainController::class, 'store'])->name('admin.domains.store');
+                Route::put('/{id}', [DomainController::class, 'update'])->name('admin.domains.update');
+                Route::delete('/{id}', [DomainController::class, 'destroy'])->name('admin.domains.destroy');
+            });
+            Route::prefix('links')->group(function () {
+                Route::get('/', [AdminLinkController::class, 'index'])->name('admin.links.index');
+                Route::get('/{id}', [AdminLinkController::class, 'show'])->name('admin.links.show');
+                Route::post('/', [AdminLinkController::class, 'store'])->name('admin.links.store');
+                Route::put('/{id}', [AdminLinkController::class, 'update'])->name('admin.links.update');
+                Route::delete('/{id}', [AdminLinkController::class, 'destroy'])->name('admin.links.destroy');
+            });
         });
     });
 });
