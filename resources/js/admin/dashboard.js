@@ -340,7 +340,6 @@ async function fetchNewData(route, startDate, endDate) {
             type: "GET",
             data: { startDate, endDate },
             dataType: "json",
-            timeout: 10000,
         });
 
         if (!response || typeof response !== "object") {
@@ -398,10 +397,6 @@ async function fetchNewData(route, startDate, endDate) {
         }
     } catch (error) {
         console.error("AJAX Error:", error);
-        showNotification(
-            "Error fetching data. Please try again later.",
-            "error"
-        );
     }
 }
 
@@ -409,35 +404,33 @@ $("#startDate, #endDate").on("change", function () {
     const startDate = $("#startDate").val();
     const endDate = $("#endDate").val();
     const route = $("#chart-update-route").data("route");
-    fetchNewData(route, startDate, endDate);
+    $("#loading-placeholder").show();
+    $("#detailed-stats-container").hide();
+
+    fetchNewData(route, startDate, endDate)
+        .then(function(data) {
+            $("#loading-placeholder").hide();
+            $("#detailed-stats-container").slideDown();
+        })
+        .catch(function(error) {
+            console.error("Error fetching data:", error);
+            $("#loading-placeholder").hide();
+        });
 });
 
-const chartDaysActivityData = JSON.parse($("#chartDaysActivityData").val());
-const chartTimeActivityData = JSON.parse($("#chartTimeActivityData").val());
-const chartGeoData = JSON.parse($("#chartGeoData").val());
-const chartBrowserData = JSON.parse($("#chartBrowserData").val());
-const chartPlatformData = JSON.parse($("#chartPlatformData").val());
+$(document).ready(function() {
+    const route = $("#chart-update-route").data("route");
 
-updateActivityDaysChart(chartDaysActivityData);
-updateActivityChart(chartTimeActivityData);
-updateBasicChart(
-    chartGeoData,
-    charts.geoChart,
-    geoChartConfig,
-    "country",
-    "click_count"
-);
-updateBasicChart(
-    chartBrowserData,
-    charts.browserChart,
-    browserChartConfig,
-    "browser",
-    "click_count"
-);
-updateBasicChart(
-    chartPlatformData,
-    charts.platformChart,
-    platformChartConfig,
-    "os",
-    "click_count"
-);
+    $("#loading-placeholder").show();
+    $("#detailed-stats-container").hide();
+
+    fetchNewData(route, null, null)
+        .then(function(data) {
+            $("#loading-placeholder").hide();
+            $("#detailed-stats-container").slideDown();
+        })
+        .catch(function(error) {
+            console.error("Error fetching data:", error);
+            $("#loading-placeholder").hide();
+        });
+});

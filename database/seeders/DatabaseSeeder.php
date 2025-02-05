@@ -19,10 +19,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $config = [
-            'users' => 10,
-            'links' => 100,
+            'users' => 50,
+            'links' => 100000,
             'domains' => 10,
-            'link_history' => 200,
+            'link_history' => 100,
         ];
 
         // Creating roles in a loop to avoid repetition

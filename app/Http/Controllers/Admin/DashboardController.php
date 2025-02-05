@@ -8,7 +8,18 @@ use App\Http\Classes\AdminStatistics;
 use App\Http\Requests\Admin\Dashboard\ShowRequest;
 use Exception;
 use App\Http\Traits\LogsErrors;
+use App\Jobs\Admin\Dashboard\GetAggregatedStatisticsJob;
+use App\Jobs\Admin\Dashboard\GetTopBrowsersJob;
+use App\Jobs\Admin\Dashboard\GetTopCountriesJob;
+use App\Jobs\Admin\Dashboard\GetTopPlatformsJob;
 use Carbon\Carbon;
+use App\Jobs\Admin\Dashboard\GetTotalLinksByDateJob;
+use App\Jobs\Admin\Dashboard\GetTotalClicksByDateJob;
+use App\Jobs\Admin\Dashboard\GetTotalDaysActivityJob;
+use App\Jobs\Admin\Dashboard\GetTotalUniqueClicksByDateJob;
+use App\Jobs\Admin\Dashboard\GetTotalUsersByDateJob;
+use App\Jobs\Admin\Dashboard\GetTotalTimeActivityJob;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
@@ -20,38 +31,20 @@ class DashboardController extends Controller
     {
         $this->middleware('role:admin');
         $this->stat_obj = $stat_obj;
+        ini_set('max_execution_time', 1200);
     }
 
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        try {
-            $startDate = now()->subDays(7);
-            $endDate = now()->endOfDay();
-            return view('admin.dashboard')->with([
-                'total_links' => $this->stat_obj->getTotalLinks(null),
-                'total_links_by_date' => $this->stat_obj->getTotalLinksByDate($startDate, $endDate),
-                'total_clicks' => $this->stat_obj->getTotalClicks(),
-                'total_clicks_by_date' => $this->stat_obj->getTotalClicksByDate($startDate, $endDate),
-                'total_active_links' => $this->stat_obj->getTotalLinks(true),
-                'total_unique_clicks' => $this->stat_obj->getTotalUniqueClicks(null,null),
-                'total_unique_clicks_by_date' => $this->stat_obj->getTotalUniqueClicks($startDate, $endDate),
-                'total_users' => $this->stat_obj->getTotalUsers(null, null),
-                'total_users_by_date' => $this->stat_obj->getTotalUsers($startDate, $endDate),
-                'total_avg_clicks' => $this->stat_obj->getAvgClicksPerLink(),
-                'chart_days_activity_data' => $this->stat_obj->getDailyClicksByDate($startDate, $endDate),
-                'chart_time_activity_data' => $this->stat_obj->getHourlyClicksByDate($startDate, $endDate),
-                'chart_geo_data' => $this->stat_obj->getTopCountriesByDate($startDate, $endDate),
-                'chart_browser_data' => $this->stat_obj->getTopBrowsersByDate($startDate, $endDate),
-                'chart_platform_data' => $this->stat_obj->getTopOSByDate($startDate, $endDate),
-            ]);
-        } catch (Exception $e) {
-            $this->logError("Error while showing dashboard", $e);
-            return abort(500);
-        }
+        return view('admin.dashboard')->with([
+            'total_links' => $this->stat_obj->getTotalLinks(null),
+            'total_clicks' => $this->stat_obj->getTotalClicks(),
+            'total_active_links' => $this->stat_obj->getTotalLinks(true),
+            'total_unique_clicks' => $this->stat_obj->getTotalUniqueClicks(null, null),
+            'total_users' => $this->stat_obj->getTotalUsers(null, null),
+            'total_avg_clicks' => $this->stat_obj->getAvgClicksPerLink(),
+        ]);
     }
 
     /**
@@ -75,25 +68,44 @@ class DashboardController extends Controller
      */
     public function show(ShowRequest $request)
     {
-        try{
+        try {
             $validatedData = $request->validated();
 
-            $startDate = $validatedData['startDate'];
-            $endDate = $validatedData['endDate'];
+            $startDate = $validatedData['startDate'] ?? now()->subDays(1);
+            $endDate = $validatedData['endDate'] ?? now()->endOfDay();
+
+            GetTotalLinksByDateJob::dispatchSync($startDate, $endDate, $this->stat_obj);
+            GetTotalClicksByDateJob::dispatchSync($startDate, $endDate, $this->stat_obj);
+            GetTotalUniqueClicksByDateJob::dispatchSync($startDate, $endDate, $this->stat_obj);
+            GetTotalUsersByDateJob::dispatchSync($startDate, $endDate, $this->stat_obj);
+            GetTotalDaysActivityJob::dispatchSync($startDate, $endDate, $this->stat_obj);
+            GetTotalTimeActivityJob::dispatchSync($startDate, $endDate, $this->stat_obj);
+            GetTopCountriesJob::dispatchSync($startDate, $endDate, $this->stat_obj);
+            GetTopBrowsersJob::dispatchSync($startDate,$endDate, $this->stat_obj);
+            GetTopPlatformsJob::dispatchSync($startDate, $endDate, $this->stat_obj);
+
+            $totalLinksByDate = Cache::get('total_links_by_date');
+            $totalClicksByDate = Cache::get('total_clicks_by_date');
+            $totalUniqueClicksByDate = Cache::get('total_unique_clicks_by_date');
+            $totalUsersByDate = Cache::get('total_users_by_date');
+            $totalDaysActivity = Cache::get('total_daily_clicks');
+            $totalTimeActivity = Cache::get('total_time_clicks');
+            $topCountries = Cache::get('chart_top_countries_by_date');
+            $topBrowsers = Cache::get('chart_top_browsers_by_date');
+            $topPlarforms = Cache::get('chart_top_platforms_by_date');
 
             return response()->json([
-                'total_links_by_date' => $this->stat_obj->getTotalLinksByDate($startDate, $endDate),
-                'total_clicks_by_date' => $this->stat_obj->getTotalClicksByDate($startDate, $endDate),
-                'total_unique_clicks_by_date' => $this->stat_obj->getTotalUniqueClicks($startDate, $endDate),
-                'total_users_by_date' => $this->stat_obj->getTotalUsers($startDate, $endDate),
-                'chart_days_activity_data' => $this->stat_obj->getDailyClicksByDate($startDate, $endDate),
-                'chart_time_activity_data' => $this->stat_obj->getHourlyClicksByDate($startDate, $endDate),
-                'chart_geo_data' => $this->stat_obj->getTopCountriesByDate($startDate, $endDate),
-                'chart_browser_data' => $this->stat_obj->getTopBrowsersByDate($startDate, $endDate),
-                'chart_platform_data' => $this->stat_obj->getTopOSByDate($startDate, $endDate),
+                'total_links_by_date' => $totalLinksByDate,
+                'total_clicks_by_date' => $totalClicksByDate,
+                'total_unique_clicks_by_date' => $totalUniqueClicksByDate,
+                'total_users_by_date' => $totalUsersByDate,
+                'chart_days_activity_data' => $totalDaysActivity,
+                'chart_time_activity_data' => $totalTimeActivity,
+                'chart_geo_data' => $topCountries,
+                'chart_browser_data' => $topBrowsers,
+                'chart_platform_data' => $topPlarforms,
             ]);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             $this->logError("Error while updating data on dashboard", $e);
             return response()->json(['error' => 'An unexpected erorr during updating data']);
         }

@@ -42,10 +42,10 @@
 </div>
 
 @php
-    use Carbon\Carbon;
+use Carbon\Carbon;
 
-    $startDate = Carbon::now()->subDays(7)->toDateString();
-    $endDate = Carbon::now()->toDateString();
+$startDate = Carbon::now()->subDays(1)->toDateString();
+$endDate = Carbon::now()->toDateString();
 @endphp
 
 <!-- Date Filter Block -->
@@ -65,61 +65,66 @@
     </form>
 </div>
 
-
-
-<div class="stats-date-container">
-    <div class="stat-card">
-        <h3>Created links</h3>
-        <p id="totalLinksByDate">{{ $total_links_by_date }}</p>
-    </div>
-    <div class="stat-card">
-        <h3>Clicks</h3>
-        <p id="totalClicksByDate">{{ $total_clicks_by_date }}</p>
-    </div>
-    <div class="stat-card">
-        <h3>Unique clicks</h3>
-        <p id="totalUniqueClicksByDate">{{ $total_unique_clicks_by_date }}</p>
-    </div>
-    <div class="stat-card">
-        <h3>New users</h3>
-        <p id="totalUsersByDate">{{ $total_users_by_date }}</p>
-    </div>
+<div id="loading-placeholder" class="loading-placeholder">
+    <div class="spinner"></div>
+    <p>Loading detailed statistics. It might take a few minutes.</p>
 </div>
 
-
-<div class="charts-container">
-    <div class="full-width-chart chart-last-container">
-        <h3 class="chart-block-title">Click Activity Over Days</h3>
-        <hr>
-        <textarea id="chartDaysActivityData" hidden>@json($chart_days_activity_data)</textarea>
-        <canvas id="activityDaysChart" style="max-height:300px;"></canvas>
+<div id="detailed-stats-container">
+    <div class="stats-date-container">
+        <div class="stat-card">
+            <h3>Created links</h3>
+            <p id="totalLinksByDate"></p>
+        </div>
+        <div class="stat-card">
+            <h3>Clicks</h3>
+            <p id="totalClicksByDate"></p>
+        </div>
+        <div class="stat-card">
+            <h3>Unique clicks</h3>
+            <p id="totalUniqueClicksByDate"></p>
+        </div>
+        <div class="stat-card">
+            <h3>New users</h3>
+            <p id="totalUsersByDate"></p>
+        </div>
     </div>
 
-    <div class="full-width-chart chart-last-container">
-        <h3 class="chart-block-title">Click Activity Over Time</h3>
-        <hr>
-        <textarea id="chartTimeActivityData" hidden>@json($chart_time_activity_data)</textarea>
-        <canvas id="activityTimeChart" style="max-height:300px;"></canvas>
+
+    <div class="charts-container">
+        <div class="full-width-chart chart-last-container">
+            <h3 class="chart-block-title">Click Activity Over Days</h3>
+            <hr>
+            <textarea id="chartDaysActivityData" hidden></textarea>
+            <canvas id="activityDaysChart" style="max-height:300px;"></canvas>
+        </div>
+
+        <div class="full-width-chart chart-last-container">
+            <h3 class="chart-block-title">Click Activity Over Time</h3>
+            <hr>
+            <textarea id="chartTimeActivityData" hidden></textarea>
+            <canvas id="activityTimeChart" style="max-height:300px;"></canvas>
+        </div>
     </div>
-</div>
-<div class="chart-last-container-wrapper">
-    <div class="chart-last-container">
-        <h3 class="chart-block-title">Countries</h3>
-        <hr>
-        <textarea id="chartGeoData" hidden>@json($chart_geo_data)</textarea>
-        <canvas id="geoChart" style="height:100% !important;"></canvas>
-    </div>
-    <div class="chart-last-container">
-        <h3 class="chart-block-title">Platform</h3>
-        <hr>
-        <textarea id="chartPlatformData" hidden>@json($chart_platform_data)</textarea>
-        <canvas id="platformChart"></canvas>
-    </div>
-    <div class="chart-last-container">
-        <h3 class="chart-block-title">Browsers</h3>
-        <hr>
-        <textarea id="chartBrowserData" hidden>@json($chart_browser_data)</textarea>
-        <canvas id="browserChart"></canvas>
+    <div class="chart-last-container-wrapper">
+        <div class="chart-last-container">
+            <h3 class="chart-block-title">Countries</h3>
+            <hr>
+            <textarea id="chartGeoData" hidden></textarea>
+            <canvas id="geoChart" style="height:100% !important;"></canvas>
+        </div>
+        <div class="chart-last-container">
+            <h3 class="chart-block-title">Platform</h3>
+            <hr>
+            <textarea id="chartPlatformData" hidden></textarea>
+            <canvas id="platformChart"></canvas>
+        </div>
+        <div class="chart-last-container">
+            <h3 class="chart-block-title">Browsers</h3>
+            <hr>
+            <textarea id="chartBrowserData" hidden></textarea>
+            <canvas id="browserChart"></canvas>
+        </div>
     </div>
 </div>
 

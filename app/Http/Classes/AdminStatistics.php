@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Domain;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use App\Http\Traits\LogsErrors;
 
 class AdminStatistics
@@ -272,64 +273,71 @@ class AdminStatistics
             $startDate = Carbon::parse($startDate)->startOfDay();
             $endDate = Carbon::parse($endDate)->endOfDay();
 
-            return LinkHistory::selectRaw('country_name, COUNT(DISTINCT ip_address) as click_count')
-                ->whereBetween('created_at', [$startDate, $endDate])
+            //for faster loading instead of EQ
+            $query = DB::table(DB::raw('(SELECT DISTINCT ip_address, country_name FROM link_histories WHERE created_at BETWEEN ? AND ?) as unique_ips'))
+                ->selectRaw('country_name, COUNT(*) as click_count')
                 ->groupBy('country_name')
                 ->orderByDesc('click_count')
                 ->limit($limit)
-                ->get()
-                ->map(function ($item) {
-                    return [
-                        'country' => $item->country_name,
-                        'click_count' => $item->click_count,
-                    ];
-                });
+                ->setBindings([$startDate, $endDate])
+                ->get();
+
+            return $query->map(fn($item) => [
+                'country' => $item->country_name,
+                'click_count' => $item->click_count,
+            ]);
         } catch (Exception $e) {
             $this->logError("Error fetching top countries by unique clicks", $e, ['start_date' => $startDate, 'end_date' => $endDate]);
             return null;
         }
     }
 
+
     public function getTopBrowsersByDate(string $startDate, string $endDate): ?iterable
     {
         try {
             $startDate = Carbon::parse($startDate)->startOfDay();
             $endDate = Carbon::parse($endDate)->endOfDay();
-            return LinkHistory::selectRaw('browser, COUNT(DISTINCT ip_address) as click_count')
-                ->whereBetween('created_at', [$startDate, $endDate])
+
+            $query = DB::table(DB::raw('(SELECT DISTINCT ip_address, browser FROM link_histories WHERE created_at BETWEEN ? AND ?) as unique_ips'))
+                ->selectRaw('browser, COUNT(*) as click_count')
                 ->groupBy('browser')
                 ->orderByDesc('click_count')
-                ->get()
-                ->map(function ($item) {
-                    return [
-                        'browser' => $item->browser,
-                        'click_count' => $item->click_count,
-                    ];
-                });
+                ->limit(5)
+                ->setBindings([$startDate, $endDate])
+                ->get();
+
+            return $query->map(fn($item) => [
+                'browser' => $item->browser,
+                'click_count' => $item->click_count,
+            ]);
         } catch (Exception $e) {
-            $this->logError("Error fetching top browsers by unique clicks", $e);
+            $this->logError("Error fetching top browsers by unique clicks", $e, ['start_date' => $startDate, 'end_date' => $endDate]);
             return null;
         }
     }
+
 
     public function getTopOSByDate(string $startDate, string $endDate): ?iterable
     {
         try {
             $startDate = Carbon::parse($startDate)->startOfDay();
             $endDate = Carbon::parse($endDate)->endOfDay();
-            return LinkHistory::selectRaw('os, COUNT(DISTINCT ip_address) as click_count')
-                ->whereBetween('created_at', [$startDate, $endDate])
+
+            $query = DB::table(DB::raw('(SELECT DISTINCT ip_address, os FROM link_histories WHERE created_at BETWEEN ? AND ?) as unique_ips'))
+                ->selectRaw('os, COUNT(*) as click_count')
                 ->groupBy('os')
                 ->orderByDesc('click_count')
-                ->get()
-                ->map(function ($item) {
-                    return [
-                        'os' => $item->os,
-                        'click_count' => $item->click_count,
-                    ];
-                });
+                ->limit(5)
+                ->setBindings([$startDate, $endDate])
+                ->get();
+
+            return $query->map(fn($item) => [
+                'os' => $item->os,
+                'click_count' => $item->click_count,
+            ]);
         } catch (Exception $e) {
-            $this->logError("Error fetching top operating systems by unique clicks", $e);
+            $this->logError("Error fetching top operating systems by unique clicks", $e, ['start_date' => $startDate, 'end_date' => $endDate]);
             return null;
         }
     }
