@@ -29,13 +29,18 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'numeric', 'min:1', 'max:999999999', 'exists:domains,id'],
+            'id' => [
+                'required',
+                'integer',
+                'min:1',
+                'exists:domains,id',
+            ],
             'domainName' => [
                 'required',
                 'string',
                 'min:3',
                 'max:255',
-                'regex:/^(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z]{2,}$/', // check without http/https
+                'regex:/^(?!:\/\/)(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/',
             ],
             'domainStatus' => [
                 'required',

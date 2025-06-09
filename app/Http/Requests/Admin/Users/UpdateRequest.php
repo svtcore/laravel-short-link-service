@@ -33,8 +33,8 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'numeric', 'min:1', 'max:999999999', 'exists:users,id'],
-            'name' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z\- ]+$/'],
+            'id' => ['required', 'integer', 'min:1', 'exists:users,id'],
+            'name' => ['nullable','string','max:255','regex:/^[a-zA-Z0-9_\- ]+$/'],
             'email' => ['required', 'string', 'email', 'max:255'],
             'status' => ['required', 'in:active,freezed,banned'],
             'roles' => ['required', 'array'],

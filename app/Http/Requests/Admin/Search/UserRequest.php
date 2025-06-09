@@ -25,7 +25,7 @@ class UserRequest extends FormRequest
             'query' => [
                 'required',
                 'string',
-                'max:1000',
+                'max:2048',
                 'regex:/^[a-z0-9\-._~:\/?#\[\]@!$&\'()*+,;=]*$/i'
             ]
         ];

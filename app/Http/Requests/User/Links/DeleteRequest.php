@@ -22,7 +22,7 @@ class DeleteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'numeric', 'min:1', 'max:999999999', 'exists:links,id'],
+            'id' => ['required', 'integer', 'min:1', 'exists:links,id'],
         ];
     }
 }

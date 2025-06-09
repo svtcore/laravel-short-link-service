@@ -28,9 +28,24 @@ class ShowRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'numeric', 'min:1', 'max:999999999', 'exists:links,id'],
-            'startDate' => ['nullable', 'date', 'before_or_equal:endDate', 'before_or_equal:today'],
-            'endDate' => ['nullable', 'date', 'after_or_equal:startDate'],
+            'id' => [
+                'required',
+                'integer',
+                'min:1',
+                'exists:links,id',
+            ],
+            'startDate' => [
+                'nullable',
+                'date',
+                'before_or_equal:endDate',
+                'before_or_equal:today',
+            ],
+            'endDate' => [
+                'nullable',
+                'date',
+                'after_or_equal:startDate',
+                'before_or_equal:today',
+            ],
         ];
     }
 }

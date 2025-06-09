@@ -27,7 +27,7 @@ class StoreRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:255',
-                'regex:/^(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z]{2,}$/', // check without http/https
+                'regex:/^(?!:\/\/)(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/',
                 'unique:domains,name',
             ],
             'domainStatus' => [

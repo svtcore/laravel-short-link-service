@@ -23,7 +23,7 @@ class ShowRequest extends FormRequest
     {
         return [
             'startDate' => ['nullable', 'date', 'before_or_equal:endDate', 'before_or_equal:today'],
-            'endDate' => ['nullable', 'date', 'after_or_equal:startDate'],
+            'endDate' => ['nullable', 'date', 'after_or_equal:startDate', 'before_or_equal:today'],
         ];
     }
 }

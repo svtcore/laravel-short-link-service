@@ -30,10 +30,9 @@ class UpdatePasswordRequest extends FormRequest
                 'required',
                 'string',
                 'min:8',
+                'max:255',
                 'confirmed',
-                'regex:/[a-zA-Z]/', // At least one letter
-                'regex:/[0-9]/', // At least one number
-                'regex:/[@$!%*?&]/', // At least one special character
+                'regex:/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/',
             ],
         ];
     }

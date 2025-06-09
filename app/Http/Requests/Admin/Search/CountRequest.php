@@ -25,8 +25,8 @@ class CountRequest extends FormRequest
             'query' => [
                 'required',
                 'string',
-                'regex:/^[a-z0-9\-._~:\/?#\[\]@!$&\'()*+,;=]*$/i',
-                'max:1000',
+                'regex:/^[a-z0-9\s\-._~:\/?#\[\]@!$&\'()*+,;=]*$/i',
+                'max:2048',
             ],
         ];
     }

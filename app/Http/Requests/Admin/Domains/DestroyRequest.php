@@ -30,7 +30,7 @@ class DestroyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'numeric', 'min:1', 'max:999999999', 'exists:domains,id'],
+            'id' => ['required', 'integer', 'min:1', 'exists:domains,id'],
         ];
     }
 }
