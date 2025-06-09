@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Http\Classes;
+namespace App\Http\Services;
 
 use App\Models\Link;
 use Exception;
-use App\Http\Classes\Users;
+use App\Http\Services\UserService;
 use App\Models\LinkHistory;
 use Illuminate\Support\Facades\DB;
 use App\Models\Domain;
 use App\Http\Traits\LogsErrors;
+use App\Http\Contracts\Interfaces\LinkServiceInterface;
 
-class Links extends Domains
+class LinkService extends DomainService implements LinkServiceInterface
 {
     use LogsErrors;
     /**
@@ -337,9 +338,11 @@ class Links extends Domains
             $links = Link::with('domain')
                 ->with('user')
                 ->withCount('link_histories')
-                ->withCount(['link_histories as unique_ip_count' => function ($query) {
-                    $query->distinct('ip_address');
-                }])
+                ->withCount([
+                    'link_histories as unique_ip_count' => function ($query) {
+                        $query->distinct('ip_address');
+                    }
+                ])
                 ->orderBy('id', 'desc')
                 ->limit($limit)
                 ->get();
@@ -347,6 +350,73 @@ class Links extends Domains
             return is_iterable($links) ? $links : [];
         } catch (Exception $e) {
             $this->logError("Error retrieving links list", $e);
+            return null;
+        }
+    }
+
+    public function searchLinks(string $query, bool $count): mixed
+    {
+        try {
+            $url = $query;
+            $parts = parse_url(
+                (strpos($url, '://') === false)
+                ? (strpos($url, '//') === 0 ? 'https:' . $url : 'https://' . $url)
+                : $url
+            );
+
+            $domain = isset($parts['host']) ? str_replace('www.', '', $parts['host']) : '';
+            $path = isset($parts['path']) ? ltrim($parts['path'], '/') : '';
+
+            if (empty($domain) && strpos($url, '/') !== false) {
+                $domain = strstr($url, '/', true);
+                $path = ltrim(strstr($url, '/'), '/');
+            }
+
+            $queryBuilder = Link::where('destination', 'LIKE', '%' . $query . '%')
+                ->orWhere('short_name', 'LIKE', '%' . $query . '%')
+                ->orWhereHas('domain', function ($q) use ($query) {
+                    $q->where('name', 'LIKE', '%' . $query . '%');
+                });
+
+            // domain + short_name
+            if ($domain && $path) {
+                $queryBuilder->orWhere(function ($q) use ($domain, $path) {
+                    $q->where('short_name', $path)
+                        ->whereHas('domain', function ($q) use ($domain) {
+                            $q->where('name', $domain);
+                        });
+                });
+            }
+
+            return $count ? $queryBuilder->count() : $queryBuilder->withCount('link_histories')->get();
+
+        } catch (Exception $e) {
+            $this->logError("Error while searching links", $e);
+            return null;
+        }
+    }
+
+    public function searchByDomainId(int $id): ?iterable
+    {
+        try {
+            $links = Link::withCount('link_histories')
+                ->where("domain_id", $id)
+                ->get();
+
+            return $links->isEmpty() ? null : $links;
+        } catch (Exception $e) {
+            $this->logError("Error while searching links by domain id: " . $id, $e);
+            return null;
+        }
+    }
+
+    public function searchByUserIP(string $ip): ?iterable
+    {
+        try {
+            $links = Link::withCount('link_histories')->where('ip_address', $ip)->get();
+            return $links->isEmpty() ? null : $links;
+        } catch (Exception $e) {
+            $this->logError("Error while searching links by user id/ip: " . $ip, $e);
             return null;
         }
     }

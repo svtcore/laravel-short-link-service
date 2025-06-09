@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Classes\LinkHistories;
-use App\Http\Classes\Links;
+use App\Http\Contracts\Interfaces\LinkHistoryServiceInterface;
+use App\Http\Contracts\Interfaces\LinkServiceInterface;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Traits\LogsErrors;
@@ -14,26 +14,38 @@ class DashboardController extends Controller
 
     use LogsErrors;
 
-    protected $links_obj = null;
-    protected $links_hist_obj = null;
+    /**
+     * @var LinkServiceInterface $linkService Links service instance
+     */
+    protected $linkService = null;
 
     /**
-     * Create a new controller instance.
-     *
-     * @return void
+     * @var LinkHistoryServiceInterface $linkHistoryService Link histories service instance
      */
-    public function __construct(Links $links, LinkHistories $linkHistories)
+    protected $linkHistoryService = null;
+
+    /**
+     * Initialize controller with service dependencies
+     *
+     * @param LinkServiceInterface $links Links service instance
+     * @param LinkHistoryServiceInterface $linkHistories Link histories service instance
+     */
+    public function __construct(LinkServiceInterface $links, LinkHistoryServiceInterface $linkHistories)
     {
         $this->middleware('role:user');
-        $this->links_obj = $links;
-        $this->links_hist_obj = $linkHistories;
+        $this->linkService = $links;
+        $this->linkHistoryService = $linkHistories;
     }
 
 
     /**
-     * Show the application dashboard.
+     * Display user dashboard with statistics
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse Returns:
+     * - Dashboard view with user statistics if successful
+     * - Redirect to home page if error occurs
+     *
+     * @throws \Exception Logs errors and redirects on failure
      */
     public function index()
     {
@@ -42,36 +54,47 @@ class DashboardController extends Controller
 
             $userData = $this->fetchUserData($user_id);
 
-            if ($userData) {
-                return view('user.dashboard')->with($userData);
-            }
-            return abort(500);
+            return $userData
+                ? view('user.dashboard', $userData)
+                : redirect()->route('home');
+
         } catch (Exception $e) {
             $this->logError("Dashboard Controller Error", $e, ['user_id' => Auth::id()]);
-            return abort(500);
+            return redirect()->route('home');
         }
     }
 
 
     /**
-     * Fetch user-related data in one go.
-     * This method consolidates all user data retrieval into a single query.
+     * Fetch all user dashboard statistics
      *
-     * @param int $user_id
-     * @return array|null
+     * @param int $user_id Authenticated user ID
+     * @return array|null Returns array containing:
+     * - username: User's name
+     * - links_count: Total links created
+     * - clicks_count: Total clicks across all links
+     * - unique_clicks_count: Unique visitor clicks
+     * - links_today_count: Today's click count
+     * - top_links: Most visited links
+     * - top_countries: Visitor countries
+     * - top_browsers: Visitor browsers
+     * - top_os: Visitor operating systems
+     * - hours_activity: Hourly click activity
+     * 
+     * @throws \Exception Logs errors and returns null on failure
      */
     private function fetchUserData(int $user_id): ?array
     {
         try {
-            $links_count = $this->links_obj->getTotalUserLinks($user_id);
-            $clicks_count = $this->links_hist_obj->getTotalClicksByUserId($user_id);
-            $unique_clicks_count = $this->links_hist_obj->getUniqueIpsByUserId($user_id);
-            $links_today_count = $this->links_hist_obj->getTodayTotalClicksByUserId($user_id);
-            $top_links = $this->links_hist_obj->getTopLinksClicksByUserId($user_id);
-            $top_countries = $this->links_hist_obj->getTopCountriesByUserId($user_id);
-            $top_browsers = $this->links_hist_obj->getTopBrowsersByUserId($user_id);
-            $top_os = $this->links_hist_obj->getTopOperatingSystemsByUserId($user_id);
-            $hours_activity = $this->links_hist_obj->getHourlyClicksByUserId($user_id);
+            $links_count = $this->linkService->getTotalUserLinks($user_id);
+            $clicks_count = $this->linkHistoryService->getTotalClicksByUserId($user_id);
+            $unique_clicks_count = $this->linkHistoryService->getUniqueIpsByUserId($user_id);
+            $links_today_count = $this->linkHistoryService->getTodayTotalClicksByUserId($user_id);
+            $top_links = $this->linkHistoryService->getTopLinksClicksByUserId($user_id);
+            $top_countries = $this->linkHistoryService->getTopCountriesByUserId($user_id);
+            $top_browsers = $this->linkHistoryService->getTopBrowsersByUserId($user_id);
+            $top_os = $this->linkHistoryService->getTopOperatingSystemsByUserId($user_id);
+            $hours_activity = $this->linkHistoryService->getHourlyClicksByUserId($user_id);
 
             return [
                 'username' => Auth::user()->name ?? 'user',

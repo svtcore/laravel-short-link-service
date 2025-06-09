@@ -20,9 +20,9 @@ class DatabaseSeeder extends Seeder
     {
         $config = [
             'users' => 50,
-            'links' => 100000,
+            'links' => 100,
             'domains' => 10,
-            'link_history' => 100,
+            'link_history' => 1000,
         ];
 
         // Creating roles in a loop to avoid repetition
@@ -45,6 +45,13 @@ class DatabaseSeeder extends Seeder
         // Creating domains
         Domain::factory()->count($config['domains'])->create();
 
+        Link::factory($config['links'])->create([
+            'user_id' => rand(1, $config['users']),
+            'domain_id' => rand(1, $config['domains']),
+        ]);
+        LinkHistory::factory($config['link_history'])->create([
+            'link_id' => rand(1, $config['links'])
+        ]);
         // Creating links and link histories
         for ($i = 1; $i <= $config['links']; $i++) {
             $link = Link::factory()->create([

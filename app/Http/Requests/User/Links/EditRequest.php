@@ -24,26 +24,10 @@ class EditRequest extends FormRequest
      */
     public function rules(): array
     {
-        // Since 'id' is a route parameter, we don't need to validate it as a form field
-        // It can be validated in the controller or using a custom rule for route parameters
-        return [];
+        return [
+            'id' => ['required', 'numeric', 'min:1', 'max:999999999', 'exists:links,id'],
+        ];
     }
 
-    /**
-     * Custom validation for the ID parameter from the route.
-     *
-     * @return void
-     */
-    public function withValidator($validator)
-    {
-        // Get the 'id' directly from the route
-        $id = $this->route('id');
 
-        // Manually add a custom validation rule for the 'id' parameter
-        $validator->after(function ($validator) use ($id) {
-            if (!is_numeric($id) || !\App\Models\Link::find($id)) {
-                $validator->errors()->add('id', 'The specified link does not exist or is invalid.');
-            }
-        });
-    }
 }

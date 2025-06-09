@@ -5,12 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="URL shortening service for creating memorable short links">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <title>@yield('title')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     @yield('styles')
 </head>
 
 <body>
+    @if(app()->isDownForMaintenance())
+        <div class="maintenance-banner fixed-bottom">
+            <div class="container-fluid bg-danger text-white py-2">
+                <div class="row align-items-center">
+                    <div class="col text-center">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>MAINTENANCE NOTICE:</strong> This website is currently undergoing maintenance. Access is restricted to administrators only.
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+    
     <!-- Navigation Menu -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">

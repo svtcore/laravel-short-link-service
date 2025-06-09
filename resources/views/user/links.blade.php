@@ -98,10 +98,13 @@
                     <!-- Destination Column (hidden on mobile) -->
                     <td class="align-middle d-none d-md-table-cell">
                         <div class="d-flex align-items-center gap-2">
-                            <span class="text-truncate" style="max-width: 200px;"
-                                title="{{ $link->destination }}">
-                                {{ parse_url($link->destination, PHP_URL_HOST) }}
-                            </span>
+                            <div class="destination-container">
+                                <span class="destination-url text-truncate d-block"
+                                    style="max-width: 180px;"
+                                    title="{{ $link->destination }}">
+                                    {{ parse_url($link->destination, PHP_URL_HOST) }}<span class="destination-path">{{ parse_url($link->destination, PHP_URL_PATH) }}</span>
+                                </span>
+                            </div>
                             <button class="btn btn-link btn-sm text-secondary copy-button p-0"
                                 data-link="{{ $link->destination }}"
                                 title="Copy Destination URL">

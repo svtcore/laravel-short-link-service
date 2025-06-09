@@ -1,7 +1,6 @@
 .links-container {
     background: white;
     border-radius: 12px;
-    padding: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     margin-bottom: 32px;
     padding: 32px;
@@ -14,27 +13,67 @@
     margin-bottom: 24px;
 }
 
-.block-title{
-    font-size: 20px;
+.block-title {
+    font-size: 1.75rem;
     font-weight: 600;
     color: #1e293b;
-    margin-bottom: 16px;
+    margin-bottom: 0;
+    width: 100%;
+    text-align: center;
+    position: relative;
 }
 
-.add-link-btn {
+/* Buttons */
+
+.add-link-btn{
+    background: #3061ca;
+    color: white;
+    border-radius: 0.5rem;
+    padding: 0.7rem 0.90rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    font-size: 1rem;
+    min-width: 120px;
+}
+
+.modal-link-submit-btn {
     background: #3061ca;
     color: white;
     padding: 10px 20px;
     border-radius: 8px;
     border: none;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-.add-link-btn:hover {
+.modal-link-cancel-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    background: transparent;
+}
+
+.modal-link-delete-btn {
+    background: #d30c0c;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-link-btn:hover,
+.modal-link-submit-btn:hover {
     background: #1a3ea3;
 }
 
+.modal-link-delete-btn:hover {
+    background: #df3939;
+}
+
+/* Table Styles */
 #linksTable td, #linksTable th {
     padding: 0.75rem;
 }
@@ -60,28 +99,13 @@
     padding-right: 16px;
 }
 
- .modal-content {
+/* Modal Styles */
+.modal-content {
     border: none;
 }
 
-.input-group-custom .input-group-text {
-    font-weight: 500;
-    border-right: 0;
-}
-.input-group-custom .form-control {
-    border-left: 0;
-}
-.input-group-custom .form-control:focus {
-    box-shadow: none;
-}
-
-.chart-wrapper {
-    position: relative;
-    margin: auto;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.modal-footer {
+    padding-right: 0;
 }
 
 .modal-body h5 {
@@ -90,49 +114,28 @@
     color: #333;
 }
 
-.modal-link-cancel-btn{
-    padding: 10px 20px;
+/* Input Groups */
+.input-group-custom .input-group-text {
+    font-weight: 500;
+    border-right: 0;
+}
+
+.input-group-custom .form-control {
+    border-left: 0;
+}
+
+.input-group-custom .form-control:focus {
+    box-shadow: none;
+}
+
+/* Chart Styles */
+.chart-wrapper {
+    position: relative;
+    margin: auto;
+    padding: 20px;
+    background-color: #ffffff;
     border-radius: 8px;
-}
-
-.add-link-btn, .modal-link-submit-btn {
-    background: #3061ca;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-.modal-link-delete-btn{
-    background: #d30c0c;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.add-link-btn:hover, .modal-link-submit-btn:hover {
-    background: #1a3ea3;
-}
-.modal-link-delete-btn:hover {
-    background: #df3939;
-}
-
-.modal-footer{
-    padding-right: 0;
-}
-
-@media (max-width: 576px) {
-    .input-group-custom {
-        flex-direction: column;
-    }
-    .input-group-custom .input-group-text,
-    .input-group-custom .form-control {
-        width: 100%;
-    }
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .chart-card {
@@ -171,10 +174,7 @@
     transform: translateY(-3px);
 }
 
-.chartjs-render-monitor {
-    animation: chart-appear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
+/* Animations */
 @keyframes chart-appear {
     from {
         opacity: 0;
@@ -186,6 +186,11 @@
     }
 }
 
+.chartjs-render-monitor {
+    animation: chart-appear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Date Filters */
 .date-filters {
     margin-bottom: 2rem;
 }
@@ -212,6 +217,7 @@
     border-color: #80bdff;
 }
 
+/* Statistics */
 .statistics-container {
     background: #ffffff;
     padding: 24px;
@@ -272,4 +278,79 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* Media Queries */
+@media (max-width: 1024px) {
+    .links-container {
+        padding: 24px;
+    }
+    
+    .link-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+    
+    .destination-column {
+        max-width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .links-container {
+        padding: 16px;
+    }
+    
+    #linksTable td, #linksTable th {
+        padding: 0.5rem;
+    }
+    
+    .destination-column {
+        max-width: 150px;
+    }
+    
+    .d-none.d-md-table-cell {
+        display: none !important;
+    }
+    
+    .add-link-btn,
+    .modal-link-submit-btn,
+    .modal-link-cancel-btn,
+    .modal-link-delete-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .links-container {
+        padding: 12px;
+    }
+    
+    .block-title {
+        font-size: 18px;
+    }
+    
+    .destination-column {
+        max-width: 100px;
+    }
+    
+    .input-group-custom {
+        flex-direction: column;
+    }
+    
+    .input-group-custom .input-group-text,
+    .input-group-custom .form-control {
+        width: 100%;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+    }
 }

@@ -4,53 +4,78 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Classes\Domains;
+use App\Http\Contracts\Interfaces\DomainServiceInterface;
 use App\Http\Requests\Admin\Domains\StoreRequest;
 use App\Http\Traits\LogsErrors;
 use App\Http\Requests\Admin\Domains\UpdateRequest;
 use App\Http\Requests\Admin\Domains\DestroyRequest;
 use Exception;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class DomainController extends Controller
 {
     use LogsErrors;
 
-    private $domain_obj = null;
+    /**
+     * @var DomainServiceInterface $domainService Domain service instance
+     */
+    private $domainService = null;
 
-    public function __construct(Domains $domain_obj)
+    /**
+     * Initialize controller with dependencies
+     * 
+     * @param DomainServiceInterface $domainService Domain service instance
+     */
+    public function __construct(DomainServiceInterface $domainService)
     {
         $this->middleware('role:admin');
-        $this->domain_obj = $domain_obj;
+        $this->domainService = $domainService;
     }
 
     /**
      * Display a listing of the resource.
+     * 
+     * @return \Illuminate\View\View Returns domains index view with:
+     * - domains: List of domains
+     * 
+     * @throws Exception Logs errors and returns error response if operation fails
      */
-    public function index()
+    public function index(): View
     {
-        return view('admin.domains.index')->with([
-            'domains' => $this->domain_obj->getDomainsList(null),
-        ]);
+        try {
+            return view('admin.domains.index')->with([
+                'domains' => $this->domainService->getDomainsList(null) ?? [],
+            ]);
+        } catch (Exception $e) {
+            $this->logError("Error fetching domains list", $e);
+            return view('admin.domains.index')->with([
+                'domains' => [],
+                'error' => 'An error occurred while loading domains. Please try again later.'
+            ]);
+        }
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a new domain
+     * 
+     * @param StoreRequest $request Validated request containing:
+     * - domainName: The domain name to add
+     * - domainStatus: Active/inactive status
+     * 
+     * @return \Illuminate\Http\RedirectResponse Redirects back with:
+     * - Success message if domain was added
+     * - Error message if domain exists or invalid
+     * 
+     * @throws \Exception Logs errors and returns error response if operation fails
      */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created domain in storage.
-     */
-    public function store(StoreRequest $request)
+    public function store(StoreRequest $request): RedirectResponse
     {
         try {
             $validatedData = $request->validated();
 
-            $result = $this->domain_obj->storeDomain($validatedData['domainName'], $validatedData['domainStatus']);
+            $result = $this->domainService->storeDomain($validatedData['domainName'], $validatedData['domainStatus']);
 
             if (is_null($result)) {
                 return redirect()->back()->withErrors([
@@ -73,41 +98,28 @@ class DomainController extends Controller
         }
     }
 
-
     /**
-     * Display the specified resource.
+     * Update an existing domain
+     * 
+     * @param Request $request Contains:
+     * - domainName: New domain name
+     * - domainStatus: New status
+     * @param string $id Domain ID to update
+     * 
+     * @return \Illuminate\Http\RedirectResponse Redirects back with:
+     * - Success message if domain was updated
+     * - Error message if update failed
+     * 
+     * @throws \Exception Logs errors and returns error response if operation fails
      */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateRequest $request): RedirectResponse
     {
         try {
-            $data = [
-                'id' => $id,
-                'domainName' => $request->domainName,
-                'domainStatus' => $request->domainStatus,
-            ];
-            $validatedData = Validator::make($data, (new UpdateRequest())->rules())->validate();
+            $validatedData = $request->validated();
 
-            $result = $this->domain_obj->updateDomain($validatedData);
-
-            if (is_null($result)) {
+            if (!$this->domainService->updateDomain($validatedData)) {
                 return redirect()->back()->withErrors([
-                    'domain' => 'An unexpected error occurred while updating the domain.',
+                    'domain' => 'Domain update failed.',
                 ]);
             }
 
@@ -115,32 +127,40 @@ class DomainController extends Controller
         } catch (Exception $e) {
             $this->logError("Error updating domain", $e);
             return redirect()->back()->withErrors([
-                'domain' => 'An internal server error occurred. Please try again later.',
+                'domain' => 'An internal error occurred. Please try again later.',
             ]);
         }
     }
 
+
     /**
-     * Remove the specified resource from storage.
+     * Delete a domain and its related links
+     * 
+     * @param Request $request
+     * @param string $id Domain ID to delete
+     * 
+     * @return \Illuminate\Http\RedirectResponse Redirects back with:
+     * - Success message if domain was deleted
+     * - Error message if deletion failed
+     * 
+     * @throws Exception Logs errors and returns error response if operation fails
      */
-    public function destroy(Request $request, string $id)
+    public function destroy(DestroyRequest $request): RedirectResponse
     {
-        try{
-            $data = [
-                'id' => $id,
-            ];
-            $validatedData = Validator::make($data, (new DestroyRequest())->rules())->validate();
-            $result = $this->domain_obj->destroyDomain($validatedData['id']);
-            if (is_null($result)) {
+        try {
+            $validatedData = $request->validated();
+            $result = $this->domainService->destroyDomain($validatedData['id']);
+
+            if (!$result) {
                 return redirect()->back()->withErrors([
                     'domain' => 'An unexpected error occurred while deleting the domain.',
                 ]);
             }
 
             return redirect()->back()->with('success', 'Domain and related links successfully deleted.');
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             $this->logError("Error deleting domain", $e);
+
             return redirect()->back()->withErrors([
                 'domain' => 'An internal server error occurred. Please try again later.',
             ]);

@@ -1,107 +1,149 @@
 :root {
-	--accent: #f7b830;
-	--light: #f8f9fa;
-	--primary: #007bff;
-	--secondary: #64b5f6;
+    --accent: #f7b830;
+    --light: #f8f9fa;
+    --primary: #007bff;
+    --secondary: #64b5f6;
 }
 
 .btn-custom {
-	background: var(--secondary);
-	border-radius: 50px;
-	border: 2px solid transparent;
-	color: white;
-	font-weight: 600;
-	margin-left: 15px;
-	padding: 8px 25px;
-	transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    background: var(--secondary);
+    border-radius: 50px;
+    border: 2px solid transparent;
+    color: white;
+    font-weight: 600;
+    padding: 8px 25px;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
 }
 
 .btn-custom:hover {
-	background: #42a5f5;
-	box-shadow: 0 4px 15px rgba(100,181,246,0.3);
-	transform: translateY(-1px);
+    background: #42a5f5;
+    box-shadow: 0 4px 15px rgba(100,181,246,0.3);
+    transform: translateY(-1px);
 }
 
 .btn-outline-custom {
-	border-radius: 50px;
-	border: 2px solid var(--secondary);
-	color: var(--secondary);
-	font-weight: 600;
-	margin-left: 15px;
-	padding: 8px 25px;
-	transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    border-radius: 50px;
+    border: 2px solid var(--secondary);
+    color: var(--secondary);
+    font-weight: 600;
+    margin-left: 15px;
+    padding: 8px 25px;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
 }
 
 .btn-outline-custom:hover {
-	background: var(--secondary);
-	box-shadow: 0 4px 15px rgba(100,181,246,0.3);
-	color: white;
-	transform: translateY(-1px);
+    background: var(--secondary);
+    box-shadow: 0 4px 15px rgba(100,181,246,0.3);
+    color: white;
+    transform: translateY(-1px);
 }
 
 .footer {
-	border-top: 1px solid rgb(182,182,182);
+    border-top: 1px solid rgb(182,182,182);
+    padding: 2rem 0;
 }
 
 .footer .nav {
-	justify-content: center;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .hero-section {
-	background: linear-gradient(135deg, var(--primary) 0%, #0063cc 100%);
-	clip-path: ellipse(120% 100% at 50% 0%);
-	color: white;
-	padding: 80px 0 120px;
+    background: linear-gradient(135deg, var(--primary) 0%, #0063cc 100%);
+    clip-path: ellipse(120% 100% at 50% 0%);
+    color: white;
+    padding: 80px 0 120px;
 }
 
 .nav-item form .btn {
-	color: var(--secondary);
-	font-weight: 600;
-	transition: color 0.3s ease;
+    color: var(--secondary);
+    font-weight: 600;
+    transition: color 0.3s ease;
 }
 
 .nav-item form .btn:hover {
-	color: #42a5f5;
+    color: #42a5f5;
 }
 
 .navbar {
-	box-shadow: 0 2px 15px rgba(0,0,0,0.05);
-	padding: 1rem 0;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    padding: 1rem 0;
 }
 
 .navbar-nav {
-	align-items: center;
+    align-items: center;
 }
 
 .navbar-nav .nav-link {
-	margin: 0 15px;
-	padding: 8px 0;
-	position: relative;
+    margin: 0 15px;
+    padding: 8px 0;
+    position: relative;
 }
 
 .navbar-nav .nav-link::after {
-	background: var(--secondary);
-	bottom: 0;
-	content: '';
-	height: 2px;
-	left: 0;
-	position: absolute;
-	transition: width 0.3s ease;
-	width: 0;
+    background: var(--secondary);
+    bottom: 0;
+    content: '';
+    height: 2px;
+    left: 0;
+    position: absolute;
+    transition: width 0.3s ease;
+    width: 0;
 }
 
 .navbar-nav .nav-link:hover::after {
-	width: 100%;
+    width: 100%;
 }
 
+/* Media Queries */
 @media (max-width: 991.98px) {
-	.btn-custom, .btn-outline-custom {
-		margin: 10px 0;
-		text-align: center;
-		width: 100%;
-	}
+    .btn-custom, .btn-outline-custom {
+        margin: 10px 0;
+        text-align: center;
+        width: 100%;
+    }
 
-	.navbar-nav {
-		padding: 20px 0;
-	}
+    .navbar-nav {
+        padding: 20px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        clip-path: ellipse(150% 100% at 50% 0%);
+        padding: 60px 0 100px;
+    }
+    
+    .navbar-nav .nav-link {
+        margin: 0 10px;
+    }
+    
+    .footer {
+        padding: 1.5rem 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        clip-path: ellipse(180% 100% at 50% 0%);
+        padding: 40px 0 80px;
+    }
+    
+    .navbar {
+        padding: 0.75rem 0;
+    }
+    
+    .navbar-nav .nav-link {
+        margin: 0 5px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-custom, .btn-outline-custom {
+        padding: 6px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .footer {
+        padding: 1rem 0;
+    }
 }

@@ -6,6 +6,15 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRequest extends FormRequest
 {
+    public function prepareForValidation(): void
+    {
+        $this->merge([
+            'id' => $this->route('id'),
+            'url' => $this->input('editURL'),
+            'custom_name' => $this->input('editCustomName'),
+            'status' => $this->input('editStatus'),
+        ]);
+    }
     /**
      * Determine if the user is authorized to make this request.
      */

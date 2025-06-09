@@ -14,9 +14,15 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id' => ['required', 'numeric', 'min:1', 'max:999999999', 'exists:links,id'],
             'custom_name' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\- ]+$/'],
-            'destination' => ['required', 'string', 'url', 'max:2048'],
+            'destination' => [
+                'required',
+                'string',
+                'max:2048',
+                'regex:/^https?:\/\/[^\s"\'<>{}|\\^`\[\]\\\\]+$/i',
+            ],
             'access' => ['required', 'boolean'],
-        ];        
+        ];
     }
 }

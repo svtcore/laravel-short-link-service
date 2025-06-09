@@ -36,6 +36,5 @@ class Link extends Model
 
     public function domain(){
         return $this->belongsTo(Domain::class, 'domain_id');
-    }    
-    
+    }
 }

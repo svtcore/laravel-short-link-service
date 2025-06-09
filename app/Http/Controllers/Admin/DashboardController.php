@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Classes\AdminStatistics;
+use App\Http\Contracts\Interfaces\AdminStatisticsServiceInterface;
 use App\Http\Requests\Admin\Dashboard\ShowRequest;
 use Exception;
 use App\Http\Traits\LogsErrors;
-use App\Jobs\Admin\Dashboard\GetAggregatedStatisticsJob;
 use App\Jobs\Admin\Dashboard\GetTopBrowsersJob;
 use App\Jobs\Admin\Dashboard\GetTopCountriesJob;
 use App\Jobs\Admin\Dashboard\GetTopPlatformsJob;
@@ -20,118 +19,120 @@ use App\Jobs\Admin\Dashboard\GetTotalUniqueClicksByDateJob;
 use App\Jobs\Admin\Dashboard\GetTotalUsersByDateJob;
 use App\Jobs\Admin\Dashboard\GetTotalTimeActivityJob;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\View\View;
+
 
 class DashboardController extends Controller
 {
     use LogsErrors;
 
-    private $stat_obj = null;
+    /**
+     * @var AdminStatisticsServiceInterface $statsService Statistics service instance
+     */
+    private $statsService = null;
 
-    public function __construct(AdminStatistics $stat_obj)
+    public function __construct(AdminStatisticsServiceInterface $statsService)
     {
         $this->middleware('role:admin');
-        $this->stat_obj = $stat_obj;
+        $this->statsService = $statsService;
         ini_set('max_execution_time', 1200);
     }
 
 
-    public function index()
-    {
-        return view('admin.dashboard')->with([
-            'total_links' => $this->stat_obj->getTotalLinks(null),
-            'total_clicks' => $this->stat_obj->getTotalClicks(),
-            'total_active_links' => $this->stat_obj->getTotalLinks(true),
-            'total_unique_clicks' => $this->stat_obj->getTotalUniqueClicks(null, null),
-            'total_users' => $this->stat_obj->getTotalUsers(null, null),
-            'total_avg_clicks' => $this->stat_obj->getAvgClicksPerLink(),
-        ]);
-    }
-
     /**
-     * Show the form for creating a new resource.
+     * Display admin dashboard with summary statistics
+     * 
+     * @return \Illuminate\View\View Returns dashboard view with statistics data including:
+     * - Total links count
+     * - Total clicks count
+     * - Active links count
+     * - Unique clicks count
+     * - Total users count
+     * - Average clicks per link
+     * 
+     * @throws Exception If statistics data cannot be loaded
      */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(ShowRequest $request)
+    public function index(): View 
     {
         try {
-            $validatedData = $request->validated();
-
-            $startDate = $validatedData['startDate'] ?? now()->subDays(1);
-            $endDate = $validatedData['endDate'] ?? now()->endOfDay();
-
-            GetTotalLinksByDateJob::dispatchSync($startDate, $endDate, $this->stat_obj);
-            GetTotalClicksByDateJob::dispatchSync($startDate, $endDate, $this->stat_obj);
-            GetTotalUniqueClicksByDateJob::dispatchSync($startDate, $endDate, $this->stat_obj);
-            GetTotalUsersByDateJob::dispatchSync($startDate, $endDate, $this->stat_obj);
-            GetTotalDaysActivityJob::dispatchSync($startDate, $endDate, $this->stat_obj);
-            GetTotalTimeActivityJob::dispatchSync($startDate, $endDate, $this->stat_obj);
-            GetTopCountriesJob::dispatchSync($startDate, $endDate, $this->stat_obj);
-            GetTopBrowsersJob::dispatchSync($startDate,$endDate, $this->stat_obj);
-            GetTopPlatformsJob::dispatchSync($startDate, $endDate, $this->stat_obj);
-
-            $totalLinksByDate = Cache::get('total_links_by_date');
-            $totalClicksByDate = Cache::get('total_clicks_by_date');
-            $totalUniqueClicksByDate = Cache::get('total_unique_clicks_by_date');
-            $totalUsersByDate = Cache::get('total_users_by_date');
-            $totalDaysActivity = Cache::get('total_daily_clicks');
-            $totalTimeActivity = Cache::get('total_time_clicks');
-            $topCountries = Cache::get('chart_top_countries_by_date');
-            $topBrowsers = Cache::get('chart_top_browsers_by_date');
-            $topPlarforms = Cache::get('chart_top_platforms_by_date');
-
-            return response()->json([
-                'total_links_by_date' => $totalLinksByDate,
-                'total_clicks_by_date' => $totalClicksByDate,
-                'total_unique_clicks_by_date' => $totalUniqueClicksByDate,
-                'total_users_by_date' => $totalUsersByDate,
-                'chart_days_activity_data' => $totalDaysActivity,
-                'chart_time_activity_data' => $totalTimeActivity,
-                'chart_geo_data' => $topCountries,
-                'chart_browser_data' => $topBrowsers,
-                'chart_platform_data' => $topPlarforms,
+            return view('admin.dashboard')->with([
+                'total_links' => $this->statsService->getTotalLinks(null),
+                'total_clicks' => $this->statsService->getTotalClicks(),
+                'total_active_links' => $this->statsService->getTotalLinks(true),
+                'total_unique_clicks' => $this->statsService->getTotalUniqueClicks(null, null),
+                'total_users' => $this->statsService->getTotalUsers(null, null),
+                'total_avg_clicks' => $this->statsService->getAvgClicksPerLink(),
             ]);
         } catch (Exception $e) {
-            $this->logError("Error while updating data on dashboard", $e);
-            return response()->json(['error' => 'An unexpected erorr during updating data']);
+            $this->logError("Error while loading data on dashboard", $e);
+            return view('admin.dashboard')->with([
+                'error' => 'Could not load statistics. Please try again later.'
+            ]);
         }
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Get filtered dashboard data for specified date range
+     * 
+     * @param ShowRequest $request Validated request containing optional date filters
+     * @return \Illuminate\Http\JsonResponse Returns JSON with:
+     * - Links, clicks, users statistics by date
+     * - Daily and hourly activity charts data  
+     * - Geographic, browser and platform distribution data
+     * 
+     * @throws \Exception Logs errors and returns error response if data processing fails
      */
-    public function edit(string $id)
+    public function show(ShowRequest $request): mixed  
     {
-        //
-    }
+        try {
+            $validatedData = $request->validated();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+            $startDate = Carbon::parse($validatedData['startDate'] ?? now()->subDay())->startOfDay();
+            $endDate = Carbon::parse($validatedData['endDate'] ?? now())->endOfDay();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+            $cacheJobs = [
+                'total_links_by_date' => GetTotalLinksByDateJob::class,
+                'total_clicks_by_date' => GetTotalClicksByDateJob::class,
+                'total_unique_clicks_by_date' => GetTotalUniqueClicksByDateJob::class,
+                'total_users_by_date' => GetTotalUsersByDateJob::class,
+                'total_daily_clicks' => GetTotalDaysActivityJob::class,
+                'total_time_clicks' => GetTotalTimeActivityJob::class,
+                'chart_top_countries_by_date' => GetTopCountriesJob::class,
+                'chart_top_browsers_by_date' => GetTopBrowsersJob::class,
+                'chart_top_platforms_by_date' => GetTopPlatformsJob::class,
+            ];
+
+            $cacheData = [];
+            foreach ($cacheJobs as $keySuffix => $jobClass) {
+                $key = $keySuffix . '_' . $startDate->toDateString() . '_' . $endDate->toDateString();
+                $data = Cache::get($key);
+
+                if (!$data) {
+                    $jobClass::dispatchSync($startDate, $endDate, $this->statsService);
+                    $data = Cache::get($key);
+                }
+                //rewrite new data cache
+                $cacheData[$keySuffix] = $data;
+            }
+
+            if (in_array(null, $cacheData, true)) {
+                return response()->json(['error' => 'Cache not found, please try again later']);
+            }
+
+            return response()->json([
+                'total_links_by_date' => $cacheData['total_links_by_date'],
+                'total_clicks_by_date' => $cacheData['total_clicks_by_date'],
+                'total_unique_clicks_by_date' => $cacheData['total_unique_clicks_by_date'],
+                'total_users_by_date' => $cacheData['total_users_by_date'],
+                'chart_days_activity_data' => $cacheData['total_daily_clicks'],
+                'chart_time_activity_data' => $cacheData['total_time_clicks'],
+                'chart_geo_data' => $cacheData['chart_top_countries_by_date'],
+                'chart_browser_data' => $cacheData['chart_top_browsers_by_date'],
+                'chart_platform_data' => $cacheData['chart_top_platforms_by_date'],
+            ]);
+        } catch (Exception $e) {
+            $this->logError("Error while updating data on dashboard", $e);
+            return response()->json(['error' => 'An unexpected error occurred during data update']);
+        }
     }
 }

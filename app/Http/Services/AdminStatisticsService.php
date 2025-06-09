@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Classes;
+namespace App\Http\Services;
 
+use App\Http\Contracts\Interfaces\AdminStatisticsServiceInterface;
 use App\Models\Link;
 use App\Models\LinkHistory;
 use App\Models\User;
@@ -11,9 +12,24 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Http\Traits\LogsErrors;
 
-class AdminStatistics
+class AdminStatisticsService implements AdminStatisticsServiceInterface
 {
     use LogsErrors;
+
+    private $maxDaysLimit = 365;
+
+    private function parseAndValidateDateRange(?string $startDate, ?string $endDate): array
+    {
+        $startDate = $startDate ? Carbon::parse($startDate)->startOfDay() : null;
+        $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : null;
+
+        if ($startDate && $endDate && $startDate->diffInDays($endDate) > $this->maxDaysLimit) {
+            $endDate = $startDate->copy()->addDays($this->maxDaysLimit);
+        }
+
+        return [$startDate, $endDate];
+    }
+
 
     /**
      * Get the total number of links created in the system.
@@ -54,18 +70,29 @@ class AdminStatistics
     {
         try {
             $activeLinksCount = Link::where('available', true)->count();
-            return ($activeLinksCount >= 0) ? $activeLinksCount : 0;
+            return ($activeLinksCount >= 1) ? $activeLinksCount : 0;
         } catch (Exception $e) {
             $this->logError("Error while retrieving total active links", $e);
             return 0;
         }
     }
 
+    /**
+     * Get total number of users in the system
+     *
+     * @param string|null $startDate Optional start date filter (format: Y-m-d)
+     * @param string|null $endDate Optional end date filter (format: Y-m-d)
+     * @return int Returns:
+     * - Total user count (filtered by date range if provided)
+     * - 0 if error occurs
+     *
+     * @throws \Exception Logs errors and returns 0 on failure
+     */
     public function getTotalUsers(?string $startDate = null, ?string $endDate = null): int
     {
         try {
-            $startDate = $startDate ? Carbon::parse($startDate)->startOfDay() : null;
-            $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : null;
+
+            list($startDate, $endDate) = $this->parseAndValidateDateRange($startDate, $endDate);
 
             $query = User::query();
             if ($startDate && $endDate) {
@@ -74,21 +101,33 @@ class AdminStatistics
             $count = $query->count();
             return ($count >= 0) ? $count : 0;
         } catch (Exception $e) {
-            $this->logError("Error while retrieving users count", $e);
+            $this->logError('Error while retrieving users count', $e, [
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ]);
             return 0;
         }
     }
 
+    /**
+     * Get total number of clicks in the system
+     *
+     * @return int Returns:
+     * - Total click count
+     * - 0 if error occurs
+     *
+     * @throws \Exception Logs errors and returns 0 on failure
+     */
     public function getTotalClicks(): int
     {
         try {
-            $clicks = LinkHistory::count();
-            return ($clicks >= 0) ? $clicks : 0;
+            return LinkHistory::count();
         } catch (Exception $e) {
             $this->logError("Error while retrieving click count", $e);
             return 0;
         }
     }
+
 
     /**
      * Get the total number of unique clicks based on IP address and link.
@@ -105,8 +144,7 @@ class AdminStatistics
     public function getTotalUniqueClicks(?string $startDate = null, ?string $endDate = null): int
     {
         try {
-            $startDate = $startDate ? Carbon::parse($startDate)->startOfDay() : null;
-            $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : null;
+            list($startDate, $endDate) = $this->parseAndValidateDateRange($startDate, $endDate);
 
             $query = LinkHistory::distinct('ip_address', 'link_id');
 
@@ -114,9 +152,7 @@ class AdminStatistics
                 $query->whereBetween('created_at', [$startDate, $endDate]);
             }
 
-            $clicks = $query->count();
-
-            return ($clicks >= 0) ? $clicks : 0;
+            return $query->count();
         } catch (Exception $e) {
             $this->logError("Error while retrieving unique click count", $e);
             return 0;
@@ -136,30 +172,19 @@ class AdminStatistics
      * @param string|null $endDate End date for filtering (optional).
      * @return float The average number of unique clicks per link, or 0 if an error occurs.
      */
-    public function getAvgClicksPerLink(string $startDate = null, string $endDate = null): float
+    public function getAvgClicksPerLink(): int
     {
         try {
-            $startDate = Carbon::parse($startDate)->startOfDay();
-            $endDate = Carbon::parse($endDate)->endOfDay();
+            $totalUniqueClicks = LinkHistory::selectRaw('COUNT(DISTINCT ip_address) as unique_clicks')->first()->unique_clicks;
+            $totalLinks = LinkHistory::distinct('link_id')->count();
 
-            $query = LinkHistory::selectRaw('link_id, COUNT(DISTINCT ip_address) as unique_clicks')
-                ->groupBy('link_id');
-
-            $uniqueClicksPerLink = $query->get();
-
-            $totalUniqueClicks = $uniqueClicksPerLink->sum('unique_clicks');
-            $totalLinks = $uniqueClicksPerLink->count();
-
-            if ($totalLinks > 0) {
-                return round($totalUniqueClicks / $totalLinks, 0);
-            }
-
-            return 0;
+            return $totalLinks > 0 ? round($totalUniqueClicks / $totalLinks, 0) : 0;
         } catch (Exception $e) {
             $this->logError("Error while calculating average clicks per link", $e);
             return 0;
         }
     }
+
 
 
     /**
@@ -170,38 +195,54 @@ class AdminStatistics
     public function getTotalLinksByDate(string $startDate, string $endDate): int
     {
         try {
-            $startDate = Carbon::parse($startDate)->startOfDay();
-            $endDate = Carbon::parse($endDate)->endOfDay();
 
-            $count = Link::whereBetween('created_at', [$startDate, $endDate])->count();
+            list($startDate, $endDate) = $this->parseAndValidateDateRange($startDate, $endDate);
 
-            return ($count >= 0) ? $count : 0;
+            return Link::whereBetween('created_at', [$startDate, $endDate])->count();
         } catch (Exception $e) {
             $this->logError("Error while retrieving total links by date", $e);
             return 0;
         }
     }
 
+    /**
+     * Get total clicks count within date range
+     *
+     * @param string $startDate Start date (format: Y-m-d)
+     * @param string $endDate End date (format: Y-m-d)
+     * @return int Returns:
+     * - Click count for date range
+     * - 0 if error occurs
+     *
+     * @throws \Exception Logs errors and returns 0 on failure
+     */
     public function getTotalClicksByDate(string $startDate, string $endDate): int
     {
         try {
-            $startDate = Carbon::parse($startDate)->startOfDay();
-            $endDate = Carbon::parse($endDate)->endOfDay();
+            list($startDate, $endDate) = $this->parseAndValidateDateRange($startDate, $endDate);
 
-            $count = LinkHistory::whereBetween('created_at', [$startDate, $endDate])->count();
-
-            return ($count >= 0) ? $count : 0;
+            return LinkHistory::whereBetween('created_at', [$startDate, $endDate])->count();
         } catch (Exception $e) {
             $this->logError("Error while retrieving total clicks by date", $e);
             return 0;
         }
     }
 
+    /**
+     * Get daily clicks breakdown within date range
+     *
+     * @param string|null $startDate Start date (format: Y-m-d)
+     * @param string|null $endDate End date (format: Y-m-d)
+     * @return array|null Returns:
+     * - Array with date => clicks count pairs
+     * - null if error occurs
+     *
+     * @throws \Exception Logs errors and returns null on failure
+     */
     public function getDailyClicksByDate(?string $startDate, ?string $endDate): ?array
     {
         try {
-            $startDate = Carbon::parse($startDate)->startOfDay();
-            $endDate = Carbon::parse($endDate)->endOfDay();
+            list($startDate, $endDate) = $this->parseAndValidateDateRange($startDate, $endDate);
 
             $clicks = LinkHistory::whereBetween('created_at', [$startDate, $endDate])
                 ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
@@ -238,12 +279,22 @@ class AdminStatistics
         }
     }
 
+    /**
+     * Get hourly clicks breakdown within date range
+     *
+     * @param string|null $startDate Start date (format: Y-m-d)
+     * @param string|null $endDate End date (format: Y-m-d)
+     * @return array|null Returns:
+     * - Array with hour => clicks count pairs (0-23)
+     * - null if error occurs
+     *
+     * @throws \Exception Logs errors and returns null on failure
+     */
     public function getHourlyClicksByDate(?string $startDate, ?string $endDate): ?array
     {
         try {
 
-            $startDate = Carbon::parse($startDate)->startOfDay();
-            $endDate = Carbon::parse($endDate)->endOfDay();
+            list($startDate, $endDate) = $this->parseAndValidateDateRange($startDate, $endDate);
 
             $clicksByHour = array_fill(0, 24, 0);
 
@@ -265,46 +316,70 @@ class AdminStatistics
         }
     }
 
+    /**
+     * Get top countries by unique clicks within date range
+     *
+     * @param string $startDate Start date (format: Y-m-d)
+     * @param string $endDate End date (format: Y-m-d)
+     * @return iterable|null Returns:
+     * - Collection of top 5 countries with click counts
+     * - null if error occurs
+     *
+     * @throws \Exception Logs errors and returns null on failure
+     */
     public function getTopCountriesByDate(string $startDate, string $endDate): ?iterable
     {
         try {
             $limit = 5;
 
-            $startDate = Carbon::parse($startDate)->startOfDay();
-            $endDate = Carbon::parse($endDate)->endOfDay();
+            list($startDate, $endDate) = $this->parseAndValidateDateRange($startDate, $endDate);
 
-            //for faster loading instead of EQ
-            $query = DB::table(DB::raw('(SELECT DISTINCT ip_address, country_name FROM link_histories WHERE created_at BETWEEN ? AND ?) as unique_ips'))
-                ->selectRaw('country_name, COUNT(*) as click_count')
+            $query = DB::table('link_histories')
+                ->select('country_name', DB::raw('COUNT(DISTINCT ip_address) as click_count'))
+                ->whereBetween('created_at', [$startDate, $endDate])
                 ->groupBy('country_name')
                 ->orderByDesc('click_count')
                 ->limit($limit)
-                ->setBindings([$startDate, $endDate])
                 ->get();
+
 
             return $query->map(fn($item) => [
                 'country' => $item->country_name,
                 'click_count' => $item->click_count,
             ]);
         } catch (Exception $e) {
-            $this->logError("Error fetching top countries by unique clicks", $e, ['start_date' => $startDate, 'end_date' => $endDate]);
+            $this->logError("Error fetching top countries by unique clicks", $e, [
+                'start_date' => $startDate,
+                'end_date' => $endDate
+            ]);
             return null;
         }
     }
 
 
+
+    /**
+     * Get top browsers by unique clicks within date range
+     *
+     * @param string $startDate Start date (format: Y-m-d)
+     * @param string $endDate End date (format: Y-m-d)
+     * @return iterable|null Returns:
+     * - Collection of top 5 browsers with click counts
+     * - null if error occurs
+     *
+     * @throws \Exception Logs errors and returns null on failure
+     */
     public function getTopBrowsersByDate(string $startDate, string $endDate): ?iterable
     {
         try {
-            $startDate = Carbon::parse($startDate)->startOfDay();
-            $endDate = Carbon::parse($endDate)->endOfDay();
+            list($startDate, $endDate) = $this->parseAndValidateDateRange($startDate, $endDate);
 
-            $query = DB::table(DB::raw('(SELECT DISTINCT ip_address, browser FROM link_histories WHERE created_at BETWEEN ? AND ?) as unique_ips'))
-                ->selectRaw('browser, COUNT(*) as click_count')
+            $query = DB::table('link_histories')
+                ->select('browser', DB::raw('COUNT(DISTINCT ip_address) as click_count'))
+                ->whereBetween('created_at', [$startDate, $endDate])
                 ->groupBy('browser')
                 ->orderByDesc('click_count')
                 ->limit(5)
-                ->setBindings([$startDate, $endDate])
                 ->get();
 
             return $query->map(fn($item) => [
@@ -312,24 +387,38 @@ class AdminStatistics
                 'click_count' => $item->click_count,
             ]);
         } catch (Exception $e) {
-            $this->logError("Error fetching top browsers by unique clicks", $e, ['start_date' => $startDate, 'end_date' => $endDate]);
+            $this->logError("Error fetching top browsers by unique clicks", $e, [
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ]);
             return null;
         }
     }
 
 
+
+    /**
+     * Get top operating systems by unique clicks within date range
+     *
+     * @param string $startDate Start date (format: Y-m-d)
+     * @param string $endDate End date (format: Y-m-d)
+     * @return iterable|null Returns:
+     * - Collection of top 5 OS with click counts
+     * - null if error occurs
+     *
+     * @throws \Exception Logs errors and returns null on failure
+     */
     public function getTopOSByDate(string $startDate, string $endDate): ?iterable
     {
         try {
-            $startDate = Carbon::parse($startDate)->startOfDay();
-            $endDate = Carbon::parse($endDate)->endOfDay();
+            list($startDate, $endDate) = $this->parseAndValidateDateRange($startDate, $endDate);
 
-            $query = DB::table(DB::raw('(SELECT DISTINCT ip_address, os FROM link_histories WHERE created_at BETWEEN ? AND ?) as unique_ips'))
-                ->selectRaw('os, COUNT(*) as click_count')
+            $query = DB::table('link_histories')
+                ->select('os', DB::raw('COUNT(DISTINCT ip_address) as click_count'))
+                ->whereBetween('created_at', [$startDate, $endDate])
                 ->groupBy('os')
                 ->orderByDesc('click_count')
                 ->limit(5)
-                ->setBindings([$startDate, $endDate])
                 ->get();
 
             return $query->map(fn($item) => [
@@ -337,8 +426,12 @@ class AdminStatistics
                 'click_count' => $item->click_count,
             ]);
         } catch (Exception $e) {
-            $this->logError("Error fetching top operating systems by unique clicks", $e, ['start_date' => $startDate, 'end_date' => $endDate]);
+            $this->logError("Error fetching top operating systems by unique clicks", $e, [
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ]);
             return null;
         }
     }
+
 }

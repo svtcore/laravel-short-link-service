@@ -44,7 +44,7 @@
 @php
 use Carbon\Carbon;
 
-$startDate = Carbon::now()->subDays(1)->toDateString();
+$startDate = Carbon::now()->subDay()->toDateString();
 $endDate = Carbon::now()->toDateString();
 @endphp
 

@@ -1,3 +1,23 @@
+/**
+ * Admin Dashboard Statistics Visualization
+ * 
+ * This module handles all chart rendering and data visualization for the admin dashboard.
+ * It provides interactive charts showing:
+ * - Daily/weekly/monthly click activity
+ * - Hourly click patterns
+ * - Geographic distribution of users
+ * - Browser and platform statistics
+ * 
+ * Features:
+ * - Responsive design for all screen sizes
+ * - Dynamic data loading with date filters
+ * - Interactive tooltips and hover effects
+ * - Automatic data aggregation for large date ranges
+ * 
+ * Dependencies:
+ * - Chart.js v3.x
+ * - jQuery (for AJAX requests)
+ */
 Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.color = "#6c757d";
 Chart.defaults.borderColor = "rgba(0, 0, 0, 0.05)";

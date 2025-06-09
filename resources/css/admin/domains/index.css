@@ -1,48 +1,81 @@
 .domains-container {
     background: white;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    margin-bottom: 32px;
-    padding: 32px;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    padding: 2rem;
 }
 
 .domain-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
 }
 
-.modal-domain-cancel-btn{
-    padding: 10px 20px;
-    border-radius: 8px;
+.block-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0;
+    width: 100%;
+    text-align: center;
+    position: relative;
 }
 
-.add-domain-btn, .modal-domain-submit-btn {
+/* Buttons */
+.add-domain-btn {
     background: #3061ca;
     color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
+    border-radius: 0.5rem;
+    padding: 0.7rem 0.90rem;
     border: none;
     cursor: pointer;
-    transition: transform 0.3s ease;
-}
-.modal-domain-delete-btn{
-    background: #d30c0c;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    font-size: 1rem;
+    min-width: 120px;
 }
 
-.add-domain-btn:hover, .modal-domain-submit-btn:hover {
+.modal-domain-submit-btn {
+    background: #3061ca;
+    color: white;
+    padding: 0.625rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-domain-cancel-btn {
+    padding: 0.625rem 0.6rem;
+    border-radius: 0.5rem;
+    background: transparent;
+}
+
+.modal-domain-delete-btn {
+    background: #d30c0c;
+    color: white;
+    padding: 0.625rem 1rem;
+    border-radius: 0.5rem;
+    margin-right: 0.75rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-domain-btn:hover,
+.modal-domain-submit-btn:hover {
     background: #1a3ea3;
 }
+
 .modal-domain-delete-btn:hover {
     background: #df3939;
+}
+
+/* Table Styles */
+#manageDomainsTable td, #manageDomainsTable th {
+    padding: 0.75rem;
 }
 
 .table tbody tr {
@@ -50,57 +83,124 @@
 }
 
 .table tbody tr:hover {
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 0.9375rem rgba(0,0,0,0.08);
+    transform: translateY(-0.125rem);
 }
 
 .table-hover tbody tr:hover {
     background-color: inherit;
 }
 
-.bg-light {
-    background-color: #f8f9fa !important;
-}
-
-.text-truncate {
-    max-width: 120px;
+.domain-column {
+    max-width: 18.75rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.badge {
-    font-size: 0.875rem;
-    padding: 0.5em 0.75em;
+    padding-right: 1rem;
 }
 
 @media (max-width: 768px) {
-    #linksTable td, #linksTable th {
-        padding: 0.5rem;
+    #domainsTable {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
     }
     
-    .text-truncate {
-        max-width: 90px;
-    }
-    
-    .badge {
-        font-size: 0.75em;
-        padding: 0.3em 0.6em;
-    }
-    
-    .d-none.d-md-table-cell,
-    .d-none.d-sm-table-cell {
-        display: none !important;
+    .domain-column {
+        max-width: 12.5rem;
     }
 }
 
-.block-title{
-    font-size: 20px;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 16px;
+/* Modal Styles */
+.modal-content {
+    border: none;
 }
-.modal-custom-footer{
-    padding-top: 3%;
+
+.modal-footer {
     padding-right: 0;
+}
+
+.modal-body h5 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Media Queries */
+@media (max-width: 1024px) {
+    .domains-container {
+        padding: 1.5rem;
+    }
+    
+    .domain-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .domain-column {
+        max-width: 12.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .domains-container {
+        padding: 1rem;
+    }
+    
+    #domainsTable td, #domainsTable th {
+        padding: 0.5rem;
+    }
+    
+    .domain-column {
+        max-width: 9.375rem;
+    }
+    
+    .d-none.d-md-table-cell {
+        display: none !important;
+    }
+    
+    .modal-domain-submit-btn,
+    .modal-domain-cancel-btn,
+    .modal-domain-delete-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .add-domain-btn{
+        width: 100%;
+        padding: 0.5rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .domains-container {
+        padding: 0.75rem;
+    }
+    
+    .block-title {
+        font-size: 1.125rem;
+    }
+    
+    .domain-column {
+        max-width: 6.25rem;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+        padding: 0.75rem;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .modal-content {
+        margin: 0.5rem;
+    }
 }

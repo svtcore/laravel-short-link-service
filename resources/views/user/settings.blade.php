@@ -17,20 +17,20 @@
     </div>
 </section>
 
-<section class="container settings-section">
+<section class="container settings-section mt-4">
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 12px; padding: 20px; background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724;">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
         <strong>Success!</strong> {{ session('success') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
 
     @if($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: 12px; padding: 20px; background-color: #f8d7da; border: 1px solid #f5c6cb; color:rgb(3, 2, 2);">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong>Error!</strong>
-        <ul style="list-style-type: none; padding-left: 0; margin-top: 10px;">
+        <ul class="alert-list">
             @foreach($errors->all() as $error)
-            <li style="background-color:rgb(252, 230, 232); border-radius: 8px; margin-bottom: 8px; padding: 10px; font-weight: 500;">
+            <li class="error-item">
                 {{ $error }}
             </li>
             @endforeach
@@ -49,25 +49,19 @@
                     @method('PUT')
                     <div class="mb-4">
                         <label for="name" class="form-label">Full Name</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
-                            <input type="text" class="form-control" name="name" id="name" 
-                                   placeholder="Enter your full name" 
-                                   value="{{ $user_data->name }}" 
-                                   maxlength="255">
-                        </div>
+                        <input type="text" class="form-control settings-input" name="name" id="name" 
+                               placeholder="Enter your full name" 
+                               value="{{ $user_data->name }}" 
+                               maxlength="255">
                     </div>
 
                     <div class="mb-4">
                         <label for="email" class="form-label">Email Address</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-envelope-at"></i></span>
-                            <input type="email" class="form-control" id="email" name="email" 
-                                   placeholder="Enter your email address" 
-                                   value="{{ $user_data->email }}" 
-                                   required 
-                                   maxlength="255">
-                        </div>
+                        <input type="email" class="form-control settings-input" id="email" name="email" 
+                               placeholder="Enter your email address" 
+                               value="{{ $user_data->email }}" 
+                               required 
+                               maxlength="255">
                     </div>
                     <button type="submit" class="btn btn-custom w-100">
                         <i class="bi bi-save2 me-2"></i>Save Changes
@@ -86,37 +80,54 @@
                     <div class="mb-4">
                         <label for="currentPassword" class="form-label">Current Password</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-key"></i></span>
-                            <input type="password" class="form-control" name="password" 
+                            <input type="password" class="form-control settings-input" name="password" 
                                    id="currentPassword" 
                                    placeholder="Enter current password" 
                                    required 
                                    minlength="8">
+                            <button class="toggle-password" type="button">
+                                <i class="bi bi-eye"></i>
+                            </button>
                         </div>
                     </div>
 
                     <div class="mb-4">
                         <label for="newPassword" class="form-label">New Password</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
-                            <input type="password" class="form-control" name="new_password" 
+                            <input type="password" class="form-control settings-input" name="new_password" 
                                    id="newPassword" 
                                    placeholder="Enter new password" 
-                                   required 
-                                   minlength="8">
+                                   required
+                                   minlength="8"
+                                   pattern="^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@$!%*?&]).*$"
+                                   title="Password must contain: at least 8 characters, one letter, one number and one special character (@$!%*?&)">
+                            <button class="toggle-password" type="button">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <div class="form-text text-muted small">
+                            Password requirements:
+                            <ul class="mb-0 ps-3">
+                                <li>Minimum 8 characters</li>
+                                <li>At least one English letter</li>
+                                <li>At least one number</li>
+                                <li>At least one special character (@$!%*?&)</li>
+                            </ul>
                         </div>
                     </div>
 
                     <div class="mb-4">
                         <label for="confirmPassword" class="form-label">Confirm Password</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-check-circle"></i></span>
-                            <input type="password" class="form-control" 
+                            <input type="password" class="form-control settings-input" 
                                    name="new_password_confirmation" 
                                    id="confirmPassword" 
                                    placeholder="Confirm new password" 
                                    required 
                                    minlength="8">
+                            <button class="toggle-password" type="button">
+                                <i class="bi bi-eye"></i>
+                            </button>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-custom w-100">

@@ -55,7 +55,14 @@ class LoginController extends Controller
                 return redirect()->route('login')->withErrors([
                     'error' => 'Your account is currently frozen. Please contact support.',
                 ]);
-            }else return redirect()->route('home');
+            }
+            else if ($user->status === 'banned') {
+                Auth::logout();
+                return redirect()->route('login')->withErrors([
+                    'error' => 'Your account is banned. Please contact support.',
+                ]);
+            }
+            else return redirect()->route('home');
         }
 
         if ($user->hasRole('admin')) {

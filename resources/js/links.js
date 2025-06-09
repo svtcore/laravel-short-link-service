@@ -412,16 +412,25 @@ $("#editLinkForm").on("submit", function (e) {
             }
         },
         error: function (xhr) {
-            const errors = xhr.responseJSON?.errors || [
-                "There is error, try agair later.",
-            ];
-
             $("#editLinkErrors").removeClass("d-none");
-
-            errors.forEach((error) => {
-                $("#editLinkErrorsList").append(`<li>${error}</li>`);
-            });
-        },
+            $("#editLinkErrorsList").empty();
+        
+            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                const errors = xhr.responseJSON.errors;
+                
+                Object.keys(errors).forEach(field => {
+                    errors[field].forEach(errorMessage => {
+                        $("#editLinkErrorsList").append(`<li>${errorMessage}</li>`);
+                    });
+                });
+            } 
+            else if (xhr.responseJSON && xhr.responseJSON.message) {
+                $("#editLinkErrorsList").append(`<li>${xhr.responseJSON.message}</li>`);
+            } 
+            else {
+                $("#editLinkErrorsList").append(`<li>There is an error, try again later.</li>`);
+            }
+        }
     });
 });
 

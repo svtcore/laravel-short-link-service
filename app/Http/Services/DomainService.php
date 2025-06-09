@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Http\Classes;
+namespace App\Http\Services;
 
+
+use App\Http\Contracts\Interfaces\DomainServiceInterface;
 use App\Models\Domain;
 use Exception;
 use App\Http\Traits\LogsErrors;
 use App\Models\LinkHistory;
 use Illuminate\Support\Facades\DB;
 
-class Domains
+class DomainService implements DomainServiceInterface
 {
     use LogsErrors;
     /**
@@ -36,10 +38,12 @@ class Domains
         try {
             $domains = Domain::select('id', 'name', 'available', 'created_at')
                 ->withCount('links')
-                ->with(['links' => function ($query) {
-                    $query->select('id', 'domain_id')
-                        ->withCount('link_histories');
-                }])
+                ->with([
+                    'links' => function ($query) {
+                        $query->select('id', 'domain_id')
+                            ->withCount('link_histories');
+                    }
+                ])
                 ->get();
 
             foreach ($domains as $domain) {
@@ -100,6 +104,26 @@ class Domains
             DB::rollBack();
             $this->logError("Error while deleting domain", $e, ['id' => $id]);
             return null;
+        }
+    }
+
+    public function searchDomains(string $query, bool $count = false): mixed
+    {
+        try {
+            $query = Domain::query()
+                ->where('name', 'LIKE', '%' . $query . '%')
+                ->withCount([
+                    'links',
+                    'links as total_clicks' => function ($q) {
+                        $q->withCount('link_histories');
+                    }
+                ]);
+
+            return $count ? $query->count() : $query->get();
+
+        } catch (Exception $e) {
+            $this->logError("Domain search failed for query: {$query}", $e);
+            return $count ? 0 : collect();
         }
     }
 }

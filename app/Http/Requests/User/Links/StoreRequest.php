@@ -16,7 +16,12 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'url' => ['required', 'string', 'url', 'max:2048'],
+            'url' =>  [
+                'required',
+                'string',
+                'max:2048',
+                'regex:/^https?:\/\/[^\s"\'<>{}|\\^`\[\]\\\\]+$/i',
+            ],
             'custom_name' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\- ]+$/'],
             'from_modal' => ['nullable', 'boolean']
         ];        

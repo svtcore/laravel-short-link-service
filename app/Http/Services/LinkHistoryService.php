@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Classes;
+namespace App\Http\Services;
 
+use App\Http\Contracts\Interfaces\LinkHistoryServiceInterface;
 use App\Models\Link;
 use Exception;
 use App\Models\LinkHistory;
@@ -11,7 +12,7 @@ use App\Http\Traits\LogsErrors;
 use Illuminate\Support\Facades\Http;
 use Jenssegers\Agent\Agent;
 
-class LinkHistories extends Links
+class LinkHistoryService extends LinkService implements LinkHistoryServiceInterface
 {
     use LogsErrors;
     /**
@@ -130,7 +131,7 @@ class LinkHistories extends Links
     public function getTopLinksClicksByUserId(int $user_id): ?iterable
     {
         try {
-            $limit = 5;
+            $limit = 3;
 
             $startDate = now()->subDay();
             $endDate = now();

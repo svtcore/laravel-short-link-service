@@ -1,112 +1,159 @@
 #result-block {
-	display: none;
-	margin: auto;
-	max-width: 500px;
-	width: 100%;
+    display: none;
+    margin: auto;
+    max-width: 500px;
+    width: 100%;
 }
 
 #shorten-btn:disabled {
-	background-color: rgb(247,184,48);
-	border-color: rgb(247,184,48);
-	color: white;
-	cursor: not-allowed;
+    background-color: rgb(247,184,48);
+    border-color: rgb(247,184,48);
+    color: white;
+    cursor: not-allowed;
 }
 
 .copy-btn {
-	background-color: #333;
-	border-radius: 20px;
-	border: none;
-	color: white;
-	cursor: pointer;
-	font-size: 14px;
-	padding: 10px 20px;
-	transition: background-color 0.3s ease;
+    background-color: #333;
+    border-radius: 20px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease;
 }
 
 .copy-btn:active {
-	background-color: #777;
+    background-color: #777;
 }
 
 .copy-btn:hover {
-	background-color: #555;
+    background-color: #555;
 }
 
 .feature-card {
-	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-	transition: transform 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    background: white;
 }
 
 .feature-card:hover {
-	transform: translateY(-10px);
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
 }
 
 .input-group-custom {
-	margin-top: 30px;
-	margin: 0 auto;
-	max-width: 600px;
+    margin: 30px auto;
+    max-width: 600px;
 }
 
 .input-group-custom button {
-	background-color: rgb(247,184,48);
-	border-radius: 50px;
-	border: 2px solid #007bff;
-	color: white;
-	font-weight: bold;
-	padding: 15px 30px;
-	transition: all 0.3s ease;
+    background-color: rgb(247,184,48);
+    border-radius: 50px;
+    border: 2px solid #007bff;
+    color: white;
+    font-weight: bold;
+    padding: 15px 30px;
+    transition: all 0.3s ease;
 }
 
 .input-group-custom button:hover {
-	background-color: rgb(247,184,48);
-	border-color: rgb(177,177,177);
-	box-shadow: 0 4px 10px rgba(56,142,60,0.2);
-	transform: scale(1.05);
+    background-color: rgb(247,184,48);
+    border-color: rgb(177,177,177);
+    box-shadow: 0 4px 10px rgba(56,142,60,0.2);
+    transform: scale(1.05);
 }
 
 .input-group-custom input {
-	border-bottom-left-radius: 50px !important;
-	border-top-left-radius: 50px !important;
-	border: 2px solid #007bff;
-	padding: 15px 30px;
-	transition: all 0.3s ease;
+    border-bottom-left-radius: 50px !important;
+    border-top-left-radius: 50px !important;
+    border: 2px solid #007bff;
+    padding: 15px 30px;
+    transition: all 0.3s ease;
 }
 
 .input-group-custom input:focus {
-	border-color: #42a5f5;
-	box-shadow: 0 4px 10px rgba(0,123,255,0.2);
+    border-color: #42a5f5;
+    box-shadow: 0 4px 10px rgba(0,123,255,0.2);
 }
 
 .result-container {
-	align-items: center;
-	background: linear-gradient(to right,#bbcdf3,#d8d9fa);
-	border-radius: 30px;
-	border: 1px solid #ccc;
-	box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-	color: black;
-	display: flex;
-	justify-content: space-between;
-	margin: auto;
-	padding: 8px;
+    align-items: center;
+    background: linear-gradient(to right,#bbcdf3,#d8d9fa);
+    border-radius: 30px;
+    border: 1px solid #ccc;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    margin: auto;
+    padding: 8px;
 }
 
 .result-link {
-	color: #333;
-	flex-grow: 1;
-	font-size: 18px;
-	font-weight: bold;
-	word-wrap: break-word;
+    color: #333;
+    flex-grow: 1;
+    font-size: 18px;
+    font-weight: bold;
+    word-wrap: break-word;
 }
 
-@media (max-width: 576px) {
-	#result-block {
-		display: none;
-		width: 100% !important;
-	}
+/* Media Queries */
+@media (max-width: 1024px) {
+    .input-group-custom {
+        max-width: 500px;
+    }
+    
+    .feature-card {
+        padding: 15px;
+    }
 }
 
-@media (max-width: 810px) {
-	#result-block {
-		display: none;
-		width: 100% !important;
-	}
+@media (max-width: 768px) {
+    .input-group-custom {
+        max-width: 400px;
+    }
+    
+    .input-group-custom input,
+    .input-group-custom button {
+        padding: 12px 24px;
+    }
+    
+    .result-container {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+    }
+    
+    .result-link {
+        font-size: 16px;
+    }
+    
+    .copy-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .input-group-custom {
+        max-width: 300px;
+    }
+    
+    .input-group-custom input,
+    .input-group-custom button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+    
+    .feature-card {
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+    
+    .result-link {
+        font-size: 14px;
+    }
 }

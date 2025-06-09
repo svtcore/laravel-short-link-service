@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Classes\Links;
-use App\Http\Classes\LinkHistories;
-use App\Http\Classes\Users;
+use App\Http\Contracts\Interfaces\LinkServiceInterface;
+use App\Http\Contracts\Interfaces\LinkHistoryServiceInterface;
+use App\Http\Contracts\Interfaces\UserServiceInterface;
 use App\Http\Requests\Admin\Links\DestroyRequest;
 use App\Http\Requests\Admin\Links\ShowRequest;
 use App\Http\Requests\Admin\Links\StoreRequest;
@@ -15,97 +15,146 @@ use Illuminate\Support\Facades\Validator;
 use Exception;
 use App\Http\Traits\LogsErrors;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 
 class LinkController extends Controller
 {
     use LogsErrors;
 
-    private $links_obj = null;
-    private $links_hist_obj = null;
-    private $users_obj = null;
+    /**
+     * @var LinkServiceInterface $linkService Links service instance
+     */
+    private $linkService = null;
 
-    public function __construct(Links $links_obj, LinkHistories $links_hist_obj, Users $users_obj)
+    /**
+     * @var LinkHistoryServiceInterface $linkHistoryService Link histories service instance
+     */
+    private $linkHistoryService = null;
+
+    /**
+     * @var UserServiceInterface $userService Users service instance
+     */
+    private $userService = null;
+
+    /**
+     * Initialize controller with dependencies
+     * 
+     * @param LinkServiceInterface $linkService Links service instance
+     * @param LinkHistoryServiceInterface $linkHistoryService Link histories service instance
+     * @param UserServiceInterface $userService Users service instance
+     */
+    public function __construct(LinkServiceInterface $linkService, LinkHistoryServiceInterface $linkHistoryService, UserServiceInterface $userService)
     {
         $this->middleware('role:admin');
-        $this->links_obj = $links_obj;
-        $this->links_hist_obj = $links_hist_obj;
-        $this->users_obj = $users_obj;
+        $this->linkService = $linkService;
+        $this->linkHistoryService = $linkHistoryService;
+        $this->userService = $userService;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        return view('admin.links.index')->with([
-            'links' => $this->links_obj->getLinksList(),
-        ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreRequest $request)
+    public function index(): View
     {
         try {
-            $validatedData = $request->validated();
-            $user_id = Auth::id();
-
-            if (!empty($validatedData['user_email'])) {
-                $user = $this->users_obj->getUserByEmail($validatedData['user_email']);
-                if (!$user) {
-                    return redirect()->back()->withErrors(['error' => 'User not found with this email']);
-                }
-                $user_id = $user->id;
-            }
-
-            $url = $validatedData['url'] ?? null;
-            $customName = $validatedData['custom_name'] ?? null;
-            $ip = $request->ip();
-
-            if (!$url) {
-                return redirect()->back()->withErrors(['error' => 'Invalid URL']);
-            }
-
-            $result = $this->links_obj->generateShortName($url, $customName, $user_id, $ip);
-
-            if (!is_null($result)) {
-                return redirect()->back()->with('success', 'Link successfully shortened');
-            }
-
-            return redirect()->back()->withErrors(['error' => 'An error occurred while shortening the link']);
+            return view('admin.links.index')->with([
+                'links' => $this->linkService->getLinksList() ?? [],
+            ]);
         } catch (Exception $e) {
-            $this->logError('Error in store method', $e);
-
-            return abort(500, 'An internal error occurred');
+            $this->logError('Error fetching links list', $e);
+            return view('admin.links.index')->with([
+                'links' => [],
+                'error' => 'Failed to load links. Please try again later.'
+            ]);
         }
     }
 
 
     /**
-     * Display the specified resource.
+     * Create a new shortened link
+     * 
+     * @param StoreRequest $request Validated request containing:
+     * - url: Original URL to shorten
+     * - custom_name: Optional custom short name
+     * - user_email: Optional user email to associate with link
+     * 
+     * @return \Illuminate\Http\RedirectResponse Redirects back with:
+     * - Success message if link was created
+     * - Error message if creation failed
+     * 
+     * @throws Exception Logs errors and returns error response if operation fails
      */
-    public function show(Request $request, string $id)
+    public function store(StoreRequest $request): RedirectResponse
     {
         try {
-            $data = [
-                'id' => $id,
-                'startDate' => $request->startDate,
-                'endDate' => $request->endDate,
-            ];
-            $validatedData = Validator::make($data, (new ShowRequest())->rules())->validate();
+            $validated = $request->validated();
 
-            $link_id = $validatedData['id'];
+            $userId = $this->resolveUserId($validated['user_email'] ?? null);
+
+            $result = $this->linkService->generateShortName(
+                $validated['url'],
+                $validated['custom_name'] ?? null,
+                $userId,
+                $request->ip()
+            );
+
+            if ($result === null) {
+                return redirect()->back()->withErrors(['error' => 'An error occurred while shortening the link']);
+            }
+
+            return redirect()->back()->with('success', 'Link successfully shortened');
+        } catch (Exception $e) {
+            $this->logError('Error in store method', $e);
+            return redirect()->back()->withErrors(['error' => 'An error occurred while shortening the link']);
+        }
+    }
+    private function resolveUserId(?string $email): int
+    {
+        if (!$email) {
+            return Auth::id();
+        }
+
+        $user = $this->userService->getUserByEmail($email);
+        if (!$user) {
+            throw new Exception('User not found with this email');
+        }
+
+        return $user->id;
+    }
+
+
+
+    /**
+     * Get link statistics and metrics
+     * 
+     * @param Request $request May contain:
+     * - startDate: Optional start date filter
+     * - endDate: Optional end date filter
+     * @param string $id Link ID to get stats for
+     * 
+     * @return \Illuminate\Http\JsonResponse Returns JSON with:
+     * - Link details
+     * - Click statistics
+     * - Geographic and device metrics
+     * 
+     * @throws \Exception Logs errors and returns error response if operation fails
+     */
+    public function show(ShowRequest $request): JsonResponse
+    {
+        $link_id = null;
+        $start_date = null;
+        $end_date = null;
+
+        try {
+            $validatedData = $request->validated();
+
+            $link_id = (int) $validatedData['id'];
             $start_date = $validatedData['startDate'] ?? null;
             $end_date = $validatedData['endDate'] ?? null;
+
+            $link = $this->linkHistoryService->getById($link_id);
+            if (!$link) {
+                return response()->json(['error' => 'Link not found'], 404);
+            }
 
             $metricsData = $this->getLinkMetrics($link_id, $start_date, $end_date);
 
@@ -114,7 +163,7 @@ class LinkController extends Controller
             $this->logError('Error fetching link statistics', $e, [
                 'link_id' => $link_id,
                 'start_date' => $start_date,
-                'end_date' => $end_date
+                'end_date' => $end_date,
             ]);
 
             return response()->json(['error' => 'An error occurred while processing your request.'], 500);
@@ -123,83 +172,95 @@ class LinkController extends Controller
 
     protected function getLinkMetrics(int $link_id, ?string $start_date, ?string $end_date): array
     {
+        $link = $this->linkHistoryService->getById($link_id);
+        if (!$link) {
+            throw new Exception("Link with id {$link_id} not found");
+        }
+
         return [
-            'link' => $this->links_hist_obj->getById($link_id),
-            'total_clicks_by_date' => $this->links_hist_obj->getTotalClicksByLinkId($link_id, $start_date, $end_date),
-            'total_unique_clicks_by_date' => $this->links_hist_obj->getUniqueIpsByLinkId($link_id, $start_date, $end_date),
-            'active_days' => $this->links_hist_obj->getDailyClicksByLinkId($link_id, $start_date, $end_date),
-            'active_hours' => $this->links_hist_obj->getHourlyClicksByLinkId($link_id, $start_date, $end_date),
-            'top_countries' => $this->links_hist_obj->getTopMetricsByLinkId($link_id, $start_date, $end_date, 'country_name'),
-            'top_devices' => $this->links_hist_obj->getTopMetricsByLinkId($link_id, $start_date, $end_date, 'os'),
-            'top_browsers' => $this->links_hist_obj->getTopMetricsByLinkId($link_id, $start_date, $end_date, 'browser'),
+            'link' => $link,
+            'total_clicks_by_date' => $this->linkHistoryService->getTotalClicksByLinkId($link_id, $start_date, $end_date),
+            'total_unique_clicks_by_date' => $this->linkHistoryService->getUniqueIpsByLinkId($link_id, $start_date, $end_date),
+            'active_days' => $this->linkHistoryService->getDailyClicksByLinkId($link_id, $start_date, $end_date),
+            'active_hours' => $this->linkHistoryService->getHourlyClicksByLinkId($link_id, $start_date, $end_date),
+            'top_countries' => $this->linkHistoryService->getTopMetricsByLinkId($link_id, $start_date, $end_date, 'country_name'),
+            'top_devices' => $this->linkHistoryService->getTopMetricsByLinkId($link_id, $start_date, $end_date, 'os'),
+            'top_browsers' => $this->linkHistoryService->getTopMetricsByLinkId($link_id, $start_date, $end_date, 'browser'),
         ];
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+
 
     /**
-     * Update the specified resource in storage.
+     * Update an existing link
+     * 
+     * @param Request $request Contains:
+     * - editURL: New destination URL
+     * - editCustomName: New custom short name
+     * - editStatus: New status
+     * @param string $id Link ID to update
+     * 
+     * @return \Illuminate\Http\RedirectResponse Redirects back with:
+     * - Success message if link was updated
+     * - Error message if update failed
+     * 
+     * @throws \Exception Logs errors and returns error response if operation fails
      */
-    /**
-     * Update an existing link.
-     *
-     * @param UpdateRequest $request The validated update request.
-     * @param string $id The ID of the link to update.
-     * @return RedirectResponse The response with success or error message.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateRequest $request): RedirectResponse
     {
         try {
-            $data = [
-                'id' => $id,
-                'url' => $request->editURL,
-                'custom_name' => $request->editCustomName,
-                'status' => $request->editStatus
-            ];
-            $validatedData = Validator::make($data, (new UpdateRequest())->rules())->validate();
+            $validatedData = $request->validated();
 
-            $result = $this->links_obj->updateLink(
+            $result = $this->linkService->updateLink(
                 $validatedData['custom_name'],
                 $validatedData['url'],
                 $validatedData['status'],
-                $id,
+                $validatedData['id']
             );
 
-            return $result
-                ? redirect()->back()->with('success', 'Link successfully updated')
-                : redirect()->back()->withErrors(['error' => 'An error occurred while updating the link']);
+            if ($result) {
+                return redirect()->back()->with('success', 'Link successfully updated');
+            }
+
+            return redirect()->back()->withErrors([
+                'update_error' => 'An error occurred while updating the link',
+            ]);
         } catch (Exception $e) {
-            $this->logError('Error in update method', $e, ['id' => $id]);
-            return abort(500, 'An internal error occurred');
+            $this->logError('Error in update method', $e);
+            return redirect()->back()->withErrors([
+                'update_error' => 'An internal server error occurred. Please try again later.',
+            ]);
         }
     }
 
 
+
     /**
-     * Remove the specified resource from storage.
+     * Delete a link and its click history
+     * 
+     * @param string $id Link ID to delete
+     * 
+     * @return \Illuminate\Http\RedirectResponse Redirects back with:
+     * - Success message if link was deleted
+     * - Error message if deletion failed
+     * 
+     * @throws \Exception Logs errors and returns error response if operation fails
      */
-    public function destroy(string $id)
+    public function destroy(DestroyRequest $request): RedirectResponse
     {
         try {
-            $data = [
-                'id' => $id,
-            ];
-            $validatedData = Validator::make($data, (new DestroyRequest())->rules())->validate();
-            $result = $this->links_obj->destroyLink($validatedData['id']);
-            if (!is_null($result)) {
-                return redirect()->back()->with('success', 'Link and histories successfuly deleted');
-            } else {
-                return redirect()->back()->withErrors(['error' => 'An error occurred while deleting the link']);
+            $validatedData = $request->validated();
+
+            $result = $this->linkService->destroyLink($validatedData['id']);
+
+            if ($result === true) {
+                return redirect()->back()->with('success', 'Link and histories successfully deleted');
             }
-        } catch (Exception $e) {
-            $this->logError("Error deleting link", $e);
+
             return redirect()->back()->withErrors(['error' => 'An error occurred while deleting the link']);
+        } catch (Exception $e) {
+            $this->logError('Error deleting link', $e);
+            return redirect()->back()->withErrors(['error' => 'An internal server error occurred. Please try again later.']);
         }
     }
 }

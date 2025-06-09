@@ -1,3 +1,25 @@
+/**
+ * Admin Links Management Module
+ * 
+ * Handles link management functionality in admin panel including:
+ * - Links DataTable initialization
+ * - Link statistics visualization (charts and metrics)
+ * - Link editing and deletion
+ * - Detailed analytics for each link
+ * 
+ * Features:
+ * - Interactive charts for click activity (daily/hourly)
+ * - Geographic and device breakdowns
+ * - Bulk operations
+ * - Clipboard functionality
+ * - Date range filtering
+ * 
+ * Dependencies:
+ * - jQuery
+ * - DataTables
+ * - Chart.js
+ * - Bootstrap modals
+ */
 Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.color = "#6c757d";
 Chart.defaults.borderColor = "rgba(0, 0, 0, 0.05)";
@@ -7,7 +29,7 @@ $(document).ready(function () {
         responsive: true,
         lengthChange: false,
         autoWidth: true,
-        searching: false,
+        searching: true,
         paging: true,
         ordering: true,
         info: false,
@@ -391,9 +413,10 @@ function updateStatTextBlock(data) {
         data.link.domain.name.toString() + "/" + data.link.short_name.toString()
     );
     $("#statCreatedAt").text(new Date(data.link.created_at).toLocaleDateString("en-UK"));
-    if(data.link.available){
-        $("#statStatus").text('Active') ;
-    }else $("#statStatus").text("Inactive");
+    $("#statIPAddress").text((data.link.ip_address).toString() ?? "No data");
+    if (data.link.available) {
+        $("#statStatus").text('Active');
+    } else $("#statStatus").text("Inactive");
     $("#statTotalClicks").text(data.total_clicks_by_date ?? 0);
     $("#statTotalUniqueClicks").text(data.total_unique_clicks_by_date ?? 0);
     $("#statTopCountry").text(
@@ -426,12 +449,13 @@ $(".edit-link").on("click", function () {
     const link_id = $(this).data("id");
     const custom_name = $(this).data("name");
     const url = $(this).data("url");
+    const formUrl = $(this).data("form-url");
     const status = $(this).data("status");
     $("#editLinkId").val(link_id);
     $("#editCustomName").val(custom_name);
     $("#editURL").val(url);
     $("#editStatus").val(status);
-    $("#editLinkForm").attr("action", "/admin/links/" + link_id.toString());
+    $("#editLinkForm").attr("action", formUrl);
     $("#editLinkModal").modal("show");
 });
 
