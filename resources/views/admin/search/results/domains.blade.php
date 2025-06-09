@@ -47,6 +47,11 @@
         <div class="domain-header">
             <h2 class="block-title">Search results for domains</h2>
         </div>
+        <div class="search-query-badge">
+            <span class="badge bg-light text-dark fs-6 p-2 border">
+                <i class="bi bi-search me-2"></i>"{{ $query }}"
+            </span>
+        </div>
         <table id="manageDomainsTable" class="table table-hover table-striped"
             style="border-collapse: separate; border-spacing: 0 1rem;">
             <thead class="bg-light">

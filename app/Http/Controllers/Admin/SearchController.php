@@ -104,8 +104,7 @@ class SearchController extends Controller
             $validatedData = $request->validated();
 
             $results = $this->domainService->searchDomains($validatedData['query'], false);
-
-            return view('search.results.domains')->with([
+            return view('admin.search.results.domains')->with([
                 'results' => $results ?? [],
                 'query' => $validatedData['query']
             ]);
@@ -195,7 +194,6 @@ class SearchController extends Controller
             $validatedData = $request->validated();
 
             $results = $this->linkService->searchByDomainId($validatedData['id']);
-
             return view('admin.search.results.links')->with([
                 'results' => $results ?? [],
                 'query' => $validatedData['id']
