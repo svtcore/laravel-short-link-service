@@ -1,4 +1,7 @@
-/* Settings Cards */
+/* ======================
+   SETTINGS CARD STYLES
+   ====================== */
+
 .settings-card {
     background-color: #fff;
     border-radius: 8px;
@@ -21,7 +24,10 @@
     margin-bottom: 20px;
 }
 
-/* Form Elements */
+/* ======================
+   FORM ELEMENT STYLES
+   ====================== */
+
 .settings-form .form-control,
 .settings-form .form-select {
     border: 1px solid rgba(100, 181, 246, 0.3);
@@ -36,7 +42,10 @@
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-/* Buttons */
+/* ======================
+   BUTTON STYLES
+   ====================== */
+
 .settings-form .btn {
     border-radius: 8px;
     font-weight: 500;
@@ -59,7 +68,10 @@
     transform: translateY(-1px);
 }
 
-/* Password Toggle */
+/* ======================
+   PASSWORD TOGGLE STYLES
+   ====================== */
+
 .toggle-password {
     align-items: center;
     background: transparent;
@@ -85,7 +97,10 @@
     box-shadow: none;
 }
 
-/* Input Group */
+/* ======================
+   INPUT GROUP STYLES
+   ====================== */
+
 .input-group {
     position: relative;
 }
@@ -95,7 +110,11 @@
     padding-right: 2.5rem !important;
 }
 
-/* Media Queries for Responsive Design */
+/* ======================
+   RESPONSIVE ADJUSTMENTS
+   ====================== */
+
+/* Tablet Breakpoint */
 @media (max-width: 768px) {
     .settings-card {
         padding: 15px;
@@ -115,6 +134,7 @@
     }
 }
 
+/* Mobile Breakpoint */
 @media (max-width: 480px) {
     .settings-card {
         margin-bottom: 15px;

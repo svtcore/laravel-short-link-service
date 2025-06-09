@@ -1,3 +1,6 @@
+/* ======================
+   DOMAINS CONTAINER STYLES
+   ====================== */
 .domains-container {
     background: white;
     border-radius: 0.75rem;
@@ -23,7 +26,9 @@
     position: relative;
 }
 
-/* Buttons */
+/* ======================
+   BUTTON STYLES
+   ====================== */
 .add-domain-btn {
     background: #3061ca;
     color: white;
@@ -73,7 +78,9 @@
     background: #df3939;
 }
 
-/* Table Styles */
+/* ======================
+   TABLE STYLES
+   ====================== */
 #manageDomainsTable td, #manageDomainsTable th {
     padding: 0.75rem;
 }
@@ -99,19 +106,9 @@
     padding-right: 1rem;
 }
 
-@media (max-width: 768px) {
-    #domainsTable {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-    
-    .domain-column {
-        max-width: 12.5rem;
-    }
-}
-
-/* Modal Styles */
+/* ======================
+   MODAL STYLES
+   ====================== */
 .modal-content {
     border: none;
 }
@@ -126,7 +123,11 @@
     color: #333;
 }
 
-/* Media Queries */
+/* ======================
+   RESPONSIVE ADJUSTMENTS
+   ====================== */
+
+/* Large Tablet Breakpoint */
 @media (max-width: 1024px) {
     .domains-container {
         padding: 1.5rem;
@@ -143,7 +144,14 @@
     }
 }
 
+/* Tablet Breakpoint */
 @media (max-width: 768px) {
+    #domainsTable {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
     .domains-container {
         padding: 1rem;
     }
@@ -173,6 +181,7 @@
     }
 }
 
+/* Mobile Breakpoint */
 @media (max-width: 480px) {
     .domains-container {
         padding: 0.75rem;

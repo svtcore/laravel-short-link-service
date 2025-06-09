@@ -1,3 +1,6 @@
+/* ======================
+   USER CONTAINER STYLES
+   ====================== */
 .user-container {
     background: white;
     border-radius: 12px;
@@ -13,7 +16,9 @@
     margin-bottom: 24px;
 }
 
-/* Buttons */
+/* ======================
+   BUTTON STYLES
+   ====================== */
 .modal-user-submit-btn,
 .modal-link-submit-btn {
     background: #3061ca;
@@ -50,7 +55,9 @@
     background: #df3939;
 }
 
-/* Chart Cards */
+/* ======================
+   CHART CARD STYLES
+   ====================== */
 .chart-card {
     backdrop-filter: blur(8px);
     background: rgba(255, 255, 255, 0.98);
@@ -87,7 +94,9 @@
     transform: translateY(-3px);
 }
 
-/* Date Filters */
+/* ======================
+   DATE FILTER STYLES
+   ====================== */
 .date-filters {
     margin-bottom: 2rem;
 }
@@ -114,7 +123,9 @@
     border-color: #80bdff;
 }
 
-/* Statistics */
+/* ======================
+   STATISTICS STYLES
+   ====================== */
 .statistics-container {
     background: #ffffff;
     padding: 24px;
@@ -170,7 +181,9 @@
     margin-right: 10px;
 }
 
-/* Text Truncate */
+/* ======================
+   TEXT TRUNCATE STYLES
+   ====================== */
 .text-truncate {
     max-width: 250px;
     white-space: nowrap;
@@ -178,7 +191,9 @@
     text-overflow: ellipsis;
 }
 
-/* Animations */
+/* ======================
+   ANIMATION STYLES
+   ====================== */
 @keyframes chart-appear {
     from {
         opacity: 0;
@@ -194,7 +209,9 @@
     animation: chart-appear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Media Queries */
+/* ======================
+   MEDIA QUERIES
+   ====================== */
 @media (max-width: 1024px) {
     .user-container {
         padding: 24px;

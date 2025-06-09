@@ -1,3 +1,8 @@
+/* ======================
+   DASHBOARD COMPONENTS
+   ====================== */
+
+/* Result Block (hidden by default) */
 #result-block {
     display: none;
     margin: auto;
@@ -5,6 +10,7 @@
     width: 100%;
 }
 
+/* Disabled Button State */
 #shorten-btn:disabled {
     background-color: rgb(247,184,48);
     border-color: rgb(247,184,48);
@@ -12,6 +18,7 @@
     cursor: not-allowed;
 }
 
+/* Chart Card Styling */
 .chart-card {
     backdrop-filter: blur(8px);
     background: rgba(255,255,255,0.98);
@@ -48,6 +55,11 @@
     transform: translateY(-3px);
 }
 
+/* ======================
+   BUTTONS & EMPTY STATES
+   ====================== */
+
+/* Copy Button Styling */
 .copy-btn {
     background-color: #333;
     border-radius: 20px;
@@ -67,6 +79,7 @@
     background-color: #555;
 }
 
+/* Empty State Icons */
 .empty-links-icon,
 .empty-stats-icon {
     animation: pulse 2s infinite;
@@ -74,6 +87,7 @@
     opacity: 0.8;
 }
 
+/* Empty State Placeholders */
 .empty-links-placeholder,
 .empty-stats-card {
     animation: fadeInBounce 0.6s ease-in-out;
@@ -84,6 +98,11 @@
     padding: 2.5rem !important;
 }
 
+/* ======================
+   INPUT & RESULT STYLES
+   ====================== */
+
+/* Custom Input Group */
 .input-group-custom {
     margin: 30px auto 0;
     max-width: 600px;
@@ -119,6 +138,7 @@
     box-shadow: 0 4px 10px rgba(0,123,255,0.2);
 }
 
+/* Result Container */
 .result-container {
     align-items: center;
     background: linear-gradient(to right,#bbcdf3,#d8d9fa);
@@ -140,6 +160,11 @@
     word-wrap: break-word;
 }
 
+/* ======================
+   STAT CARDS & ANIMATIONS
+   ====================== */
+
+/* Stat Card Styling */
 .stat-card {
     background: rgba(255,255,255,0.95);
     border-radius: 16px;
@@ -165,11 +190,12 @@
     transform: translateY(-5px);
 }
 
+/* Chart Render Animation */
 .chartjs-render-monitor {
     animation: chart-appear 0.6s cubic-bezier(0.34,1.56,0.64,1);
 }
 
-/* Animations */
+/* Animation Keyframes */
 @keyframes chart-appear {
     from {
         opacity: 0;
@@ -206,7 +232,11 @@
     }
 }
 
-/* Media Queries */
+/* ======================
+   RESPONSIVE ADJUSTMENTS
+   ====================== */
+
+/* Tablet Landscape */
 @media (max-width: 1024px) {
     .input-group-custom {
         max-width: 500px;
@@ -222,6 +252,7 @@
     }
 }
 
+/* Tablet Portrait */
 @media (max-width: 768px) {
     .input-group-custom {
         max-width: 400px;
@@ -251,6 +282,7 @@
     }
 }
 
+/* Mobile */
 @media (max-width: 480px) {
     .input-group-custom {
         max-width: 300px;
@@ -280,7 +312,10 @@
     }
 }
 
-/* Top Links Styles */
+/* ======================
+   TOP LINKS SECTION
+   ====================== */
+
 .top-links-list {
     display: flex;
     flex-direction: column;

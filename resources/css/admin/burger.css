@@ -1,3 +1,8 @@
+/* ======================
+   MOBILE MENU STYLES
+   ====================== */
+
+/* Burger Menu Button */
 .burger-menu {
     display: none;
     cursor: pointer;
@@ -8,6 +13,7 @@
     position: relative;
 }
 
+/* Sidebar Overlay */
 .sidebar-overlay {
     display: none;
     position: fixed;
@@ -19,11 +25,17 @@
     z-index: 999;
 }
 
+/* ======================
+   RESPONSIVE ADJUSTMENTS
+   ====================== */
+
 @media (max-width: 992px) {
+    /* Burger Menu Visibility */
     .burger-menu {
         display: block;
     }
     
+    /* Sidebar Positioning */
     .sidebar {
         transform: translateX(-100%);
         transition: transform 0.3s ease;
@@ -37,10 +49,12 @@
         box-shadow: 2px 0 10px rgba(0,0,0,0.1);
     }
     
+    /* Active Sidebar State */
     .sidebar.active {
         transform: translateX(0);
     }
     
+    /* Overlay Visibility */
     .sidebar.active + .sidebar-overlay {
         display: block;
     }

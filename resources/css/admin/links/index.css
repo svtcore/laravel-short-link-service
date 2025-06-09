@@ -1,3 +1,6 @@
+/* ======================
+   LINKS CONTAINER STYLES
+   ====================== */
 .links-container {
     background: white;
     border-radius: 12px;
@@ -23,9 +26,10 @@
     position: relative;
 }
 
-/* Buttons */
-
-.add-link-btn{
+/* ======================
+   BUTTON STYLES
+   ====================== */
+.add-link-btn {
     background: #3061ca;
     color: white;
     border-radius: 0.5rem;
@@ -73,7 +77,9 @@
     background: #df3939;
 }
 
-/* Table Styles */
+/* ======================
+   TABLE STYLES
+   ====================== */
 #linksTable td, #linksTable th {
     padding: 0.75rem;
 }
@@ -99,7 +105,9 @@
     padding-right: 16px;
 }
 
-/* Modal Styles */
+/* ======================
+   MODAL STYLES
+   ====================== */
 .modal-content {
     border: none;
 }
@@ -114,7 +122,9 @@
     color: #333;
 }
 
-/* Input Groups */
+/* ======================
+   INPUT GROUP STYLES
+   ====================== */
 .input-group-custom .input-group-text {
     font-weight: 500;
     border-right: 0;
@@ -128,7 +138,9 @@
     box-shadow: none;
 }
 
-/* Chart Styles */
+/* ======================
+   CHART STYLES
+   ====================== */
 .chart-wrapper {
     position: relative;
     margin: auto;
@@ -174,7 +186,9 @@
     transform: translateY(-3px);
 }
 
-/* Animations */
+/* ======================
+   ANIMATION STYLES
+   ====================== */
 @keyframes chart-appear {
     from {
         opacity: 0;
@@ -190,7 +204,9 @@
     animation: chart-appear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Date Filters */
+/* ======================
+   DATE FILTER STYLES
+   ====================== */
 .date-filters {
     margin-bottom: 2rem;
 }
@@ -217,7 +233,9 @@
     border-color: #80bdff;
 }
 
-/* Statistics */
+/* ======================
+   STATISTICS STYLES
+   ====================== */
 .statistics-container {
     background: #ffffff;
     padding: 24px;
@@ -280,7 +298,9 @@
     text-overflow: ellipsis;
 }
 
-/* Media Queries */
+/* ======================
+   MEDIA QUERIES
+   ====================== */
 @media (max-width: 1024px) {
     .links-container {
         padding: 24px;
@@ -314,12 +334,16 @@
         display: none !important;
     }
     
-    .add-link-btn,
     .modal-link-submit-btn,
     .modal-link-cancel-btn,
     .modal-link-delete-btn {
         padding: 8px 16px;
         font-size: 14px;
+    }
+
+    .add-link-btn{
+        width: 100%;
+        padding: 0.5rem 1rem;
     }
 }
 

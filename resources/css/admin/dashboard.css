@@ -311,8 +311,7 @@
 
     .chart-last-container {
         flex: 0 0 auto;
-        width: 90%;
-        margin-right: 16px;
+        width: 100%;
     }
 
     .full-width-chart {
@@ -353,7 +352,7 @@
     }
 
     .chart-last-container {
-        width: 85%;
+        width: 100%;
     }
 
     .chart-block-title {

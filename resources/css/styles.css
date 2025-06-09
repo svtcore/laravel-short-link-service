@@ -1,10 +1,17 @@
+/* ======================
+   GLOBAL VARIABLES
+   ====================== */
 :root {
-    --accent: #f7b830;
-    --light: #f8f9fa;
-    --primary: #007bff;
-    --secondary: #64b5f6;
+    --accent: #f7b830;       /* Accent color for highlights */
+    --light: #f8f9fa;        /* Light background color */
+    --primary: #007bff;      /* Main brand color */
+    --secondary: #64b5f6;    /* Secondary brand color */
 }
 
+/* ======================
+   BUTTON STYLES
+   ====================== */
+/* Primary button style */
 .btn-custom {
     background: var(--secondary);
     border-radius: 50px;
@@ -21,6 +28,7 @@
     transform: translateY(-1px);
 }
 
+/* Outline button style */
 .btn-outline-custom {
     border-radius: 50px;
     border: 2px solid var(--secondary);
@@ -38,33 +46,9 @@
     transform: translateY(-1px);
 }
 
-.footer {
-    border-top: 1px solid rgb(182,182,182);
-    padding: 2rem 0;
-}
-
-.footer .nav {
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.hero-section {
-    background: linear-gradient(135deg, var(--primary) 0%, #0063cc 100%);
-    clip-path: ellipse(120% 100% at 50% 0%);
-    color: white;
-    padding: 80px 0 120px;
-}
-
-.nav-item form .btn {
-    color: var(--secondary);
-    font-weight: 600;
-    transition: color 0.3s ease;
-}
-
-.nav-item form .btn:hover {
-    color: #42a5f5;
-}
-
+/* ======================
+   NAVIGATION
+   ====================== */
 .navbar {
     box-shadow: 0 2px 15px rgba(0,0,0,0.05);
     padding: 1rem 0;
@@ -74,6 +58,7 @@
     align-items: center;
 }
 
+/* Nav link with animated underline */
 .navbar-nav .nav-link {
     margin: 0 15px;
     padding: 8px 0;
@@ -95,7 +80,44 @@
     width: 100%;
 }
 
-/* Media Queries */
+/* Form buttons in nav */
+.nav-item form .btn {
+    color: var(--secondary);
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.nav-item form .btn:hover {
+    color: #42a5f5;
+}
+
+/* ======================
+   HERO SECTION
+   ====================== */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary) 0%, #0063cc 100%);
+    clip-path: ellipse(120% 100% at 50% 0%);
+    color: white;
+    padding: 80px 0 120px;
+}
+
+/* ======================
+   FOOTER
+   ====================== */
+.footer {
+    border-top: 1px solid rgb(182,182,182);
+    padding: 2rem 0;
+}
+
+.footer .nav {
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ======================
+   RESPONSIVE ADJUSTMENTS
+   ====================== */
+/* Tablet and below */
 @media (max-width: 991.98px) {
     .btn-custom, .btn-outline-custom {
         margin: 10px 0;
@@ -108,6 +130,7 @@
     }
 }
 
+/* Small tablets */
 @media (max-width: 768px) {
     .hero-section {
         clip-path: ellipse(150% 100% at 50% 0%);
@@ -123,6 +146,7 @@
     }
 }
 
+/* Mobile phones */
 @media (max-width: 480px) {
     .hero-section {
         clip-path: ellipse(180% 100% at 50% 0%);
