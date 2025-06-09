@@ -38,14 +38,29 @@ class SettingController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display admin settings page
+     *
+     * @return \Illuminate\View\View Returns settings view
      */
-    public function index()
+    public function index(): View
     {
         return view('admin.settings.index');
     }
 
 
+    /**
+     * Toggle maintenance mode status
+     *
+     * @param MaintenanceModeRequest $request Validated request containing:
+     * - status: Boolean indicating whether to activate maintenance mode
+     * 
+     * @return \Illuminate\Http\JsonResponse Returns JSON with:
+     * - success: Boolean indicating operation status
+     * - message: Status message
+     * - secret: Maintenance mode secret (when activating)
+     * 
+     * @throws \Exception Logs errors and returns error response
+     */
     public function maintenanceMode(MaintenanceModeRequest $request): JsonResponse
     {
         $validated = $request->validated();

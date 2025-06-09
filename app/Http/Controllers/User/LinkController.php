@@ -47,6 +47,15 @@ class LinkController extends Controller
     }
 
 
+    /**
+     * Display list of user's links with statistics
+     *
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse Returns:
+     * - View with links data if successful
+     * - Redirect back with error message on failure
+     *
+     * @throws \Exception Logs errors and returns error response
+     */
     public function index()
     {
         try {

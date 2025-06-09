@@ -36,6 +36,15 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
         }
     }
 
+    /**
+     * Get total clicks count for a specific link within a date range.
+     *
+     * @param int $link_id The ID of the link to count clicks for
+     * @param string|null $startDate Start date in Y-m-d format (inclusive)
+     * @param string|null $endDate End date in Y-m-d format (inclusive)
+     * @return int|null Total clicks count or null on error
+     * @throws Exception On database query failure
+     */
     public function getTotalClicksByLinkId(int $link_id, ?string $startDate, ?string $endDate): ?int
     {
         try {
@@ -51,6 +60,15 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
         }
     }
 
+    /**
+     * Get count of unique IP addresses that clicked a specific link within a date range.
+     *
+     * @param int $link_id The ID of the link to analyze
+     * @param string|null $startDate Start date in Y-m-d format (inclusive)
+     * @param string|null $endDate End date in Y-m-d format (inclusive)
+     * @return int|null Count of unique IPs or null on error
+     * @throws Exception On database query failure
+     */
     public function getUniqueIpsByLinkId(int $link_id, ?string $startDate, ?string $endDate): ?int
     {
         try {
@@ -451,6 +469,24 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
      * @return array|null The destination URL in the form of an associative array with the key 'link', 
      *         or null if the link could not be found or analytics data is missing.
      */
+    /**
+     * Track and collect analytics data from user request.
+     *
+     * Extracts browser, platform, device and country information from tracking data.
+     *
+     * @param array $trackingData {
+     *     @var string $ip User IP address
+     *     @var string $user-agent User agent string
+     * }
+     * @return array Analytics data including:
+     *               - country_name
+     *               - browser
+     *               - platform
+     *               - device
+     *               - ip_address
+     *               - user_agent
+     * @throws Exception On analytics processing failure
+     */
     private function trackAnalytics(array $trackingData): array
     {
         try {
@@ -540,7 +576,14 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
     }
 
 
-    private function getCountryName($ip)
+    /**
+     * Get country name from IP address using external API.
+     *
+     * @param string $ip IP address to lookup
+     * @return string Country name or 'Unknown'/'Other' on failure
+     * @throws Exception On API request failure
+     */
+    private function getCountryName(string $ip): string
     {
         $test_ip = "195.1.1.1";
         $response = Http::get("http://ipinfo.io/" . $test_ip . "/json");

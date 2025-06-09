@@ -53,6 +53,15 @@ class LinkController extends Controller
         $this->userService = $userService;
     }
 
+    /**
+     * Display list of all links with statistics
+     *
+     * @return \Illuminate\View\View Returns:
+     * - View with links data if successful
+     * - View with error message if fails
+     *
+     * @throws \Exception Logs errors and returns error view
+     */
     public function index(): View
     {
         try {

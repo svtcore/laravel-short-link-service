@@ -68,6 +68,16 @@ class UserController extends Controller
     }
 
 
+    /**
+     * Display user profile with links
+     *
+     * @param ShowRequest $request Validated request containing user ID
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse Returns:
+     * - View with user data and links if successful
+     * - Redirect with error if fails
+     *
+     * @throws \Exception Logs errors and returns error response
+     */
     public function show(ShowRequest $request): RedirectResponse|View
     {
         try {
@@ -84,6 +94,17 @@ class UserController extends Controller
     }
 
 
+    /**
+     * Update user information
+     *
+     * @param UpdateRequest $request Validated request with user data
+     * @param string $id User ID to update
+     * @return \Illuminate\Http\RedirectResponse Returns:
+     * - Redirect with success message if updated
+     * - Redirect with error if fails
+     *
+     * @throws \Exception Logs errors and returns error response
+     */
     public function update(UpdateRequest $request, string $id): RedirectResponse
     {
         try {
@@ -123,6 +144,14 @@ class UserController extends Controller
     }
 
 
+    /**
+     * Ban user account
+     *
+     * @param SetStatusRequest $request Validated request with user ID
+     * @return \Illuminate\Http\RedirectResponse Returns:
+     * - Redirect with success message if banned
+     * - Redirect with error if fails
+     */
     public function ban(SetStatusRequest $request): RedirectResponse
     {
         $validatedData = $request->validated();
@@ -134,6 +163,14 @@ class UserController extends Controller
         );
     }
 
+    /**
+     * Activate user account (unban/unfreeze)
+     *
+     * @param SetStatusRequest $request Validated request with user ID
+     * @return \Illuminate\Http\RedirectResponse Returns:
+     * - Redirect with success message if activated
+     * - Redirect with error if fails
+     */
     public function active(SetStatusRequest $request): RedirectResponse
     {
         $validatedData = $request->validated();
@@ -145,6 +182,14 @@ class UserController extends Controller
         );
     }
 
+    /**
+     * Freeze user account
+     *
+     * @param SetStatusRequest $request Validated request with user ID
+     * @return \Illuminate\Http\RedirectResponse Returns:
+     * - Redirect with success message if frozen
+     * - Redirect with error if fails
+     */
     public function freeze(SetStatusRequest $request): RedirectResponse
     {
         $validatedData = $request->validated();
@@ -175,6 +220,16 @@ class UserController extends Controller
 
 
 
+    /**
+     * Update admin profile information
+     *
+     * @param UpdateProfileRequest $request Validated request with profile data
+     * @return \Illuminate\Http\RedirectResponse Returns:
+     * - Redirect with success message if updated
+     * - Redirect with error if fails
+     *
+     * @throws \Exception Logs errors and returns error response
+     */
     public function updateProfile(UpdateProfileRequest $request): RedirectResponse
     {
         try {
@@ -198,6 +253,16 @@ class UserController extends Controller
     }
 
 
+    /**
+     * Update admin password
+     *
+     * @param UpdatePasswordRequest $request Validated request with new password
+     * @return \Illuminate\Http\RedirectResponse Returns:
+     * - Redirect with success message if updated
+     * - Redirect with error if fails
+     *
+     * @throws \Exception Logs errors and returns error response
+     */
     public function updatePassword(UpdatePasswordRequest $request): RedirectResponse
     {
         try {

@@ -331,6 +331,20 @@ class LinkService extends DomainService implements LinkServiceInterface
             ->first();
     }
 
+    /**
+     * Retrieve a paginated list of links with statistics.
+     *
+     * Returns the most recent 50 links with their domains, user info,
+     * total clicks count and unique IP clicks count.
+     *
+     * @return iterable|null Collection of Link models with:
+     *                       - domain relation
+     *                       - user relation  
+     *                       - link_histories_count
+     *                       - unique_ip_count
+     *                       Or null on error
+     * @throws Exception On database query failure
+     */
     public function getLinksList(): ?iterable
     {
         try {
@@ -354,6 +368,22 @@ class LinkService extends DomainService implements LinkServiceInterface
         }
     }
 
+    /**
+     * Search links by various criteria with optional count-only mode.
+     *
+     * Searches by:
+     * - Destination URL
+     * - Short name
+     * - Domain name
+     * - Combined domain+path (if URL format detected)
+     *
+     * @param string $query Search term (can be full URL or part)
+     * @param bool $count If true, returns only count of matches
+     * @return mixed Collection of Link models if $count=false,
+     *               integer count if $count=true,
+     *               null on error
+     * @throws Exception On database query failure
+     */
     public function searchLinks(string $query, bool $count): mixed
     {
         try {
@@ -396,6 +426,14 @@ class LinkService extends DomainService implements LinkServiceInterface
         }
     }
 
+    /**
+     * Retrieve all links for a specific domain ID.
+     *
+     * @param int $id Domain ID to search by
+     * @return iterable|null Collection of Link models with click counts,
+     *                       or null if no matches/error
+     * @throws Exception On database query failure
+     */
     public function searchByDomainId(int $id): ?iterable
     {
         try {
@@ -410,6 +448,14 @@ class LinkService extends DomainService implements LinkServiceInterface
         }
     }
 
+    /**
+     * Find links created from a specific IP address.
+     *
+     * @param string $ip IP address to search by
+     * @return iterable|null Collection of Link models with click counts,
+     *                       or null if no matches/error
+     * @throws Exception On database query failure
+     */
     public function searchByUserIP(string $ip): ?iterable
     {
         try {
