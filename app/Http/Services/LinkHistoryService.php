@@ -492,7 +492,7 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
         try {
             $agent = new Agent();
             $ip = $trackingData['ip'];
-            $user_agent = $trackingData['user-agent'];
+            $user_agent = $trackingData['user_agent'];
 
             $agent->setUserAgent($user_agent);
 
@@ -530,7 +530,7 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
             $ip = $data['ip'];
             $domain = $data['host'];
             $short_name = $data['path'];
-            $user_agent = $data['user-agent'];
+            $user_agent = $data['user_agent'];
 
             $analytics_data = $this->trackAnalytics($data);
 
@@ -585,8 +585,8 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
      */
     private function getCountryName(string $ip): string
     {
-        $test_ip = "195.1.1.1";
-        $response = Http::get("http://ipinfo.io/" . $test_ip . "/json");
+        #$ip = "195.1.1.1"; //test on localhost
+        $response = Http::get("http://ipinfo.io/" . $ip . "/json");
 
         if ($response->successful()) {
             $data = $response->json();

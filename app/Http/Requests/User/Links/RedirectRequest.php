@@ -30,10 +30,11 @@ class RedirectRequest extends FormRequest
             'path' => [
                 'nullable',
                 'string',
-                'size:7',
+                'min:3',
+                'max:255',
                 'regex:/^[a-zA-Z0-9]+$/',
             ],
-            'user-agent' => [
+            'user_agent' => [
                 'required',
                 'string',
                 'max:500',
@@ -44,5 +45,15 @@ class RedirectRequest extends FormRequest
                 'ip',
             ],
         ];
+    }
+
+    public function validationData(): array
+    {
+        return array_merge($this->all(), [
+            'host' => $this->getHost(),
+            'path' => ltrim($this->path(), '/'),
+            'user_agent' => $this->userAgent(),
+            'ip' => $this->ip(),
+        ]);
     }
 }

@@ -374,20 +374,15 @@ class LinkController extends Controller
     public function redirect(RedirectRequest $request): mixed
     {
         try {
-            $data = [
-                'host' => $request->getHost(),
-                'path' => ltrim($request->path(), '/'),
-                'user_agent' => $request->userAgent(),
-                'ip' => $request->ip(),
-            ];
+            $validated = $request->validated();
 
-            $result = $this->linkHistoryService->processRedirect($data);
+            $result = $this->linkHistoryService->processRedirect($validated);
 
-            if (empty($result['url'])) {
+            if (empty($result['link'])) {
                 throw new Exception('Destination URL not found');
             }
 
-            return redirect()->away($result['url']);
+            return redirect()->away($result['link']);
 
         } catch (NotFoundHttpException $e) {
             abort(404, 'Link not found or expired');
