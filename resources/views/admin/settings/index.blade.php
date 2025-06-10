@@ -52,13 +52,14 @@
                         <div class="mb-3">
                             <label for="name" class="form-label">Full Name</label>
                             <input type="text" class="form-control" id="name" name="name" value="{{ auth()->user()->name }}"
-                                required>
+                                required maxlength="255" pattern="^[a-zA-Z0-9_\- ]+$" 
+                                title="Only letters, numbers, spaces, hyphens and underscores are allowed">
                         </div>
 
                         <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
                             <input type="email" class="form-control" id="email" name="email"
-                                value="{{ auth()->user()->email }}" required>
+                                value="{{ auth()->user()->email }}" required maxlength="255">
                         </div>
 
                         <button type="submit" class="btn btn-primary">
@@ -76,7 +77,8 @@
                         <div class="mb-3">
                             <label for="current_password" class="form-label">Current Password</label>
                             <div class="input-group">
-                                <input type="password" class="form-control" id="password" name="password" required>
+                                <input type="password" class="form-control" id="password" name="password" 
+                                    required maxlength="255">
                                 <button class="toggle-password" type="button"
                                     style="position: absolute; right: 0; top: 0; height: 100%; width: 2.5rem; border: none; background: transparent; color: #6c757d; outline: none;">
                                     <i class="bi bi-eye"></i>
@@ -110,7 +112,7 @@
                             <label for="new_password_confirmation" class="form-label">Confirm New Password</label>
                             <div class="input-group">
                                 <input type="password" class="form-control" id="new_password_confirmation"
-                                    name="new_password_confirmation" required>
+                                    name="new_password_confirmation" required maxlength="255">
                                 <button class="toggle-password" type="button"
                                     style="position: absolute; right: 0; top: 0; height: 100%; width: 2.5rem; border: none; background: transparent; color: #6c757d; outline: none;">
                                     <i class="bi bi-eye"></i>
@@ -131,7 +133,7 @@
                     <h3><i class="bi bi-globe"></i> Site Settings</h3>
                     <div class="mb-3">
                         <label for="maintenance_mode" class="form-label">Maintenance Mode</label>
-                        <select class="form-select" id="maintenance_mode" name="maintenance_mode"
+                        <select class="form-select" id="maintenance_mode" name="maintenance_mode" required
                             data-url="{{ route('admin.settings.maintenance') }}">
                             <option value="0" {{ !app()->isDownForMaintenance() ? 'selected' : '' }}>Disabled</option>
                             <option value="1" {{ app()->isDownForMaintenance() ? 'selected' : '' }}>Enabled</option>

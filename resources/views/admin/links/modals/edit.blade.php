@@ -14,8 +14,12 @@
 
                     <div class="mb-3">
                         <label for="edit_custom_name" class="form-label">Custom name</label>
-                        <input type="text" class="form-control" id="editCustomName" name="editCustomName" minlength="3" maxlength="50">
-                        <div class="invalid-feedback">Custom name must be between 3 and 50 characters, using only letters, numbers, and dashes.</div>
+                        <input type="text" class="form-control" id="editCustomName" name="editCustomName" 
+                            minlength="3"
+                            maxlength="255"
+                            pattern="^[a-zA-Z0-9_\- ]+$"
+                            title="Only letters, numbers, spaces, underscores and dashes are allowed">
+                        <div class="invalid-feedback">Custom name must be between 3 and 255 characters, using only letters, numbers, spaces, underscores and dashes.</div>
                     </div>
 
                     <div class="mb-3">

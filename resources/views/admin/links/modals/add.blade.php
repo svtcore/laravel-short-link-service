@@ -7,12 +7,16 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="addLinkForm" action="{{ route('admin.links.store') }}" method="POST" novalidate>
+                <form id="addLinkForm" action="{{ route('admin.links.store') }}" method="POST">
                     @csrf
                     <div class="mb-3">
                         <label for="custom_name" class="form-label">Custom name</label>
-                        <input type="text" class="form-control" id="custom_name" name="custom_name" minlength="3" maxlength="50">
-                        <div class="invalid-feedback">Custom name must be between 3 and 50 characters, using only letters, numbers, and dashes.</div>
+                        <input type="text" class="form-control" id="custom_name" name="custom_name" 
+                            minlength="3" 
+                            maxlength="255"
+                            pattern="^[a-zA-Z0-9_\- ]+$"
+                            title="Only letters, numbers, spaces, underscores and dashes are allowed">
+                        <div class="invalid-feedback">Custom name must be between 3 and 255 characters, using only letters, numbers, spaces, underscores and dashes.</div>
                     </div>
 
                     <div class="mb-3">

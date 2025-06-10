@@ -52,7 +52,10 @@
                         <input type="text" class="form-control settings-input" name="name" id="name" 
                                placeholder="Enter your full name" 
                                value="{{ $user_data->name }}" 
-                               maxlength="255">
+                               required
+                               maxlength="255"
+                               pattern="[a-zA-Z0-9_\- ]+"
+                               title="Please enter your name using only letters, numbers, spaces, hyphens and underscores (max 255 characters)">
                     </div>
 
                     <div class="mb-4">
@@ -61,7 +64,8 @@
                                placeholder="Enter your email address" 
                                value="{{ $user_data->email }}" 
                                required 
-                               maxlength="255">
+                               maxlength="255"
+                               title="Please enter a valid email address (max 255 characters)">
                     </div>
                     <button type="submit" class="btn btn-custom w-100">
                         <i class="bi bi-save2 me-2"></i>Save Changes
@@ -179,4 +183,5 @@
 @endsection
 
 @section('scripts')
+@vite(['resources/js/settings.js'])
 @endsection

@@ -340,7 +340,7 @@
 
                     <div class="mb-3">
                         <label for="editCustomName" class="form-label">Custom Name</label>
-                        <input type="text" class="form-control" id="editCustomName" name="custom_name" placeholder="Enter link name" minlength="3" maxlength="255" title="Only letters, numbers, spaces, and hyphens are allowed">
+                        <input type="text" class="form-control" id="editCustomName" name="custom_name" placeholder="Enter link name" minlength="3" maxlength="255" pattern="^[a-zA-Z0-9_\- ]+$" title="Only letters, numbers, spaces, hyphens and underscores are allowed">
                     </div>
 
                     <div class="mb-3">
@@ -383,14 +383,15 @@
                     <!-- Custom Name Field -->
                     <div class="mb-4">
                         <label for="custom_name" class="form-label">Custom Name</label>
-                        <input type="text"
-                            class="form-control border-radius-8 border-2 p-3"
-                            id="custom_name"
-                            name="custom_name"
-                            placeholder="My Special Link"
-                            minlength="3"
-                            maxlength="255"
-                            title="Only letters, numbers, spaces, and hyphens are allowed">
+                            <input type="text"
+                                class="form-control border-radius-8 border-2 p-3"
+                                id="custom_name"
+                                name="custom_name"
+                                placeholder="My Special Link"
+                                minlength="3"
+                                maxlength="255"
+                                pattern="^[a-zA-Z0-9_\- ]+$"
+                                title="Only letters, numbers, spaces, hyphens and underscores are allowed">
                     </div>
 
                     <!-- Destination URL Field -->

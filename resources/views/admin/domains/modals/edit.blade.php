@@ -13,11 +13,16 @@
                     <input type="hidden" id="editDomainId" name="id">
                     <div class="mb-3">
                         <label for="editDomainName" class="form-label">Domain Name</label>
-                        <input type="text" class="form-control" id="editDomainName" name="domainName" required>
+                        <input type="text" class="form-control" id="editDomainName" name="domainName" 
+                            required
+                            minlength="3"
+                            maxlength="255"
+                            pattern="^(?!:\/\/)(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$"
+                            title="Please enter a valid domain name (e.g. example.com)">
                     </div>
                     <div class="mb-3">
                         <label for="editDomainStatus" class="form-label">Status</label>
-                        <select class="form-select" id="editDomainStatus" name="domainStatus">
+                        <select class="form-select" id="editDomainStatus" name="domainStatus" required>
                             <option value="1">Active</option>
                             <option value="0">Inactive</option>
                         </select>

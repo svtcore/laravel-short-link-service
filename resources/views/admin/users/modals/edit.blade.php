@@ -13,15 +13,18 @@
                     <input type="hidden" id="editUserId" name="id">
                     <div class="mb-3">
                         <label for="editName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="editName" name="editName" required>
+                        <input type="text" class="form-control" id="editName" name="editName" 
+                            maxlength="255" pattern="^[a-zA-Z0-9_\- ]+$" 
+                            title="Only letters, numbers, spaces, hyphens and underscores are allowed" required>
                     </div>
                     <div class="mb-3">
                         <label for="editEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="editEmail" name="editEmail" required>
+                        <input type="email" class="form-control" id="editEmail" name="editEmail" 
+                            maxlength="255" required>
                     </div>
                     <div class="mb-3">
                         <label for="editStatus" class="form-label">Status</label>
-                        <select class="form-select" id="editStatus" name="editStatus">
+                        <select class="form-select" id="editStatus" name="editStatus" required>
                             <option value="active">Active</option>
                             <option value="banned">Banned</option>
                             <option value="freezed">Freezed</option>

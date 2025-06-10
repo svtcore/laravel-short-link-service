@@ -31,6 +31,7 @@ export default defineConfig({
                 'resources/js/admin/settings/maintenance.js',
                 'resources/js/admin/search.js',
                 'resources/css/admin/burger.css',
+                'resources/js/settings.js',
             ],
             refresh: true,
         }),
