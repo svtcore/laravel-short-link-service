@@ -47,7 +47,7 @@
         </div>
         <div class="search-query-badge">
             <span class="badge bg-light text-dark fs-6 p-2 border">
-                <i class="bi bi-search me-2"></i>"{{ $query }}"
+                <i class="bi bi-search me-2"></i> @isset($query) "{{ $query }}" @endisset
             </span>
         </div>
         <table id="manageLinksTable" class="table table-hover table-striped" style="border-collapse: separate; border-spacing: 0 1rem;">

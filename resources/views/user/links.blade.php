@@ -216,9 +216,6 @@
                             <div class="form-group">
                                 <label for="startDate" class="form-label">From Date:</label>
                                 <div class="input-group date-input-group">
-                                    <span class="input-group-text">
-                                        <i class="bi bi-calendar"></i>
-                                    </span>
                                     <input type="date" id="startDate" class="form-control form-control-lg"
                                         placeholder="Select start date" required
                                         max="{{ now()->toDateString() }}" value="{{ now()->toDateString() }}">
