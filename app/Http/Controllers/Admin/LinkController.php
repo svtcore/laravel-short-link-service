@@ -228,15 +228,15 @@ class LinkController extends Controller
             );
 
             if ($result) {
-                return redirect()->back()->with('success', 'Link successfully updated');
+                return redirect()->route('admin.links.index')->with('success', 'Link successfully updated');
             }
 
-            return redirect()->back()->withErrors([
+            return redirect()->route('admin.links.index')->withErrors([
                 'update_error' => 'An error occurred while updating the link',
             ]);
         } catch (Exception $e) {
             $this->logError('Error in update method', $e);
-            return redirect()->back()->withErrors([
+            return redirect()->route('admin.links.index')->withErrors([
                 'update_error' => 'An internal server error occurred. Please try again later.',
             ]);
         }

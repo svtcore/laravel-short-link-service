@@ -123,10 +123,10 @@ class DomainController extends Controller
                 ]);
             }
 
-            return redirect()->back()->with('success', 'Domain successfully updated.');
+            return redirect()->route('admin.domains.index')->with('success', 'Domain successfully updated.');
         } catch (Exception $e) {
             $this->logError("Error updating domain", $e);
-            return redirect()->back()->withErrors([
+            return redirect()->route('admin.domains.index')->withErrors([
                 'domain' => 'An internal error occurred. Please try again later.',
             ]);
         }
