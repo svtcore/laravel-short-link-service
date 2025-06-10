@@ -26,7 +26,7 @@ class DomainRequest extends FormRequest
                 'required',
                 'string',
                 'max:253',
-                'regex:/^(?!:\/\/)(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/',
+                'regex:/^[a-zA-Z0-9.-]+$/',
             ],
         ];
     }
