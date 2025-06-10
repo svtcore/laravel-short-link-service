@@ -35,8 +35,7 @@
         <div class="user-header">
             <h2 class="block-title">Top users</h2>
         </div>
-        <table id="manageUsersTable" class="table table-hover table-striped"
-            style="border-collapse: separate; border-spacing: 0 1rem;">
+        <table id="manageUsersTable" class="table table-hover table-striped">
             <thead class="bg-light">
                 <tr>
                     <th data-priority="1">Email</th>

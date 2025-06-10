@@ -21,16 +21,14 @@
 
 @section('content')
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert"
-            style="border-radius: 12px; padding: 20px; background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724;">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
             <strong>Success!</strong> {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
     @if ($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show" role="alert"
-            style="border-radius: 12px; padding: 20px; background-color: #fee2e2; border: 1px solid #fca5a5; color: #7f1d1d;">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>Error!</strong>
             <ul style="list-style-type: none; padding-left: 0; margin-top: 10px;">
                 @foreach ($errors->all() as $error)

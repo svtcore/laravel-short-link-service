@@ -147,7 +147,7 @@
                 <h5 class="mb-4"><i class="bi bi-database me-2"></i>Data Management</h5>
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <div class="border-start border-3 border-info ps-3">
+                        <div class="data-request-block">
                             <h6>Request Account Data</h6>
                             <form action="{{ route('user.settings.data') }}" method="POST">
                                 @csrf
@@ -162,14 +162,14 @@
                     </div>
 
                     <div class="col-md-6">
-                        <div class="border-start border-3 border-danger ps-3">
+                        <div class="data-delete-block">
                             <h6>Delete Account</h6>
                             <form action="{{ route('user.settings.deletion') }}" method="POST">
                                 @csrf
                                 <p class="text-muted small mb-3">
                                     This action cannot be undone. All data will be permanently deleted.
                                 </p>
-                                <button type="submit" class="btn delete-btn">
+                                <button type="submit" class="btn btn-danger delete-btn">
                                     <i class="bi bi-trash3 me-2"></i>Delete Account
                                 </button>
                             </form>

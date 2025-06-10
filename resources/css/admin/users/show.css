@@ -210,6 +210,73 @@
 }
 
 /* ======================
+   ALERT STYLES
+   ====================== */
+.alert-success {
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #7f1d1d;
+}
+
+.alert-danger ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 10px;
+}
+
+.alert-danger li {
+    background-color: #fecaca;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    padding: 10px;
+    font-weight: 500;
+    color: #7f1d1d;
+}
+
+/* ======================
+   TABLE STYLES
+   ====================== */
+#userLinksTable {
+    border-collapse: separate;
+    border-spacing: 0 1rem;
+}
+
+#userLinksTable td, #userLinksTable th {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.table tbody tr {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.table tbody tr:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+.table-hover tbody tr:hover {
+    background-color: inherit;
+}
+
+.text-truncate {
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ======================
    MEDIA QUERIES
    ====================== */
 @media (max-width: 1024px) {

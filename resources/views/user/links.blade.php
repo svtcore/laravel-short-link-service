@@ -33,18 +33,18 @@
             </div>
         </div>
         @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 12px; padding: 20px; background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724;">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
             <strong>Success!</strong> {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         @endif
 
         @if($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: 12px; padding: 20px; background-color: #f8d7da; border: 1px solid #f5c6cb; color:rgb(3, 2, 2);">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>Error!</strong>
-            <ul style="list-style-type: none; padding-left: 0; margin-top: 10px;">
+            <ul>
                 @foreach($errors->all() as $error)
-                <li style="background-color:rgb(252, 230, 232); border-radius: 8px; margin-bottom: 8px; padding: 10px; font-weight: 500;">
+                <li>
                     {{ $error }}
                 </li>
                 @endforeach
@@ -52,7 +52,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         @endif
-        <table id="linksTable" class="table table-hover" style="border-collapse: separate; border-spacing: 0 1rem;">
+        <table id="linksTable" class="table table-hover links-table">
             <thead class="bg-light">
                 <tr>
                     <th data-priority="1">Name</th>
@@ -71,8 +71,7 @@
                     <td class="align-middle">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-link-45deg me-2 text-primary"></i>
-                            <span class="text-truncate" style="max-width: 120px;"
-                                title="{{ $link->custom_name }}">
+                            <span class="text-truncate" title="{{ $link->custom_name }}">
                                 {{ $link->custom_name }}
                             </span>
                         </div>
@@ -82,9 +81,7 @@
                     <td class="align-middle">
                         <div class="d-flex align-items-center gap-2">
                             <a href="https://{{ $link->domain->name }}/{{ $link->short_name }}"
-                                class="text-truncate text-primary"
-                                style="max-width: 180px;"
-                                target="_blank">
+                                class="text-truncate text-primary" target="_blank">
                                 {{ $link->domain->name }}/{{ $link->short_name }}
                             </a>
                             <button class="btn btn-link btn-sm text-secondary copy-button p-0"
@@ -99,9 +96,7 @@
                     <td class="align-middle d-none d-md-table-cell">
                         <div class="d-flex align-items-center gap-2">
                             <div class="destination-container">
-                                <span class="destination-url text-truncate d-block"
-                                    style="max-width: 180px;"
-                                    title="{{ $link->destination }}">
+                                <span class="destination-url text-truncate d-block" title="{{ $link->destination }}">
                                     {{ parse_url($link->destination, PHP_URL_HOST) }}<span class="destination-path">{{ parse_url($link->destination, PHP_URL_PATH) }}</span>
                                 </span>
                             </div>
@@ -128,11 +123,11 @@
                     <!-- Status -->
                     <td class="align-middle d-none d-sm-table-cell">
                         @if ($link->available)
-                        <span class="badge rounded-pill bg-success text-white px-3 py-2 shadow-sm" style="font-size: 0.875rem; transition: all 0.3s ease;">
+                        <span class="badge rounded-pill bg-success text-white px-3 py-2 shadow-sm status-badge">
                             Active
                         </span>
                         @else
-                        <span class="badge rounded-pill bg-danger text-white px-3 py-2 shadow-sm" style="font-size: 0.875rem; transition: all 0.3s ease;">
+                        <span class="badge rounded-pill bg-danger text-white px-3 py-2 shadow-sm status-badge">
                             Inactive
                         </span>
                         @endif
@@ -366,7 +361,7 @@
 </div>
 
 <!-- Add Create Link Modal -->
-<div class="modal fade" id="createLinkModal" tabindex="-1" aria-labelledby="createLinkModalLabel" aria-hidden="true">
+<div class="modal fade create-link-modal" id="createLinkModal" tabindex="-1" aria-labelledby="createLinkModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <form method="POST" action="{{ route('links.store') }}">
@@ -376,15 +371,15 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body bg-light">
-                    <div id="createLinkErrors" class="alert alert-danger d-none border-radius-8 border-2 p-3">
-                        <ul class="mb-0" id="createLinkErrorsList" style="color: #f56565; font-size: 0.9rem;"></ul>
+                    <div id="createLinkErrors" class="alert alert-danger d-none">
+                        <ul class="mb-0" id="createLinkErrorsList"></ul>
                     </div>
 
                     <!-- Custom Name Field -->
                     <div class="mb-4">
                         <label for="custom_name" class="form-label">Custom Name</label>
                             <input type="text"
-                                class="form-control border-radius-8 border-2 p-3"
+                                class="form-control"
                                 id="custom_name"
                                 name="custom_name"
                                 placeholder="My Special Link"
@@ -398,7 +393,7 @@
                     <div class="mb-4">
                         <label for="destination" class="form-label">Destination URL</label>
                         <input type="url"
-                            class="form-control border-radius-8 border-2 p-3"
+                            class="form-control"
                             id="url"
                             name="url"
                             placeholder="https://example.com"
@@ -407,7 +402,7 @@
                     </div>
                     <input type="hidden" name="from_modal" value="1" />
                 </div>
-                <div class="modal-footer bg-white border-top border-light p-3">
+                <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-custom">Shorten Link</button>
                 </div>

@@ -313,6 +313,30 @@
 }
 
 /* ======================
+   TABLE STYLES
+   ====================== */
+.table-spaced {
+    border-collapse: separate;
+    border-spacing: 0 1rem;
+}
+
+/* ======================
+   STATUS BADGES
+   ====================== */
+.badge-status {
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.badge-status-success {
+    background-color: #28a745;
+}
+
+.badge-status-danger {
+    background-color: #dc3545;
+}
+
+/* ======================
    TOP LINKS SECTION
    ====================== */
 

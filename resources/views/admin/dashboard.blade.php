@@ -99,14 +99,14 @@
                 <h3 class="chart-block-title">Click Activity Over Days</h3>
                 <hr>
                 <textarea id="chartDaysActivityData" hidden></textarea>
-                <canvas id="activityDaysChart" style="max-height:300px;"></canvas>
+                <canvas id="activityDaysChart"></canvas>
             </div>
 
             <div class="full-width-chart chart-last-container">
                 <h3 class="chart-block-title">Click Activity Over Time</h3>
                 <hr>
                 <textarea id="chartTimeActivityData" hidden></textarea>
-                <canvas id="activityTimeChart" style="max-height:300px;"></canvas>
+                <canvas id="activityTimeChart"></canvas>
             </div>
         </div>
         <div class="chart-last-container-wrapper">

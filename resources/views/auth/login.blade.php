@@ -14,7 +14,7 @@
             <i class="bi bi-box-arrow-in-right fs-1 text-primary"></i>
         </div>
         
-        <div class="auth-card shadow-lg bg-white rounded-3 p-4 mb-4" style="max-width: 400px; width: 100%;">
+        <div class="auth-card shadow-lg bg-white rounded-3 p-4 mb-4">
             <h1 class="display-6 mb-3 text-center">Welcome Back</h1>
             <p class="text-muted text-center mb-4">Enter your credentials to access your dashboard</p>
 

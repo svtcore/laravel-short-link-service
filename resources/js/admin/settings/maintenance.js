@@ -30,7 +30,7 @@ $('#maintenance_mode').on('change', function() {
             
             $toggle.val(status == 1 ? 0 : 1);
             
-            alert(xhr.responseJSON?.message || 'Произошла ошибка при изменении режима');
+            alert(xhr.responseJSON?.message || 'Error toggling maintenance mode. Please try again.');
         },
         complete: function() {
             $toggle.prop('disabled', false);

@@ -100,6 +100,17 @@
     font-weight: 500;
 }
 
+/* Data Management Blocks */
+.data-request-block {
+    border-left: 3px solid #0dcaf0;
+    padding-left: 1rem;
+}
+
+.data-delete-block {
+    border-left: 3px solid #dc3545;
+    padding-left: 1rem;
+}
+
 /* Delete Account Button */
 .delete-btn {
     background-color: #fee2e2;

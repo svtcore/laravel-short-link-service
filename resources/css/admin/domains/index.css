@@ -27,6 +27,89 @@
 }
 
 /* ======================
+   ALERT STYLES
+   ====================== */
+.alert-success {
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #7f1d1d;
+}
+
+.alert-danger ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 10px;
+}
+
+.alert-danger li {
+    background-color: #fecaca;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    padding: 10px;
+    font-weight: 500;
+    color: #7f1d1d;
+}
+
+/* ======================
+   BADGE STYLES
+   ====================== */
+.badge-status {
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.badge-status-success {
+    background-color: rgba(var(--bs-success-rgb),var(--bs-bg-opacity)) !important
+}
+
+.badge-status-danger {
+    background-color: #dc2626;
+}
+
+/* ======================
+   TABLE STYLES
+   ====================== */
+#manageDomainsTable {
+    border-collapse: separate;
+    border-spacing: 0 1rem;
+}
+
+#manageDomainsTable td, #manageDomainsTable th {
+    padding: 0.75rem;
+}
+
+.table tbody tr {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.table tbody tr:hover {
+    box-shadow: 0 0.25rem 0.9375rem rgba(0,0,0,0.08);
+    transform: translateY(-0.125rem);
+}
+
+.table-hover tbody tr:hover {
+    background-color: inherit;
+}
+
+.domain-column {
+    max-width: 18.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 1rem;
+}
+
+/* ======================
    BUTTON STYLES
    ====================== */
 .add-domain-btn {
@@ -76,34 +159,6 @@
 
 .modal-domain-delete-btn:hover {
     background: #df3939;
-}
-
-/* ======================
-   TABLE STYLES
-   ====================== */
-#manageDomainsTable td, #manageDomainsTable th {
-    padding: 0.75rem;
-}
-
-.table tbody tr {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.table tbody tr:hover {
-    box-shadow: 0 0.25rem 0.9375rem rgba(0,0,0,0.08);
-    transform: translateY(-0.125rem);
-}
-
-.table-hover tbody tr:hover {
-    background-color: inherit;
-}
-
-.domain-column {
-    max-width: 18.75rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-right: 1rem;
 }
 
 /* ======================

@@ -63,6 +63,11 @@
 /* ======================
    TABLE STYLES
    ====================== */
+#manageUsersTable {
+    border-collapse: separate;
+    border-spacing: 0 1rem;
+}
+
 #manageUsersTable td, #manageUsersTable th {
     padding: 12px;
     vertical-align: middle;
