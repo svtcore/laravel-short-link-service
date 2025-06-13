@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class SettingController extends Controller
 {
+    use \App\Http\Traits\LogsErrors;
     /**
      * @var UserServiceInterface $usersService Users service instance
      */
