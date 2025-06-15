@@ -42,6 +42,9 @@ Route::middleware(['role:user'])->group(function () {
 Route::middleware(['role:admin'])->group(function () {
     Route::namespace('App\Http\Controllers\Admin')->group(function () {
         Route::prefix('admin')->group(function () {
+            Route::get('/', function () {
+                return redirect()->route('admin.dashboard');
+            });
             Route::prefix('dashboard')->group(function () {
                 Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
                 Route::get('/show', [AdminDashboardController::class, 'show'])->name('admin.dashboard.show');
@@ -84,12 +87,12 @@ Route::middleware(['role:admin'])->group(function () {
                 Route::get('/domains', [AdminSearchController::class, 'domains'])->name('admin.search.domains');
                 Route::prefix('links')->group(function () {
                     Route::get('/', [AdminSearchController::class, 'links'])->name('admin.search.links');
-                    Route::get('/domain/{id}', [AdminSearchController::class, 'linksByDomain'])->name('admin.search.links.byDomainId'); 
+                    Route::get('/domain/{id}', [AdminSearchController::class, 'linksByDomain'])->name('admin.search.links.byDomainId');
                     Route::get('/user', [AdminSearchController::class, 'linksByIP'])->name('admin.search.links.byUserIP');
                 });
                 Route::get('/users', [AdminSearchController::class, 'users'])->name('admin.search.users');
             });
-            
+
         });
     });
 });
