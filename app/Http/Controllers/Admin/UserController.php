@@ -2,42 +2,41 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Http\Contracts\Interfaces\UserServiceInterface;
 use App\Http\Contracts\Interfaces\LinkServiceInterface;
-use App\Http\Traits\LogsErrors;
-use Illuminate\Support\Facades\Validator;
-use Exception;
-use App\Http\Requests\Admin\Users\UpdateRequest;
+use App\Http\Contracts\Interfaces\UserServiceInterface;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Users\DestroyRequest;
-use App\Http\Requests\Admin\Users\ShowRequest;
 use App\Http\Requests\Admin\Users\SetStatusRequest;
+use App\Http\Requests\Admin\Users\ShowRequest;
 use App\Http\Requests\Admin\Users\UpdatePasswordRequest;
 use App\Http\Requests\Admin\Users\UpdateProfileRequest;
+use App\Http\Requests\Admin\Users\UpdateRequest;
+use App\Http\Traits\LogsErrors;
+use Exception;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
 
 class UserController extends Controller
 {
     use LogsErrors;
 
     /**
-     * @var UserServiceInterface $userService Users service instance
+     * @var UserServiceInterface Users service instance
      */
     private $userService = null;
 
     /**
-     * @var LinkServiceInterface $serviceLink Links service instance
+     * @var LinkServiceInterface Links service instance
      */
     private $serviceLink = null;
 
     /**
      * Initialize controller with service dependencies
      *
-     * @param UserServiceInterface $userService Users service instance
-     * @param LinkServiceInterface $serviceLink Links service instance
+     * @param  UserServiceInterface  $userService  Users service instance
+     * @param  LinkServiceInterface  $serviceLink  Links service instance
      */
     public function __construct(
         UserServiceInterface $userService,
@@ -50,8 +49,6 @@ class UserController extends Controller
 
     /**
      * Display a listing of top users.
-     *
-     * @return \Illuminate\View\View
      */
     public function index(): View
     {
@@ -67,14 +64,13 @@ class UserController extends Controller
         ]);
     }
 
-
     /**
      * Display user profile with links
      *
-     * @param ShowRequest $request Validated request containing user ID
+     * @param  ShowRequest  $request  Validated request containing user ID
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse Returns:
-     * - View with user data and links if successful
-     * - Redirect with error if fails
+     *                                                                 - View with user data and links if successful
+     *                                                                 - Redirect with error if fails
      *
      * @throws \Exception Logs errors and returns error response
      */
@@ -89,19 +85,19 @@ class UserController extends Controller
             return view('admin.users.show')->with(['user' => $user_data, 'links' => $links]);
         } catch (Exception $e) {
             $this->logError('Error in show method', $e);
+
             return redirect()->back()->withErrors(['error' => 'An error occurred while updating the user']);
         }
     }
 
-
     /**
      * Update user information
      *
-     * @param UpdateRequest $request Validated request with user data
-     * @param string $id User ID to update
+     * @param  UpdateRequest  $request  Validated request with user data
+     * @param  string  $id  User ID to update
      * @return \Illuminate\Http\RedirectResponse Returns:
-     * - Redirect with success message if updated
-     * - Redirect with error if fails
+     *                                           - Redirect with success message if updated
+     *                                           - Redirect with error if fails
      *
      * @throws \Exception Logs errors and returns error response
      */
@@ -117,10 +113,10 @@ class UserController extends Controller
                 : redirect()->back()->withErrors(['error' => 'An error occurred while updating the user']);
         } catch (Exception $e) {
             $this->logError('Error in update method', $e, ['id' => $id]);
+
             return redirect()->back()->withErrors(['error' => 'An error occurred while updating the user']);
         }
     }
-
 
     /**
      * Remove the specified resource from storage.
@@ -139,22 +135,23 @@ class UserController extends Controller
             }
         } catch (Exception $e) {
             $this->logError('Error deleting user', $e, ['user_id' => $id, 'auth_user' => auth()->id()]);
+
             return redirect()->back()->withErrors(['error' => 'An error occurred while deleting the user']);
         }
     }
 
-
     /**
      * Ban user account
      *
-     * @param SetStatusRequest $request Validated request with user ID
+     * @param  SetStatusRequest  $request  Validated request with user ID
      * @return \Illuminate\Http\RedirectResponse Returns:
-     * - Redirect with success message if banned
-     * - Redirect with error if fails
+     *                                           - Redirect with success message if banned
+     *                                           - Redirect with error if fails
      */
     public function ban(SetStatusRequest $request): RedirectResponse
     {
         $validatedData = $request->validated();
+
         return $this->processUserStatusChange(
             'banAccount',
             $validatedData['id'],
@@ -166,14 +163,15 @@ class UserController extends Controller
     /**
      * Activate user account (unban/unfreeze)
      *
-     * @param SetStatusRequest $request Validated request with user ID
+     * @param  SetStatusRequest  $request  Validated request with user ID
      * @return \Illuminate\Http\RedirectResponse Returns:
-     * - Redirect with success message if activated
-     * - Redirect with error if fails
+     *                                           - Redirect with success message if activated
+     *                                           - Redirect with error if fails
      */
     public function active(SetStatusRequest $request): RedirectResponse
     {
         $validatedData = $request->validated();
+
         return $this->processUserStatusChange(
             'unAccount',
             $validatedData['id'],
@@ -185,14 +183,15 @@ class UserController extends Controller
     /**
      * Freeze user account
      *
-     * @param SetStatusRequest $request Validated request with user ID
+     * @param  SetStatusRequest  $request  Validated request with user ID
      * @return \Illuminate\Http\RedirectResponse Returns:
-     * - Redirect with success message if frozen
-     * - Redirect with error if fails
+     *                                           - Redirect with success message if frozen
+     *                                           - Redirect with error if fails
      */
     public function freeze(SetStatusRequest $request): RedirectResponse
     {
         $validatedData = $request->validated();
+
         return $this->processUserStatusChange(
             'freezeAccount',
             $validatedData['id'],
@@ -211,22 +210,22 @@ class UserController extends Controller
             if ($result) {
                 return redirect()->back()->with('success', $successMessage);
             }
+
             return redirect()->back()->withErrors(['message' => $errorMessage]);
         } catch (Exception $e) {
             $this->logError($errorMessage, $e, ['user_id' => $userId, 'admin_id' => auth()->id()]);
+
             return redirect()->back()->withErrors(['message' => $errorMessage]);
         }
     }
 
-
-
     /**
      * Update admin profile information
      *
-     * @param UpdateProfileRequest $request Validated request with profile data
+     * @param  UpdateProfileRequest  $request  Validated request with profile data
      * @return \Illuminate\Http\RedirectResponse Returns:
-     * - Redirect with success message if updated
-     * - Redirect with error if fails
+     *                                           - Redirect with success message if updated
+     *                                           - Redirect with error if fails
      *
      * @throws \Exception Logs errors and returns error response
      */
@@ -247,19 +246,19 @@ class UserController extends Controller
                 return back()->withErrors(['message' => 'Failed to update profile data. Please try again.']);
             }
         } catch (Exception $e) {
-            $this->logError("An unexpected error occurred while updating your profile", $e, ['user_id' => Auth::id()]);
+            $this->logError('An unexpected error occurred while updating your profile', $e, ['user_id' => Auth::id()]);
+
             return redirect()->route('admin.settings.index')->withErrors(['message' => 'An unexpected error occurred while updating your profile']);
         }
     }
 
-
     /**
      * Update admin password
      *
-     * @param UpdatePasswordRequest $request Validated request with new password
+     * @param  UpdatePasswordRequest  $request  Validated request with new password
      * @return \Illuminate\Http\RedirectResponse Returns:
-     * - Redirect with success message if updated
-     * - Redirect with error if fails
+     *                                           - Redirect with success message if updated
+     *                                           - Redirect with error if fails
      *
      * @throws \Exception Logs errors and returns error response
      */
@@ -276,7 +275,8 @@ class UserController extends Controller
                 return back()->withErrors(['message' => 'Failed to update password. Please try again.']);
             }
         } catch (Exception $e) {
-            $this->logError("An error occurred while updating the password", $e, ['user_id' => Auth::id()]);
+            $this->logError('An error occurred while updating the password', $e, ['user_id' => Auth::id()]);
+
             return back()->withErrors(['message' => 'An unexpected error occurred while updating the password']);
         }
     }

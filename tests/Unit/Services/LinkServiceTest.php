@@ -3,13 +3,13 @@
 namespace Tests\Unit\Services;
 
 use App\Http\Services\LinkService;
-use App\Models\Link;
 use App\Models\Domain;
-use App\Models\User;
+use App\Models\Link;
 use App\Models\LinkHistory;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
 
 class LinkServiceTest extends TestCase
 {
@@ -20,7 +20,7 @@ class LinkServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new LinkService();
+        $this->service = new LinkService;
     }
 
     public function test_store_link(): void
@@ -43,13 +43,13 @@ class LinkServiceTest extends TestCase
         $this->assertDatabaseHas('links', [
             'short_name' => 'test123',
             'domain_id' => $domain->id,
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
     }
 
     public function test_store_link_failure(): void
     {
-        $domain = new \stdClass();
+        $domain = new \stdClass;
         $domain->id = 999; // Non-existent domain
 
         $result = $this->service->storeLink(
@@ -100,7 +100,7 @@ class LinkServiceTest extends TestCase
         $domain = Domain::factory()->create();
         $link = Link::factory()->create([
             'user_id' => $user->id,
-            'domain_id' => $domain->id
+            'domain_id' => $domain->id,
         ]);
         LinkHistory::factory()->create(['link_id' => $link->id]);
 
@@ -146,7 +146,7 @@ class LinkServiceTest extends TestCase
             'id' => $link->id,
             'custom_name' => 'new-name',
             'destination' => 'https://new.example.com',
-            'available' => false
+            'available' => false,
         ]);
     }
 
@@ -175,7 +175,7 @@ class LinkServiceTest extends TestCase
         $link = Link::factory()->create([
             'domain_id' => $domain->id,
             'short_name' => 'test123',
-            'destination' => 'https://destination.com'
+            'destination' => 'https://destination.com',
         ]);
 
         // Search by domain

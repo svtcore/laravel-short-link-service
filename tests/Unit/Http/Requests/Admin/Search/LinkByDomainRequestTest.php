@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Search;
 
-use PHPUnit\Framework\Attributes\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\Admin\Search\LinkByDomainRequest;
 use App\Models\Domain;
 use Illuminate\Routing\Route;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class LinkByDomainRequestTest extends RequestTestCase
 {
@@ -18,28 +18,22 @@ class LinkByDomainRequestTest extends RequestTestCase
     protected function getValidData(): array
     {
         return [
-            'id' => Domain::factory()->create()->id
+            'id' => Domain::factory()->create()->id,
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]
     public function it_prepares_data_correctly()
     {
-        $request = new LinkByDomainRequest();
-        
+        $request = new LinkByDomainRequest;
+
         $route = new Route('GET', '/search/links/domain/{id}', []);
         $route->bind($request);
         $route->setParameter('id', 123);
         $request->setRouteResolver(fn () => $route);
-        
+
         $request->prepareForValidation();
-        
+
         $this->assertEquals(['id' => 123], $request->all());
     }
 

@@ -2,32 +2,31 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Contracts\Interfaces\AdminStatisticsServiceInterface;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Dashboard\ShowRequest;
-use Exception;
 use App\Http\Traits\LogsErrors;
 use App\Jobs\Admin\Dashboard\GetTopBrowsersJob;
 use App\Jobs\Admin\Dashboard\GetTopCountriesJob;
 use App\Jobs\Admin\Dashboard\GetTopPlatformsJob;
-use Carbon\Carbon;
-use App\Jobs\Admin\Dashboard\GetTotalLinksByDateJob;
 use App\Jobs\Admin\Dashboard\GetTotalClicksByDateJob;
 use App\Jobs\Admin\Dashboard\GetTotalDaysActivityJob;
+use App\Jobs\Admin\Dashboard\GetTotalLinksByDateJob;
+use App\Jobs\Admin\Dashboard\GetTotalTimeActivityJob;
 use App\Jobs\Admin\Dashboard\GetTotalUniqueClicksByDateJob;
 use App\Jobs\Admin\Dashboard\GetTotalUsersByDateJob;
-use App\Jobs\Admin\Dashboard\GetTotalTimeActivityJob;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
-
 
 class DashboardController extends Controller
 {
     use LogsErrors;
 
     /**
-     * @var AdminStatisticsServiceInterface $statsService Statistics service instance
+     * @var AdminStatisticsServiceInterface Statistics service instance
      */
     private $statsService = null;
 
@@ -38,21 +37,20 @@ class DashboardController extends Controller
         ini_set('max_execution_time', 1200);
     }
 
-
     /**
      * Display admin dashboard with summary statistics
-     * 
+     *
      * @return \Illuminate\View\View Returns dashboard view with statistics data including:
-     * - Total links count
-     * - Total clicks count
-     * - Active links count
-     * - Unique clicks count
-     * - Total users count
-     * - Average clicks per link
-     * 
+     *                               - Total links count
+     *                               - Total clicks count
+     *                               - Active links count
+     *                               - Unique clicks count
+     *                               - Total users count
+     *                               - Average clicks per link
+     *
      * @throws Exception If statistics data cannot be loaded
      */
-    public function index(): View 
+    public function index(): View
     {
         try {
             return view('admin.dashboard')->with([
@@ -64,25 +62,26 @@ class DashboardController extends Controller
                 'total_avg_clicks' => $this->statsService->getAvgClicksPerLink(),
             ]);
         } catch (Exception $e) {
-            $this->logError("Error while loading data on dashboard", $e);
+            $this->logError('Error while loading data on dashboard', $e);
+
             return view('admin.dashboard')->with([
-                'error' => 'Could not load statistics. Please try again later.'
+                'error' => 'Could not load statistics. Please try again later.',
             ]);
         }
     }
 
     /**
      * Get filtered dashboard data for specified date range
-     * 
-     * @param ShowRequest $request Validated request containing optional date filters
+     *
+     * @param  ShowRequest  $request  Validated request containing optional date filters
      * @return \Illuminate\Http\JsonResponse Returns JSON with:
-     * - Links, clicks, users statistics by date
-     * - Daily and hourly activity charts data  
-     * - Geographic, browser and platform distribution data
-     * 
+     *                                       - Links, clicks, users statistics by date
+     *                                       - Daily and hourly activity charts data
+     *                                       - Geographic, browser and platform distribution data
+     *
      * @throws \Exception Logs errors and returns error response if data processing fails
      */
-    public function show(ShowRequest $request): mixed  
+    public function show(ShowRequest $request): mixed
     {
         try {
             $validatedData = $request->validated();
@@ -104,14 +103,14 @@ class DashboardController extends Controller
 
             $cacheData = [];
             foreach ($cacheJobs as $keySuffix => $jobClass) {
-                $key = $keySuffix . '_' . $startDate->toDateString() . '_' . $endDate->toDateString();
+                $key = $keySuffix.'_'.$startDate->toDateString().'_'.$endDate->toDateString();
                 $data = Cache::get($key);
 
-                if (!$data) {
+                if (! $data) {
                     $jobClass::dispatchSync($startDate, $endDate, $this->statsService);
                     $data = Cache::get($key);
                 }
-                //rewrite new data cache
+                // rewrite new data cache
                 $cacheData[$keySuffix] = $data;
             }
 
@@ -131,7 +130,8 @@ class DashboardController extends Controller
                 'chart_platform_data' => $cacheData['chart_top_platforms_by_date'],
             ]);
         } catch (Exception $e) {
-            $this->logError("Error while updating data on dashboard", $e);
+            $this->logError('Error while updating data on dashboard', $e);
+
             return response()->json(['error' => 'An unexpected error occurred during data update']);
         }
     }

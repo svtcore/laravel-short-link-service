@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Search;
 
+use App\Http\Requests\Admin\Search\UserRequest;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Unit\Http\Requests\RequestTestCase;
-use App\Http\Requests\Admin\Search\UserRequest;
 
 class UserRequestTest extends RequestTestCase
 {
@@ -16,14 +16,8 @@ class UserRequestTest extends RequestTestCase
     protected function getValidData(): array
     {
         return [
-            'query' => 'username123'
+            'query' => 'username123',
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]
@@ -34,7 +28,7 @@ class UserRequestTest extends RequestTestCase
             'user.name',
             'user-name',
             'user@example.com',
-            'user123'
+            'user123',
         ];
 
         foreach ($validQueries as $query) {

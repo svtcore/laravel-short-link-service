@@ -10,7 +10,6 @@ class Link extends Model
     /** @use HasFactory<\Database\Factories\LinkFactory> */
     use HasFactory;
 
-
     /**
      * The attributes that are mass assignable.
      *
@@ -26,15 +25,18 @@ class Link extends Model
         'available',
     ];
 
-    public function link_histories(){
+    public function link_histories()
+    {
         return $this->hasMany(LinkHistory::class, 'link_id');
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function domain(){
+    public function domain()
+    {
         return $this->belongsTo(Domain::class, 'domain_id');
     }
 }

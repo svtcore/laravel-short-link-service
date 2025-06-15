@@ -2,26 +2,29 @@
 
 namespace Tests\Unit\Middleware;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Domain;
 use App\Models\Link;
-use Spatie\Permission\Models\Role;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class RoleMiddlewareTest extends TestCase
 {
     use RefreshDatabase;
 
     protected $adminUser;
+
     protected $regularUser;
+
     protected $testDomain;
+
     protected $testLink;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'admin']);
         Role::create(['name' => 'user']);
@@ -29,10 +32,10 @@ class RoleMiddlewareTest extends TestCase
         // Create test users
         $this->adminUser = User::factory()->create()->assignRole('admin');
         $this->regularUser = User::factory()->create()->assignRole('user');
-        
+
         // Create test data
         $this->testDomain = Domain::factory()->create();
-        $this->testLink = Link::factory()->create(['domain_id' => Domain::factory()->create()->id,'user_id' => $this->regularUser->id]);
+        $this->testLink = Link::factory()->create(['domain_id' => Domain::factory()->create()->id, 'user_id' => $this->regularUser->id]);
     }
 
     // Test user routes access

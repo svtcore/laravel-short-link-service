@@ -3,19 +3,21 @@
 namespace App\Jobs\Admin\Dashboard;
 
 use App\Http\Services\AdminStatisticsService;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use Carbon\Carbon;
 
 class GetTotalUniqueClicksByDateJob implements ShouldQueue
 {
     use Dispatchable, Queueable, SerializesModels;
 
     protected $startDate;
+
     protected $endDate;
+
     protected $statService;
 
     /**
@@ -27,12 +29,13 @@ class GetTotalUniqueClicksByDateJob implements ShouldQueue
         $this->endDate = Carbon::parse($endDate);
         $this->statService = $statService;
     }
+
     /**
      * Execute the job.
      */
     public function handle(): void
     {
-        $key = 'total_unique_clicks_by_date_' . $this->startDate->toDateString() . '_' . $this->endDate->toDateString();
+        $key = 'total_unique_clicks_by_date_'.$this->startDate->toDateString().'_'.$this->endDate->toDateString();
         $data = $this->statService->getTotalUniqueClicks($this->startDate, $this->endDate);
 
         if ($this->endDate->isToday()) {

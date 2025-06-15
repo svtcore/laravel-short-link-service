@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Search;
 
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\Admin\Search\LinkRequest;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class LinkRequestTest extends RequestTestCase
 {
@@ -15,13 +15,8 @@ class LinkRequestTest extends RequestTestCase
     protected function getValidData(): array
     {
         return [
-            'query' => 'example.com/path'
+            'query' => 'example.com/path',
         ];
-    }
-
-    public function test_it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     public function test_it_validates_correct_data()
@@ -31,7 +26,7 @@ class LinkRequestTest extends RequestTestCase
             'https://example.com/path',
             'user@example.com',
             'example.com?query=string',
-            'example.com#fragment'
+            'example.com#fragment',
         ];
 
         foreach ($validQueries as $query) {

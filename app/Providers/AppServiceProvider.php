@@ -2,18 +2,17 @@
 
 namespace App\Providers;
 
+use App\Http\Contracts\Interfaces\AdminStatisticsServiceInterface;
+use App\Http\Contracts\Interfaces\DomainServiceInterface;
+use App\Http\Contracts\Interfaces\LinkHistoryServiceInterface;
+use App\Http\Contracts\Interfaces\LinkServiceInterface;
+use App\Http\Contracts\Interfaces\UserServiceInterface;
+use App\Http\Services\AdminStatisticsService;
 use App\Http\Services\DomainService;
+use App\Http\Services\LinkHistoryService;
 use App\Http\Services\LinkService;
 use App\Http\Services\UserService;
 use Illuminate\Support\ServiceProvider;
-use App\Http\Contracts\Interfaces\LinkServiceInterface;
-use App\Http\Contracts\Interfaces\LinkHistoryServiceInterface;
-use App\Http\Services\LinkHistoryService;
-use App\Http\Contracts\Interfaces\DomainServiceInterface;
-use App\Http\Contracts\Interfaces\UserServiceInterface;
-use App\Http\Contracts\Interfaces\AdminStatisticsServiceInterface;
-use App\Http\Services\AdminStatisticsService;
-
 
 class AppServiceProvider extends ServiceProvider
 {

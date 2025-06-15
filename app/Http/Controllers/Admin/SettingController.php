@@ -2,34 +2,27 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Contracts\Interfaces\UserServiceInterface;
-use Exception;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use App\Models\User;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Settings\MaintenanceModeRequest;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
 
 class SettingController extends Controller
 {
     /**
-     * @var UserServiceInterface $userService Users service instance
+     * @var UserServiceInterface Users service instance
      */
     private $userService = null;
 
     /**
      * Initialize controller with service dependencies
      *
-     * @param UserServiceInterface $userService Users service instance
+     * @param  UserServiceInterface  $userService  Users service instance
      */
     public function __construct(UserServiceInterface $userService)
     {
@@ -47,18 +40,16 @@ class SettingController extends Controller
         return view('admin.settings.index');
     }
 
-
     /**
      * Toggle maintenance mode status
      *
-     * @param MaintenanceModeRequest $request Validated request containing:
-     * - status: Boolean indicating whether to activate maintenance mode
-     * 
+     * @param  MaintenanceModeRequest  $request  Validated request containing:
+     *                                           - status: Boolean indicating whether to activate maintenance mode
      * @return \Illuminate\Http\JsonResponse Returns JSON with:
-     * - success: Boolean indicating operation status
-     * - message: Status message
-     * - secret: Maintenance mode secret (when activating)
-     * 
+     *                                       - success: Boolean indicating operation status
+     *                                       - message: Status message
+     *                                       - secret: Maintenance mode secret (when activating)
+     *
      * @throws \Exception Logs errors and returns error response
      */
     public function maintenanceMode(MaintenanceModeRequest $request): JsonResponse

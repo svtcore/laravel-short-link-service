@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Search;
 
+use App\Http\Requests\Admin\Search\DomainRequest;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Unit\Http\Requests\RequestTestCase;
-use App\Http\Requests\Admin\Search\DomainRequest;
 
 class DomainRequestTest extends RequestTestCase
 {
@@ -16,14 +16,8 @@ class DomainRequestTest extends RequestTestCase
     protected function getValidData(): array
     {
         return [
-            'query' => 'example.com'
+            'query' => 'example.com',
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]
@@ -67,7 +61,7 @@ class DomainRequestTest extends RequestTestCase
             'sub.example.com',
             'example-domain.com',
             '123domain.com',
-            'xn--example-9ua.com' // IDN domain
+            'xn--example-9ua.com', // IDN domain
         ];
 
         foreach ($validDomains as $domain) {

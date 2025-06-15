@@ -31,6 +31,6 @@ class ShowRequest extends FormRequest
         return [
             'id' => ['required', 'integer', 'min:1', 'exists:users,id'],
         ];
-        ;
+
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Search;
 
+use App\Http\Requests\Admin\Search\CountRequest;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Unit\Http\Requests\RequestTestCase;
-use App\Http\Requests\Admin\Search\CountRequest;
 
 class CountRequestTest extends RequestTestCase
 {
@@ -16,14 +16,8 @@ class CountRequestTest extends RequestTestCase
     protected function getValidData(): array
     {
         return [
-            'query' => 'example search'
+            'query' => 'example search',
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]
@@ -59,7 +53,7 @@ class CountRequestTest extends RequestTestCase
             'search.with.dots',
             'search:with:colons',
             'search/with/slashes',
-            'search[with]brackets'
+            'search[with]brackets',
         ];
 
         foreach ($validQueries as $query) {

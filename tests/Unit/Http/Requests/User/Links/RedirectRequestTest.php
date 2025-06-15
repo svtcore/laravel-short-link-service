@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Http\Requests\User\Links;
 
-use PHPUnit\Framework\Attributes\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\User\Links\RedirectRequest;
 use Illuminate\Container\Container;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class RedirectRequestTest extends RequestTestCase
 {
@@ -20,7 +20,7 @@ class RedirectRequestTest extends RequestTestCase
             'host' => 'example.com',
             'path' => 'abc123',
             'user_agent' => 'Mozilla/5.0 (Windows NT 10.0)',
-            'ip' => '192.168.1.1'
+            'ip' => '192.168.1.1',
         ];
     }
 
@@ -28,7 +28,7 @@ class RedirectRequestTest extends RequestTestCase
     public function it_authorizes_all_requests()
     {
         $request = new RedirectRequest($this->getValidData());
-        $request->setContainer(new Container());
+        $request->setContainer(new Container);
         $this->assertTrue($request->authorize());
     }
 

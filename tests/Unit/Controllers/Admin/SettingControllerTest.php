@@ -2,23 +2,22 @@
 
 namespace Tests\Unit\Controllers\Admin;
 
-use Tests\TestCase;
-use App\Http\Controllers\Admin\SettingController;
 use App\Http\Contracts\Interfaces\UserServiceInterface;
+use App\Http\Controllers\Admin\SettingController;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use App\Models\User;
-use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Artisan;
 use Mockery;
-use App\Http\Requests\Admin\Settings\MaintenanceModeRequest;
+use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class SettingControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
     private UserServiceInterface $userService;
+
     private SettingController $controller;
 
     protected function setUp(): void

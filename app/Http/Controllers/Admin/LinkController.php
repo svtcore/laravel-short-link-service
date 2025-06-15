@@ -2,48 +2,47 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Http\Contracts\Interfaces\LinkServiceInterface;
 use App\Http\Contracts\Interfaces\LinkHistoryServiceInterface;
+use App\Http\Contracts\Interfaces\LinkServiceInterface;
 use App\Http\Contracts\Interfaces\UserServiceInterface;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Links\DestroyRequest;
 use App\Http\Requests\Admin\Links\ShowRequest;
 use App\Http\Requests\Admin\Links\StoreRequest;
 use App\Http\Requests\Admin\Links\UpdateRequest;
-use Illuminate\Support\Facades\Validator;
-use Exception;
 use App\Http\Traits\LogsErrors;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\JsonResponse;
 
 class LinkController extends Controller
 {
     use LogsErrors;
 
     /**
-     * @var LinkServiceInterface $linkService Links service instance
+     * @var LinkServiceInterface Links service instance
      */
     private $linkService = null;
 
     /**
-     * @var LinkHistoryServiceInterface $linkHistoryService Link histories service instance
+     * @var LinkHistoryServiceInterface Link histories service instance
      */
     private $linkHistoryService = null;
 
     /**
-     * @var UserServiceInterface $userService Users service instance
+     * @var UserServiceInterface Users service instance
      */
     private $userService = null;
 
     /**
      * Initialize controller with dependencies
-     * 
-     * @param LinkServiceInterface $linkService Links service instance
-     * @param LinkHistoryServiceInterface $linkHistoryService Link histories service instance
-     * @param UserServiceInterface $userService Users service instance
+     *
+     * @param  LinkServiceInterface  $linkService  Links service instance
+     * @param  LinkHistoryServiceInterface  $linkHistoryService  Link histories service instance
+     * @param  UserServiceInterface  $userService  Users service instance
      */
     public function __construct(LinkServiceInterface $linkService, LinkHistoryServiceInterface $linkHistoryService, UserServiceInterface $userService)
     {
@@ -57,8 +56,8 @@ class LinkController extends Controller
      * Display list of all links with statistics
      *
      * @return \Illuminate\View\View Returns:
-     * - View with links data if successful
-     * - View with error message if fails
+     *                               - View with links data if successful
+     *                               - View with error message if fails
      *
      * @throws \Exception Logs errors and returns error view
      */
@@ -70,26 +69,25 @@ class LinkController extends Controller
             ]);
         } catch (Exception $e) {
             $this->logError('Error fetching links list', $e);
+
             return view('admin.links.index')->with([
                 'links' => [],
-                'error' => 'Failed to load links. Please try again later.'
+                'error' => 'Failed to load links. Please try again later.',
             ]);
         }
     }
 
-
     /**
      * Create a new shortened link
-     * 
-     * @param StoreRequest $request Validated request containing:
-     * - url: Original URL to shorten
-     * - custom_name: Optional custom short name
-     * - user_email: Optional user email to associate with link
-     * 
+     *
+     * @param  StoreRequest  $request  Validated request containing:
+     *                                 - url: Original URL to shorten
+     *                                 - custom_name: Optional custom short name
+     *                                 - user_email: Optional user email to associate with link
      * @return \Illuminate\Http\RedirectResponse Redirects back with:
-     * - Success message if link was created
-     * - Error message if creation failed
-     * 
+     *                                           - Success message if link was created
+     *                                           - Error message if creation failed
+     *
      * @throws Exception Logs errors and returns error response if operation fails
      */
     public function store(StoreRequest $request): RedirectResponse
@@ -113,38 +111,37 @@ class LinkController extends Controller
             return redirect()->back()->with('success', 'Link successfully shortened');
         } catch (Exception $e) {
             $this->logError('Error in store method', $e);
+
             return redirect()->back()->withErrors(['error' => 'An error occurred while shortening the link']);
         }
     }
+
     private function resolveUserId(?string $email): int
     {
-        if (!$email) {
+        if (! $email) {
             return Auth::id();
         }
 
         $user = $this->userService->getUserByEmail($email);
-        if (!$user) {
+        if (! $user) {
             throw new Exception('User not found with this email');
         }
 
         return $user->id;
     }
 
-
-
     /**
      * Get link statistics and metrics
-     * 
-     * @param Request $request May contain:
-     * - startDate: Optional start date filter
-     * - endDate: Optional end date filter
-     * @param string $id Link ID to get stats for
-     * 
+     *
+     * @param  Request  $request  May contain:
+     *                            - startDate: Optional start date filter
+     *                            - endDate: Optional end date filter
+     * @param  string  $id  Link ID to get stats for
      * @return \Illuminate\Http\JsonResponse Returns JSON with:
-     * - Link details
-     * - Click statistics
-     * - Geographic and device metrics
-     * 
+     *                                       - Link details
+     *                                       - Click statistics
+     *                                       - Geographic and device metrics
+     *
      * @throws \Exception Logs errors and returns error response if operation fails
      */
     public function show(ShowRequest $request): JsonResponse
@@ -161,7 +158,7 @@ class LinkController extends Controller
             $end_date = $validatedData['endDate'] ?? null;
 
             $link = $this->linkHistoryService->getById($link_id);
-            if (!$link) {
+            if (! $link) {
                 return response()->json(['error' => 'Link not found'], 404);
             }
 
@@ -182,7 +179,7 @@ class LinkController extends Controller
     protected function getLinkMetrics(int $link_id, ?string $start_date, ?string $end_date): array
     {
         $link = $this->linkHistoryService->getById($link_id);
-        if (!$link) {
+        if (! $link) {
             throw new Exception("Link with id {$link_id} not found");
         }
 
@@ -198,21 +195,18 @@ class LinkController extends Controller
         ];
     }
 
-
-
     /**
      * Update an existing link
-     * 
-     * @param Request $request Contains:
-     * - editURL: New destination URL
-     * - editCustomName: New custom short name
-     * - editStatus: New status
-     * @param string $id Link ID to update
-     * 
+     *
+     * @param  Request  $request  Contains:
+     *                            - editURL: New destination URL
+     *                            - editCustomName: New custom short name
+     *                            - editStatus: New status
+     * @param  string  $id  Link ID to update
      * @return \Illuminate\Http\RedirectResponse Redirects back with:
-     * - Success message if link was updated
-     * - Error message if update failed
-     * 
+     *                                           - Success message if link was updated
+     *                                           - Error message if update failed
+     *
      * @throws \Exception Logs errors and returns error response if operation fails
      */
     public function update(UpdateRequest $request): RedirectResponse
@@ -236,23 +230,21 @@ class LinkController extends Controller
             ]);
         } catch (Exception $e) {
             $this->logError('Error in update method', $e);
+
             return redirect()->route('admin.links.index')->withErrors([
                 'update_error' => 'An internal server error occurred. Please try again later.',
             ]);
         }
     }
 
-
-
     /**
      * Delete a link and its click history
-     * 
-     * @param string $id Link ID to delete
-     * 
+     *
+     * @param  string  $id  Link ID to delete
      * @return \Illuminate\Http\RedirectResponse Redirects back with:
-     * - Success message if link was deleted
-     * - Error message if deletion failed
-     * 
+     *                                           - Success message if link was deleted
+     *                                           - Error message if deletion failed
+     *
      * @throws \Exception Logs errors and returns error response if operation fails
      */
     public function destroy(DestroyRequest $request): RedirectResponse
@@ -269,6 +261,7 @@ class LinkController extends Controller
             return redirect()->back()->withErrors(['error' => 'An error occurred while deleting the link']);
         } catch (Exception $e) {
             $this->logError('Error deleting link', $e);
+
             return redirect()->back()->withErrors(['error' => 'An internal server error occurred. Please try again later.']);
         }
     }

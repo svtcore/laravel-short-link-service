@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Http\Requests\User\Links;
 
-use PHPUnit\Framework\Attributes\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\User\Links\UpdateRequest;
 use App\Models\Link;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class UpdateRequestTest extends RequestTestCase
 {
@@ -20,7 +20,7 @@ class UpdateRequestTest extends RequestTestCase
             'id' => Link::factory()->create()->id,
             'custom_name' => 'Updated Link',
             'destination' => 'https://updated.example.com',
-            'access' => true
+            'access' => true,
         ];
     }
 
@@ -36,7 +36,7 @@ class UpdateRequestTest extends RequestTestCase
         $this->assertValidationFails(
             [
                 'custom_name' => 'Updated Link',
-                'destination' => 'https://updated.example.com'
+                'destination' => 'https://updated.example.com',
             ],
             ['id' => 'The id field is required.']
         );
@@ -91,7 +91,7 @@ class UpdateRequestTest extends RequestTestCase
     public function it_fails_on_long_destination()
     {
         $this->assertValidationFails(
-            ['destination' => 'https://example.com/' . str_repeat('a', 2048)],
+            ['destination' => 'https://example.com/'.str_repeat('a', 2048)],
             ['destination' => 'The destination field must not be greater than 2048 characters.']
         );
     }
@@ -102,7 +102,7 @@ class UpdateRequestTest extends RequestTestCase
         $this->assertValidationFails(
             [
                 'id' => 1,
-                'destination' => 'https://example.com'
+                'destination' => 'https://example.com',
             ],
             ['access' => 'The access field is required.']
         );

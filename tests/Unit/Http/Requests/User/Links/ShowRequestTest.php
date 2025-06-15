@@ -2,11 +2,10 @@
 
 namespace Tests\Unit\Http\Requests\User\Links;
 
-use PHPUnit\Framework\Attributes\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\User\Links\ShowRequest;
 use App\Models\Link;
-use Illuminate\Container\Container;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class ShowRequestTest extends RequestTestCase
 {
@@ -20,7 +19,7 @@ class ShowRequestTest extends RequestTestCase
         return [
             'id' => Link::factory()->create()->id,
             'startDate' => '2025-01-01',
-            'endDate' => '2025-01-31'
+            'endDate' => '2025-01-31',
         ];
     }
 
@@ -63,7 +62,7 @@ class ShowRequestTest extends RequestTestCase
         $this->assertValidationFails(
             [
                 'startDate' => '2025-02-01',
-                'endDate' => '2025-01-01'
+                'endDate' => '2025-01-01',
             ],
             ['startDate' => 'The start date field must be a date before or equal to end date.']
         );
@@ -93,7 +92,7 @@ class ShowRequestTest extends RequestTestCase
         $this->assertValidationFails(
             [
                 'startDate' => '2025-01-15',
-                'endDate' => '2025-01-01'
+                'endDate' => '2025-01-01',
             ],
             ['endDate' => 'The end date field must be a date after or equal to start date.']
         );
@@ -114,7 +113,7 @@ class ShowRequestTest extends RequestTestCase
         $data = $this->getValidData();
         $data['startDate'] = null;
         $data['endDate'] = null;
-        
+
         $this->assertValidationPasses($data);
     }
 }

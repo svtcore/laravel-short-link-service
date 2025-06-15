@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Http\Requests\User\Links;
 
+use App\Http\Requests\User\Links\StoreRequest;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Unit\Http\Requests\RequestTestCase;
-use App\Http\Requests\User\Links\StoreRequest;
 
 class StoreRequestTest extends RequestTestCase
 {
@@ -18,7 +18,7 @@ class StoreRequestTest extends RequestTestCase
         return [
             'url' => 'https://example.com',
             'custom_name' => 'My Link',
-            'from_modal' => true
+            'from_modal' => true,
         ];
     }
 
@@ -50,7 +50,7 @@ class StoreRequestTest extends RequestTestCase
     public function it_fails_on_long_url()
     {
         $this->assertValidationFails(
-            ['url' => 'https://example.com/' . str_repeat('a', 2048)],
+            ['url' => 'https://example.com/'.str_repeat('a', 2048)],
             ['url' => 'The url field must not be greater than 2048 characters.']
         );
     }
@@ -61,7 +61,7 @@ class StoreRequestTest extends RequestTestCase
         $this->assertValidationFails(
             [
                 'url' => 'https://example.com',
-                'custom_name' => 'Invalid@Name'
+                'custom_name' => 'Invalid@Name',
             ],
             ['custom_name' => 'The custom name field format is invalid.']
         );
@@ -73,7 +73,7 @@ class StoreRequestTest extends RequestTestCase
         $this->assertValidationFails(
             [
                 'url' => 'https://example.com',
-                'custom_name' => str_repeat('a', 256)
+                'custom_name' => str_repeat('a', 256),
             ],
             ['custom_name' => 'The custom name field must not be greater than 255 characters.']
         );
@@ -85,7 +85,7 @@ class StoreRequestTest extends RequestTestCase
         $this->assertValidationFails(
             [
                 'url' => 'https://example.com',
-                'from_modal' => 'not-a-boolean'
+                'from_modal' => 'not-a-boolean',
             ],
             ['from_modal' => 'The from modal field must be true or false.']
         );

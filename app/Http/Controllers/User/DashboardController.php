@@ -2,33 +2,32 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Http\Controllers\Controller;
 use App\Http\Contracts\Interfaces\LinkHistoryServiceInterface;
 use App\Http\Contracts\Interfaces\LinkServiceInterface;
+use App\Http\Controllers\Controller;
+use App\Http\Traits\LogsErrors;
 use Exception;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Traits\LogsErrors;
 
 class DashboardController extends Controller
 {
-
     use LogsErrors;
 
     /**
-     * @var LinkServiceInterface $linkService Links service instance
+     * @var LinkServiceInterface Links service instance
      */
     protected $linkService = null;
 
     /**
-     * @var LinkHistoryServiceInterface $linkHistoryService Link histories service instance
+     * @var LinkHistoryServiceInterface Link histories service instance
      */
     protected $linkHistoryService = null;
 
     /**
      * Initialize controller with service dependencies
      *
-     * @param LinkServiceInterface $links Links service instance
-     * @param LinkHistoryServiceInterface $linkHistories Link histories service instance
+     * @param  LinkServiceInterface  $links  Links service instance
+     * @param  LinkHistoryServiceInterface  $linkHistories  Link histories service instance
      */
     public function __construct(LinkServiceInterface $links, LinkHistoryServiceInterface $linkHistories)
     {
@@ -37,13 +36,12 @@ class DashboardController extends Controller
         $this->linkHistoryService = $linkHistories;
     }
 
-
     /**
      * Display user dashboard with statistics
      *
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse Returns:
-     * - Dashboard view with user statistics if successful
-     * - Redirect to home page if error occurs
+     *                                                                           - Dashboard view with user statistics if successful
+     *                                                                           - Redirect to home page if error occurs
      *
      * @throws \Exception Logs errors and redirects on failure
      */
@@ -59,28 +57,28 @@ class DashboardController extends Controller
                 : redirect()->route('home');
 
         } catch (Exception $e) {
-            $this->logError("Dashboard Controller Error", $e, ['user_id' => Auth::id()]);
+            $this->logError('Dashboard Controller Error', $e, ['user_id' => Auth::id()]);
+
             return redirect()->route('home');
         }
     }
 
-
     /**
      * Fetch all user dashboard statistics
      *
-     * @param int $user_id Authenticated user ID
+     * @param  int  $user_id  Authenticated user ID
      * @return array|null Returns array containing:
-     * - username: User's name
-     * - links_count: Total links created
-     * - clicks_count: Total clicks across all links
-     * - unique_clicks_count: Unique visitor clicks
-     * - links_today_count: Today's click count
-     * - top_links: Most visited links
-     * - top_countries: Visitor countries
-     * - top_browsers: Visitor browsers
-     * - top_os: Visitor operating systems
-     * - hours_activity: Hourly click activity
-     * 
+     *                    - username: User's name
+     *                    - links_count: Total links created
+     *                    - clicks_count: Total clicks across all links
+     *                    - unique_clicks_count: Unique visitor clicks
+     *                    - links_today_count: Today's click count
+     *                    - top_links: Most visited links
+     *                    - top_countries: Visitor countries
+     *                    - top_browsers: Visitor browsers
+     *                    - top_os: Visitor operating systems
+     *                    - hours_activity: Hourly click activity
+     *
      * @throws \Exception Logs errors and returns null on failure
      */
     private function fetchUserData(int $user_id): ?array
@@ -109,7 +107,8 @@ class DashboardController extends Controller
                 'hours_activity' => $hours_activity ?? [],
             ];
         } catch (Exception $e) {
-            $this->logError("Error fetching user data", $e, ['user_id' => Auth::id()]);
+            $this->logError('Error fetching user data', $e, ['user_id' => Auth::id()]);
+
             return null;
         }
     }

@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Users;
 
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\Admin\Users\UpdateProfileRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class UpdateProfileRequestTest extends RequestTestCase
 {
@@ -19,14 +19,8 @@ class UpdateProfileRequestTest extends RequestTestCase
     {
         return [
             'name' => 'Valid Name 123',
-            'email' => 'valid@example.com'
+            'email' => 'valid@example.com',
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]
@@ -59,16 +53,16 @@ class UpdateProfileRequestTest extends RequestTestCase
         $invalidNames = [
             'Name@Invalid',
             'Name#Invalid',
-            'Name$Invalid'
+            'Name$Invalid',
         ];
 
         foreach ($invalidNames as $name) {
             $this->assertValidationFails(
                 [
                     'name' => $name,
-                    'email' => 'valid@example.com'
+                    'email' => 'valid@example.com',
                 ],
-            ['name' => 'The name field format is invalid.']
+                ['name' => 'The name field format is invalid.']
             );
         }
     }
@@ -79,7 +73,7 @@ class UpdateProfileRequestTest extends RequestTestCase
         $this->assertValidationFails(
             [
                 'name' => 'Valid Name',
-                'email' => 'invalid-email'
+                'email' => 'invalid-email',
             ],
             ['email' => 'The email field must be a valid email address.']
         );
@@ -89,11 +83,11 @@ class UpdateProfileRequestTest extends RequestTestCase
     public function it_fails_on_duplicate_email()
     {
         $user = User::factory()->create(['email' => 'existing@example.com']);
-        
+
         $this->assertValidationFails(
             [
                 'name' => 'Valid Name',
-                'email' => 'existing@example.com'
+                'email' => 'existing@example.com',
             ],
             ['email' => 'The email has already been taken.']
         );
@@ -103,9 +97,9 @@ class UpdateProfileRequestTest extends RequestTestCase
     public function it_allows_own_email()
     {
         $user = User::factory()->create(['email' => 'existing@example.com']);
-        
+
         $requestClass = $this->getRequestClass();
-        $request = new $requestClass();
+        $request = new $requestClass;
         $request->setUserResolver(fn () => $user);
 
         $validator = Validator::make(

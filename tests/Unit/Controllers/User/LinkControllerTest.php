@@ -2,24 +2,25 @@
 
 namespace Tests\Unit\Controllers\User;
 
-use Tests\TestCase;
-use App\Models\Link;
-use App\Models\Domain;
-use App\Models\LinkHistory;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use App\Http\Controllers\User\LinkController;
 use App\Http\Contracts\Interfaces\LinkHistoryServiceInterface;
 use App\Http\Contracts\Interfaces\LinkServiceInterface;
+use App\Http\Controllers\User\LinkController;
+use App\Models\Domain;
+use App\Models\Link;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class LinkControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
     private LinkController $controller;
+
     private User $user;
+
     private $linkService;
 
     protected function setUp(): void
@@ -30,7 +31,7 @@ class LinkControllerTest extends TestCase
         $this->controller = new LinkController($this->linkService, $mockLinkHistoryService);
 
         Role::firstOrCreate(['name' => 'user']);
-        
+
         $this->user = User::factory()->create();
         $this->user->assignRole('user');
     }
@@ -43,7 +44,7 @@ class LinkControllerTest extends TestCase
 
         $response = $this->actingAs($this->user)
             ->get(route('user.links.index'));
-        
+
         $response->assertStatus(200);
         $response->assertViewIs('user.links');
         $response->assertViewHas('links');
@@ -52,24 +53,24 @@ class LinkControllerTest extends TestCase
     public function test_store_new_link_redirects_with_success()
     {
         $domain = Domain::factory()->create();
-        
+
         $this->linkService->method('generateShortName')
             ->willReturn([
                 'short_name' => 'abc123',
-                'destination_url' => 'https://example.com'
+                'destination_url' => 'https://example.com',
             ]);
         $this->linkService->method('storeLink')
             ->willReturn([
                 'id' => 1,
                 'short_name' => 'abc123',
-                'destination_url' => 'https://example.com'
+                'destination_url' => 'https://example.com',
             ]);
 
         $response = $this->actingAs($this->user)
             ->post(route('links.store'), [
                 'url' => 'https://example.com',
                 'from_modal' => true,
-                'ip' => '127.0.0.1'
+                'ip' => '127.0.0.1',
             ]);
 
         $response->assertRedirect(route('user.links.index'));
@@ -80,7 +81,7 @@ class LinkControllerTest extends TestCase
     {
         $this->actingAs($this->user);
         $domain = Domain::factory()->create();
-        
+
         $link = Link::factory()->create([
             'user_id' => $this->user->id,
             'domain_id' => $domain->id,
@@ -101,14 +102,14 @@ class LinkControllerTest extends TestCase
                 'id' => $link->id,
                 'custom_name' => 'new-name',
                 'destination' => 'https://new.com',
-                'access' => true
+                'access' => true,
             ]
         );
 
         $response->assertStatus(200);
         $response->assertJson([
             'status' => true,
-            'message' => 'Link updated successfully.'
+            'message' => 'Link updated successfully.',
         ]);
     }
 
@@ -132,11 +133,11 @@ class LinkControllerTest extends TestCase
         $link = Link::factory()->create(['user_id' => $otherUser->id]);
 
         $this->actingAs($this->user);
-        
+
         $response = $this->getJson(route('user.links.show', [
             'id' => $link->id,
             'startDate' => null,
-            'endDate' => null
+            'endDate' => null,
         ]));
         $response->assertForbidden();
     }

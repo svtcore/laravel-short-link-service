@@ -23,10 +23,10 @@ class ShowRequest extends FormRequest
     {
         return [
             'id' => [
-                'required', 
-                'integer', 
-                'min:1', 
-                'exists:links,id'
+                'required',
+                'integer',
+                'min:1',
+                'exists:links,id',
             ],
             'startDate' => [
                 'nullable',

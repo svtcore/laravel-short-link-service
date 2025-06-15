@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Users;
 
+use App\Http\Requests\Admin\Users\UpdatePasswordRequest;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Unit\Http\Requests\RequestTestCase;
-use App\Http\Requests\Admin\Users\UpdatePasswordRequest;
 
 class UpdatePasswordRequestTest extends RequestTestCase
 {
@@ -18,7 +18,7 @@ class UpdatePasswordRequestTest extends RequestTestCase
         return [
             'password' => 'password', // Default Laravel test password
             'new_password' => 'NewP@ssw0rd',
-            'new_password_confirmation' => 'NewP@ssw0rd'
+            'new_password_confirmation' => 'NewP@ssw0rd',
         ];
     }
 
@@ -47,7 +47,7 @@ class UpdatePasswordRequestTest extends RequestTestCase
             'short',
             'n0symbols',
             'nouppercase',
-            'NOLOWERCASE'
+            'NOLOWERCASE',
         ];
 
         foreach ($weakPasswords as $password) {
@@ -55,7 +55,7 @@ class UpdatePasswordRequestTest extends RequestTestCase
                 [
                     'password' => 'current_password',
                     'new_password' => $password,
-                    'new_password_confirmation' => $password
+                    'new_password_confirmation' => $password,
                 ],
                 ['new_password' => 'The new password field format is invalid.']
             );
@@ -69,7 +69,7 @@ class UpdatePasswordRequestTest extends RequestTestCase
             [
                 'password' => 'current_password',
                 'new_password' => 'NewP@ssw0rd',
-                'new_password_confirmation' => 'Different1!'
+                'new_password_confirmation' => 'Different1!',
             ],
             ['new_password' => 'The new password field confirmation does not match.']
         );
@@ -82,7 +82,7 @@ class UpdatePasswordRequestTest extends RequestTestCase
             [
                 'password' => 'current_password',
                 'new_password' => 'Short1!',
-                'new_password_confirmation' => 'Short1!'
+                'new_password_confirmation' => 'Short1!',
             ],
             ['new_password' => 'The new password field must be at least 8 characters.']
         );

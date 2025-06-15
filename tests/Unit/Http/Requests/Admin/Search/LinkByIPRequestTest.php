@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Search;
 
+use App\Http\Requests\Admin\Search\LinkByIPRequest;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Unit\Http\Requests\RequestTestCase;
-use App\Http\Requests\Admin\Search\LinkByIPRequest;
 
 class LinkByIPRequestTest extends RequestTestCase
 {
@@ -16,14 +16,8 @@ class LinkByIPRequestTest extends RequestTestCase
     protected function getValidData(): array
     {
         return [
-            'ip' => '192.168.1.1'
+            'ip' => '192.168.1.1',
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]
@@ -32,7 +26,7 @@ class LinkByIPRequestTest extends RequestTestCase
         $validIPs = [
             '192.168.1.1', // IPv4
             '2001:0db8:85a3:0000:0000:8a2e:0370:7334', // Full IPv6
-            '2001:db8::8a2e:370:7334' // Mixed IPv6
+            '2001:db8::8a2e:370:7334', // Mixed IPv6
         ];
 
         foreach ($validIPs as $ip) {

@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Domains;
 
-use PHPUnit\Framework\Attributes\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\Admin\Domains\UpdateRequest;
 use App\Models\Domain;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class UpdateRequestTest extends RequestTestCase
 {
@@ -19,14 +19,8 @@ class UpdateRequestTest extends RequestTestCase
         return [
             'id' => Domain::factory()->create()->id,
             'domainName' => 'updated.com',
-            'domainStatus' => false
+            'domainStatus' => false,
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]

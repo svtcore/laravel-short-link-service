@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DomainController;
+use App\Http\Controllers\Admin\LinkController as AdminLinkController;
+use App\Http\Controllers\Admin\SearchController as AdminSearchController;
+use App\Http\Controllers\Admin\SettingController as AdminSettingController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\LinkController;
 use App\Http\Controllers\User\SettingController;
 use App\Http\Controllers\User\UserController;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\LinkController as AdminLinkController;
-use App\Http\Controllers\Admin\DomainController;
-use App\Http\Controllers\Admin\SettingController as AdminSettingController;
-use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Admin\SearchController as AdminSearchController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
@@ -61,7 +61,7 @@ Route::middleware(['role:admin'])->group(function () {
                 Route::post('/', [AdminLinkController::class, 'store'])->name('admin.links.store');
                 Route::put('/{id}', [AdminLinkController::class, 'update'])->name('admin.links.update');
                 Route::delete('/{id}', [AdminLinkController::class, 'destroy'])->name('admin.links.destroy');
-                //search
+                // search
             });
             Route::prefix('users')->group(function () {
                 Route::get('/', action: [AdminUserController::class, 'index'])->name('admin.users.index');
@@ -72,7 +72,7 @@ Route::middleware(['role:admin'])->group(function () {
                 Route::put('/{id}/unban', [AdminUserController::class, 'active'])->name('admin.users.unban');
                 Route::put('/{id}/unfreeze', [AdminUserController::class, 'active'])->name('admin.users.unfreeze');
                 Route::put('/{id}/freeze', [AdminUserController::class, 'freeze'])->name('admin.users.freeze');
-                //search
+                // search
             });
             Route::prefix('settings')->group(function () {
                 Route::get('/', action: [AdminSettingController::class, 'index'])->name('admin.settings.index');

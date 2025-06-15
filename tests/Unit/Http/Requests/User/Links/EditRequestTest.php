@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Http\Requests\User\Links;
 
-use PHPUnit\Framework\Attributes\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\User\Links\EditRequest;
 use App\Models\Link;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class EditRequestTest extends RequestTestCase
 {
@@ -17,7 +17,7 @@ class EditRequestTest extends RequestTestCase
     protected function getValidData(): array
     {
         return [
-            'id' => Link::factory()->create()->id
+            'id' => Link::factory()->create()->id,
         ];
     }
 

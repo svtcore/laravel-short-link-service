@@ -39,8 +39,6 @@ class UpdatePasswordRequest extends FormRequest
 
     /**
      * Get the custom error messages for validation rules.
-     *
-     * @return array
      */
     public function messages(): array
     {

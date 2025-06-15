@@ -23,7 +23,7 @@ class UpdateProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['nullable','string','max:255','regex:/^[a-zA-Z0-9_\- ]+$/'],
+            'name' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\- ]+$/'],
             'email' => [
                 'required',
                 'string',

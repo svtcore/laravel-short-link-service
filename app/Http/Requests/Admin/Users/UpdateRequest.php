@@ -34,11 +34,11 @@ class UpdateRequest extends FormRequest
     {
         return [
             'id' => ['required', 'integer', 'min:1', 'exists:users,id'],
-            'name' => ['nullable','string','max:255','regex:/^[a-zA-Z0-9_\- ]+$/'],
+            'name' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\- ]+$/'],
             'email' => ['required', 'string', 'email', 'max:255'],
             'status' => ['required', 'in:active,freezed,banned'],
             'roles' => ['required', 'array'],
-            'roles.*' => ['string', 'exists:roles,name']
+            'roles.*' => ['string', 'exists:roles,name'],
         ];
     }
 }

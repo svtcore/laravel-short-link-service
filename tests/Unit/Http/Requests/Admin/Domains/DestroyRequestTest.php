@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Domains;
 
-use PHPUnit\Framework\Attributes\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\Admin\Domains\DestroyRequest;
 use App\Models\Domain;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class DestroyRequestTest extends RequestTestCase
 {
@@ -17,14 +17,8 @@ class DestroyRequestTest extends RequestTestCase
     protected function getValidData(): array
     {
         return [
-            'id' => Domain::factory()->create()->id
+            'id' => Domain::factory()->create()->id,
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]

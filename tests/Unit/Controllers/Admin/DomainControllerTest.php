@@ -2,33 +2,31 @@
 
 namespace Tests\Unit\Controllers\Admin;
 
-use Tests\TestCase;
+use App\Http\Controllers\Admin\DomainController;
+use App\Http\Services\DomainService;
 use App\Models\Domain;
 use App\Models\Link;
 use App\Models\LinkHistory;
-use App\Http\Services\DomainService;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use App\Http\Controllers\Admin\DomainController;
-use App\Http\Requests\Admin\Domains\StoreRequest;
-use App\Http\Requests\Admin\Domains\UpdateRequest;
-use App\Http\Requests\Admin\Domains\DestroyRequest;
-use App\Models\User;
-use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class DomainControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
     private DomainService $service;
+
     private DomainController $controller;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new DomainService();
+        $this->service = new DomainService;
         $this->controller = new DomainController($this->service);
 
         $roles_list = ['admin', 'user'];
@@ -37,15 +35,16 @@ class DomainControllerTest extends TestCase
         }
 
         // Creating specific users with roles
-        $admin = $this->createUser('John Doe', 'admin@admin.com', 'admin', Hash::make("password"));
+        $admin = $this->createUser('John Doe', 'admin@admin.com', 'admin', Hash::make('password'));
         $admin->assignRole('user');
-        $user = $this->createUser('Test user', 'user@user.com', 'user', Hash::make("password"));
+        $user = $this->createUser('Test user', 'user@user.com', 'user', Hash::make('password'));
     }
 
-    private function createUser(string $name = null, string $email = null, string $role = 'user', string $password = null): User
+    private function createUser(?string $name = null, ?string $email = null, string $role = 'user', ?string $password = null): User
     {
-        if ($password == null)
+        if ($password == null) {
             $password = Hash::make(Str::random(16));
+        }
         $user = User::factory()->create([
             'name' => $name ?? fake()->name(),
             'email' => $email ?? fake()->unique()->safeEmail(),
@@ -54,6 +53,7 @@ class DomainControllerTest extends TestCase
             'remember_token' => Str::random(60),
         ]);
         $user->assignRole($role);
+
         return $user;
     }
 
@@ -111,7 +111,6 @@ class DomainControllerTest extends TestCase
         ]);
     }
 
-
     public function test_delete_domain()
     {
         $this->actingAs(User::first());
@@ -130,7 +129,7 @@ class DomainControllerTest extends TestCase
     {
         $this->actingAs(User::first());
         $mockService = $this->createMock(DomainService::class);
-        $mockService->method('getDomainsList')->willThrowException(new \Exception());
+        $mockService->method('getDomainsList')->willThrowException(new \Exception);
 
         $controller = new DomainController($mockService);
         $response = $controller->index();

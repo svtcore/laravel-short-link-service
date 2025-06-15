@@ -27,7 +27,7 @@ class LinkRequest extends FormRequest
                 'string',
                 'max:2048',
                 'regex:/^[a-z0-9\-._~:\/?#\[\]@!$&\'()*+,;=]*$/i',
-            ]
+            ],
         ];
     }
 }

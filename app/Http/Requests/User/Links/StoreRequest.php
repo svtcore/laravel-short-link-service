@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\User\Links;
 
-use App\Rules\SafePHP;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Rules\SafeXSS;
 
 class StoreRequest extends FormRequest
 {
@@ -18,7 +16,7 @@ class StoreRequest extends FormRequest
         return [
             'url' => ['required', 'url', 'max:2048'],
             'custom_name' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_\- ]+$/'],
-            'from_modal' => ['nullable', 'boolean']
-        ];        
+            'from_modal' => ['nullable', 'boolean'],
+        ];
     }
 }

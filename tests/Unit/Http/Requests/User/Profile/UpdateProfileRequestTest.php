@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Http\Requests\User\Profile;
 
-use PHPUnit\Framework\Attributes\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\User\Profile\UpdateProfileRequest;
 use App\Models\User;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class UpdateProfileRequestTest extends RequestTestCase
 {
@@ -18,7 +18,7 @@ class UpdateProfileRequestTest extends RequestTestCase
     {
         return [
             'name' => 'Updated Name',
-            'email' => 'updated@example.com'
+            'email' => 'updated@example.com',
         ];
     }
 

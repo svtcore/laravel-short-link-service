@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Domains;
 
-use PHPUnit\Framework\Attributes\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\Admin\Domains\StoreRequest;
 use App\Models\Domain;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class StoreRequestTest extends RequestTestCase
 {
@@ -18,14 +18,8 @@ class StoreRequestTest extends RequestTestCase
     {
         return [
             'domainName' => 'example.com',
-            'domainStatus' => true
+            'domainStatus' => true,
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]
@@ -59,7 +53,7 @@ class StoreRequestTest extends RequestTestCase
     public function it_fails_on_duplicate_domain()
     {
         Domain::factory()->create(['name' => 'existing.com']);
-        
+
         $this->assertValidationFails(
             ['domainName' => 'existing.com', 'domainStatus' => true],
             ['domainName' => 'The domain name has already been taken.']

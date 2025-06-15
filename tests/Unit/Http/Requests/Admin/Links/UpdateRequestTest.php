@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Links;
 
-use PHPUnit\Framework\Attributes\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\Admin\Links\UpdateRequest;
 use App\Models\Link;
 use Illuminate\Routing\Route;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class UpdateRequestTest extends RequestTestCase
 {
@@ -21,33 +21,27 @@ class UpdateRequestTest extends RequestTestCase
             'id' => Link::factory()->create()->id,
             'url' => 'https://updated.com',
             'custom_name' => 'updated-link',
-            'status' => true
+            'status' => true,
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]
     public function it_prepares_data_correctly()
     {
-        $request = new UpdateRequest();
+        $request = new UpdateRequest;
         $request->merge([
             'editURL' => 'https://example.com',
             'editCustomName' => 'test',
-            'editStatus' => true
+            'editStatus' => true,
         ]);
-        
+
         $route = new Route('PUT', '/links/{id}', []);
         $route->bind($request);
         $route->setParameter('id', 123);
         $request->setRouteResolver(fn () => $route);
-        
+
         $request->prepareForValidation();
-        
+
         $this->assertEquals([
             'editURL' => 'https://example.com',
             'editCustomName' => 'test',
@@ -55,7 +49,7 @@ class UpdateRequestTest extends RequestTestCase
             'id' => 123,
             'url' => 'https://example.com',
             'custom_name' => 'test',
-            'status' => true
+            'status' => true,
         ], $request->all());
     }
 

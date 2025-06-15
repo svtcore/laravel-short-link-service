@@ -2,19 +2,21 @@
 
 namespace Tests\Unit\Controllers\User;
 
-use Tests\TestCase;
+use App\Http\Contracts\Interfaces\UserServiceInterface;
+use App\Http\Controllers\User\SettingController;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Http\Controllers\User\SettingController;
 use Spatie\Permission\Models\Role;
-use App\Http\Contracts\Interfaces\UserServiceInterface;
+use Tests\TestCase;
 
 class SettingControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     private SettingController $controller;
+
     private User $user;
+
     private $userService;
 
     protected function setUp(): void
@@ -32,7 +34,7 @@ class SettingControllerTest extends TestCase
     {
         $response = $this->actingAs($this->user)
             ->get(route('user.settings.index'));
-        
+
         $response->assertStatus(200);
         $response->assertViewIs('user.settings');
     }
@@ -41,15 +43,15 @@ class SettingControllerTest extends TestCase
     {
         $mockUser = new User([
             'name' => 'Test User',
-            'email' => 'test@example.com'
+            'email' => 'test@example.com',
         ]);
-        
+
         $this->userService->method('getUserData')
             ->willReturn($mockUser);
 
         $response = $this->actingAs($this->user)
             ->get(route('user.settings.index'));
-        
+
         $response->assertViewHas('user_data');
     }
 
@@ -60,7 +62,7 @@ class SettingControllerTest extends TestCase
 
         $response = $this->actingAs($this->user)
             ->post(route('user.settings.data'));
-        
+
         $response->assertRedirect(route('user.settings.index'));
         $response->assertSessionHas('success');
     }
@@ -68,16 +70,16 @@ class SettingControllerTest extends TestCase
     public function test_cannot_update_other_users_settings()
     {
         $otherUser = User::factory()->create();
-        
+
         $this->userService->expects($this->never())
             ->method('updateProfile');
 
         $response = $this->actingAs($this->user)
             ->put(route('user.settings.profile'), [
                 'name' => 'Other User',
-                'email' => 'other@example.com'
+                'email' => 'other@example.com',
             ]);
-        
+
         $this->assertFalse($response->isSuccessful());
         $this->assertFalse($response->isOk());
     }

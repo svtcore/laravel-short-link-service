@@ -12,6 +12,7 @@ class ShowRequest extends FormRequest
             'id' => $this->route('id'),
         ]);
     }
+
     /**
      * Determine if the user is authorized to make this request.
      */

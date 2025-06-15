@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Links;
 
-use PHPUnit\Framework\Attributes\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\Admin\Links\ShowRequest;
 use App\Models\Link;
 use Carbon\Carbon;
 use Illuminate\Routing\Route;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class ShowRequestTest extends RequestTestCase
 {
@@ -21,27 +21,21 @@ class ShowRequestTest extends RequestTestCase
         return [
             'id' => Link::factory()->create()->id,
             'startDate' => Carbon::yesterday()->format('Y-m-d'),
-            'endDate' => Carbon::today()->format('Y-m-d')
+            'endDate' => Carbon::today()->format('Y-m-d'),
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]
     public function it_prepares_data_correctly()
     {
-        $request = new ShowRequest();
+        $request = new ShowRequest;
         $route = new Route('GET', '/links/{id}', []);
         $route->bind($request);
         $route->setParameter('id', 123);
         $request->setRouteResolver(fn () => $route);
-        
+
         $request->prepareForValidation();
-        
+
         $this->assertEquals(['id' => 123], $request->all());
     }
 

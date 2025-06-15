@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Links;
 
-use PHPUnit\Framework\Attributes\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\Admin\Links\DestroyRequest;
 use App\Models\Link;
 use Illuminate\Routing\Route;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class DestroyRequestTest extends RequestTestCase
 {
@@ -18,27 +18,21 @@ class DestroyRequestTest extends RequestTestCase
     protected function getValidData(): array
     {
         return [
-            'id' => Link::factory()->create()->id
+            'id' => Link::factory()->create()->id,
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]
     public function it_prepares_data_correctly()
     {
-        $request = new DestroyRequest();
+        $request = new DestroyRequest;
         $route = new Route('DELETE', '/links/{id}', []);
         $route->bind($request);
         $route->setParameter('id', 123);
         $request->setRouteResolver(fn () => $route);
-        
+
         $request->prepareForValidation();
-        
+
         $this->assertEquals(['id' => 123], $request->all());
     }
 

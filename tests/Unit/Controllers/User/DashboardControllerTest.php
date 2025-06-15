@@ -2,32 +2,33 @@
 
 namespace Tests\Unit\Controllers\User;
 
-use Tests\TestCase;
+use App\Http\Contracts\Interfaces\LinkHistoryServiceInterface;
+use App\Http\Contracts\Interfaces\LinkServiceInterface;
+use App\Http\Controllers\User\DashboardController;
 use App\Models\Domain;
 use App\Models\Link;
 use App\Models\LinkHistory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Http\Controllers\User\DashboardController;
 use Spatie\Permission\Models\Role;
-use App\Http\Contracts\Interfaces\LinkServiceInterface;
-use App\Http\Contracts\Interfaces\LinkHistoryServiceInterface;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Testing\Fluent\AssertableJson;
+use Tests\TestCase;
 
 class DashboardControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     private DashboardController $controller;
+
     private User $user;
+
     private $linkService;
+
     private $linkHistoryService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->linkService = $this->createMock(LinkServiceInterface::class);
         $this->linkHistoryService = $this->createMock(LinkHistoryServiceInterface::class);
         $this->controller = new DashboardController($this->linkService, $this->linkHistoryService);
@@ -36,7 +37,7 @@ class DashboardControllerTest extends TestCase
         $this->user = User::factory()->create([
             'name' => 'Test User',
             'email' => 'user@example.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
         $this->user->assignRole('user');
     }
@@ -44,12 +45,12 @@ class DashboardControllerTest extends TestCase
     public function test_index_returns_expected_stats(): void
     {
         $this->actingAs($this->user);
-        
+
         // Create test data
         $domain = Domain::factory()->create();
         $link = Link::factory()->create([
             'user_id' => $this->user->id,
-            'domain_id' => $domain->id
+            'domain_id' => $domain->id,
         ]);
         LinkHistory::factory()->count(5)->create([
             'link_id' => $link->id,
@@ -61,7 +62,7 @@ class DashboardControllerTest extends TestCase
             ->willReturn(5);
 
         $response = $this->get(route('user.dashboard'));
-        
+
         $response->assertStatus(200);
         $response->assertViewIs('user.dashboard');
         $response->assertViewHas('links_count', 1);

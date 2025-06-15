@@ -3,19 +3,21 @@
 namespace App\Jobs\Admin\Dashboard;
 
 use App\Http\Services\AdminStatisticsService;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use Carbon\Carbon;
 
 class GetTotalLinksByDateJob implements ShouldQueue
 {
     use Dispatchable, Queueable, SerializesModels;
 
     protected $startDate;
+
     protected $endDate;
+
     protected $statService;
 
     /**
@@ -28,13 +30,12 @@ class GetTotalLinksByDateJob implements ShouldQueue
         $this->statService = $statService;
     }
 
-
     /**
      * Execute the job.
      */
     public function handle()
     {
-        $key = 'total_links_by_date_' . $this->startDate->toDateString() . '_' . $this->endDate->toDateString();
+        $key = 'total_links_by_date_'.$this->startDate->toDateString().'_'.$this->endDate->toDateString();
         $data = $this->statService->getTotalLinksByDate($this->startDate, $this->endDate);
 
         if ($this->endDate->isToday()) {

@@ -3,13 +3,13 @@
 namespace Tests\Unit\Services;
 
 use App\Http\Services\LinkHistoryService;
+use App\Models\Domain;
 use App\Models\Link;
 use App\Models\LinkHistory;
 use App\Models\User;
-use App\Models\Domain;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Illuminate\Support\Carbon;
+use Tests\TestCase;
 
 class LinkHistoryServiceTest extends TestCase
 {
@@ -20,7 +20,7 @@ class LinkHistoryServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new LinkHistoryService();
+        $this->service = new LinkHistoryService;
     }
 
     public function test_get_total_clicks_by_user_id(): void
@@ -37,9 +37,9 @@ class LinkHistoryServiceTest extends TestCase
     {
         $link = Link::factory()->create();
         LinkHistory::factory()->count(2)->create(['link_id' => $link->id]);
-        LinkHistory::factory()->create(['link_id' => $link->id, 
+        LinkHistory::factory()->create(['link_id' => $link->id,
             'created_at' => Carbon::now()->subDays(2)]);
-        LinkHistory::factory()->create(['link_id' => $link->id, 
+        LinkHistory::factory()->create(['link_id' => $link->id,
             'created_at' => Carbon::now()->addDays(2)]);
 
         $result = $this->service->getTotalClicksByLinkId(
@@ -82,7 +82,7 @@ class LinkHistoryServiceTest extends TestCase
         $user = User::factory()->create();
         $link = Link::factory()->create(['user_id' => $user->id]);
         LinkHistory::factory()->count(2)->create(['link_id' => $link->id]);
-        LinkHistory::factory()->create(['link_id' => $link->id, 
+        LinkHistory::factory()->create(['link_id' => $link->id,
             'created_at' => Carbon::yesterday()]);
 
         $result = $this->service->getTodayTotalClicksByUserId($user->id);
@@ -94,7 +94,7 @@ class LinkHistoryServiceTest extends TestCase
         $user = User::factory()->create();
         $link1 = Link::factory()->create(['user_id' => $user->id, 'destination' => 'https://example1.com']);
         $link2 = Link::factory()->create(['user_id' => $user->id, 'destination' => 'https://example2.com']);
-        
+
         LinkHistory::factory()->count(3)->create(['link_id' => $link1->id]);
         LinkHistory::factory()->count(5)->create(['link_id' => $link2->id]);
 
@@ -108,7 +108,7 @@ class LinkHistoryServiceTest extends TestCase
     {
         $user = User::factory()->create();
         $link = Link::factory()->create(['user_id' => $user->id]);
-        
+
         LinkHistory::factory()->create(['link_id' => $link->id, 'country_name' => 'Ukraine', 'ip_address' => '192.168.1.1']);
         LinkHistory::factory()->create(['link_id' => $link->id, 'country_name' => 'Ukraine', 'ip_address' => '192.168.1.2']);
         LinkHistory::factory()->create(['link_id' => $link->id, 'country_name' => 'USA', 'ip_address' => '192.168.2.1']);
@@ -123,7 +123,7 @@ class LinkHistoryServiceTest extends TestCase
     {
         $user = User::factory()->create();
         $link = Link::factory()->create(['user_id' => $user->id]);
-        
+
         LinkHistory::factory()->create(['link_id' => $link->id, 'browser' => 'Chrome', 'ip_address' => '192.168.1.1']);
         LinkHistory::factory()->create(['link_id' => $link->id, 'browser' => 'Chrome', 'ip_address' => '192.168.1.2']);
         LinkHistory::factory()->create(['link_id' => $link->id, 'browser' => 'Firefox', 'ip_address' => '192.168.2.1']);
@@ -138,7 +138,7 @@ class LinkHistoryServiceTest extends TestCase
     {
         $user = User::factory()->create();
         $link = Link::factory()->create(['user_id' => $user->id]);
-        
+
         LinkHistory::factory()->create(['link_id' => $link->id, 'os' => 'Windows', 'ip_address' => '192.168.1.1']);
         LinkHistory::factory()->create(['link_id' => $link->id, 'os' => 'Windows', 'ip_address' => '192.168.1.2']);
         LinkHistory::factory()->create(['link_id' => $link->id, 'os' => 'macOS', 'ip_address' => '192.168.2.1']);
@@ -153,7 +153,7 @@ class LinkHistoryServiceTest extends TestCase
     {
         $user = User::factory()->create();
         $link = Link::factory()->create(['user_id' => $user->id]);
-        
+
         LinkHistory::factory()->create(['link_id' => $link->id, 'created_at' => Carbon::today()->setHour(10)]);
         LinkHistory::factory()->create(['link_id' => $link->id, 'created_at' => Carbon::today()->setHour(10)]);
         LinkHistory::factory()->create(['link_id' => $link->id, 'created_at' => Carbon::today()->setHour(15)]);
@@ -167,7 +167,7 @@ class LinkHistoryServiceTest extends TestCase
     public function test_get_hourly_clicks_by_link_id(): void
     {
         $link = Link::factory()->create();
-        
+
         LinkHistory::factory()->create(['link_id' => $link->id, 'created_at' => Carbon::today()->setHour(10)]);
         LinkHistory::factory()->create(['link_id' => $link->id, 'created_at' => Carbon::today()->setHour(10)]);
         LinkHistory::factory()->create(['link_id' => $link->id, 'created_at' => Carbon::today()->setHour(15)]);
@@ -185,7 +185,7 @@ class LinkHistoryServiceTest extends TestCase
     public function test_get_top_metrics_by_link_id(): void
     {
         $link = Link::factory()->create();
-        
+
         LinkHistory::factory()->create(['link_id' => $link->id, 'country_name' => 'Ukraine', 'ip_address' => '192.168.1.1']);
         LinkHistory::factory()->create(['link_id' => $link->id, 'country_name' => 'Ukraine', 'ip_address' => '192.168.1.2']);
         LinkHistory::factory()->create(['link_id' => $link->id, 'country_name' => 'USA', 'ip_address' => '192.168.2.1']);
@@ -204,7 +204,7 @@ class LinkHistoryServiceTest extends TestCase
     public function test_get_daily_clicks_by_link_id(): void
     {
         $link = Link::factory()->create();
-        
+
         LinkHistory::factory()->create(['link_id' => $link->id, 'created_at' => '2025-01-01']);
         LinkHistory::factory()->create(['link_id' => $link->id, 'created_at' => '2025-01-01']);
         LinkHistory::factory()->create(['link_id' => $link->id, 'created_at' => '2025-01-02']);
@@ -232,18 +232,18 @@ class LinkHistoryServiceTest extends TestCase
             'destination' => 'https://example.com',
             'created_at' => now(),
         ]);
-        
+
         $result = $this->service->processRedirect([
             'host' => 'mydomain.com',
             'path' => 'test123',
             'ip' => '195.1.1.1',
-            'user_agent' => 'Mozilla/5.0'
+            'user_agent' => 'Mozilla/5.0',
         ]);
-        
+
         $this->assertEquals($link->destination, $result['link']);
         $this->assertDatabaseHas('link_histories', [
             'link_id' => $link->id,
-            'ip_address' => '195.1.1.1'
+            'ip_address' => '195.1.1.1',
         ]);
     }
 
@@ -254,13 +254,13 @@ class LinkHistoryServiceTest extends TestCase
             '2025-01-01',
             '2025-01-03'
         );
-        
+
         $expected = [
             '2025-01-01' => 0,
             '2025-01-02' => 0,
-            '2025-01-03' => 0
+            '2025-01-03' => 0,
         ];
-        
+
         $this->assertEquals($expected, $result);
     }
 }

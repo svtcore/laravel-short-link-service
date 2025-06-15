@@ -2,36 +2,34 @@
 
 namespace Tests\Unit\Controllers\Admin;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Link;
+use App\Http\Contracts\Interfaces\LinkServiceInterface;
+use App\Http\Contracts\Interfaces\UserServiceInterface;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Services\UserService;
+use App\Models\Domain;
+use App\Models\Link;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Contracts\Interfaces\UserServiceInterface;
-use App\Http\Contracts\Interfaces\LinkServiceInterface;
-use App\Http\Requests\Admin\Users\UpdateRequest;
-use App\Http\Requests\Admin\Users\DestroyRequest;
-use App\Http\Requests\Admin\Users\ShowRequest;
-use App\Http\Requests\Admin\Users\SetStatusRequest;
-use Spatie\Permission\Models\Role;
 use Mockery;
-use App\Models\Domain;
+use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class UserControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
     private UserServiceInterface $userService;
+
     private LinkServiceInterface $linkService;
+
     private UserController $controller;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->userService = new UserService();
+        $this->userService = new UserService;
         $this->linkService = $this->createMock(LinkServiceInterface::class);
         $this->controller = new UserController($this->userService, $this->linkService);
 
@@ -45,7 +43,7 @@ class UserControllerTest extends TestCase
         $admin = User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
         $admin->assignRole('admin');
     }
@@ -117,7 +115,7 @@ class UserControllerTest extends TestCase
     public function test_handle_errors_when_fetching_users()
     {
         $mockUserService = $this->createMock(UserServiceInterface::class);
-        $mockUserService->method('getTopUsers')->willThrowException(new \Exception());
+        $mockUserService->method('getTopUsers')->willThrowException(new \Exception);
 
         $mockLinkService = $this->createMock(LinkServiceInterface::class);
         $controller = new UserController($mockUserService, $mockLinkService);

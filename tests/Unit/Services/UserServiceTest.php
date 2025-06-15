@@ -3,15 +3,13 @@
 namespace Tests\Unit\Services;
 
 use App\Http\Services\UserService;
-use App\Models\User;
 use App\Models\Link;
 use App\Models\LinkHistory;
-use App\Models\AccountRequest;
-use Spatie\Permission\Models\Role;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class UserServiceTest extends TestCase
 {
@@ -22,14 +20,14 @@ class UserServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new UserService();
+        $this->service = new UserService;
     }
 
     public function test_get_user_data(): void
     {
         $user = User::factory()->create();
         $result = $this->service->getUserData($user->id);
-        
+
         $this->assertNotNull($result);
         $this->assertEquals($user->id, $result->id);
     }
@@ -53,7 +51,7 @@ class UserServiceTest extends TestCase
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'name' => 'New Name',
-            'email' => 'new@example.com'
+            'email' => 'new@example.com',
         ]);
     }
 
@@ -80,7 +78,7 @@ class UserServiceTest extends TestCase
         $this->assertTrue($result);
         $this->assertDatabaseHas('account_requests', [
             'user_id' => $user->id,
-            'type' => 'data'
+            'type' => 'data',
         ]);
     }
 
@@ -88,7 +86,7 @@ class UserServiceTest extends TestCase
     {
         $user = User::factory()->create(['email' => 'test@example.com']);
         $result = $this->service->getUserByEmail('test@example.com');
-        
+
         $this->assertNotNull($result);
         $this->assertEquals($user->id, $result->id);
     }
@@ -97,7 +95,7 @@ class UserServiceTest extends TestCase
     {
         User::factory()->count(5)->create();
         $result = $this->service->getTopUsers(3);
-        
+
         $this->assertNotNull($result);
         $this->assertCount(3, $result);
     }
@@ -112,14 +110,14 @@ class UserServiceTest extends TestCase
             'name' => 'Updated Name',
             'email' => 'updated@example.com',
             'status' => 'active',
-            'roles' => ['admin']
+            'roles' => ['admin'],
         ]);
 
         $this->assertTrue($result);
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'name' => 'Updated Name',
-            'email' => 'updated@example.com'
+            'email' => 'updated@example.com',
         ]);
         $this->assertTrue($user->fresh()->hasRole('admin'));
     }
@@ -128,7 +126,7 @@ class UserServiceTest extends TestCase
     {
         $user = User::factory()->create();
         $result = $this->service->destroyUser($user->id);
-        
+
         $this->assertTrue($result);
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
     }
@@ -137,7 +135,7 @@ class UserServiceTest extends TestCase
     {
         $user = User::factory()->create();
         $result = $this->service->getProfile($user->id);
-        
+
         $this->assertNotNull($result);
         $this->assertEquals($user->id, $result->id);
     }
@@ -146,7 +144,7 @@ class UserServiceTest extends TestCase
     {
         $user = User::factory()->create();
         $link = Link::factory()->create(['user_id' => $user->id]);
-        
+
         $result = $this->service->freezeAccount($user->id);
 
         $this->assertTrue($result);
@@ -159,9 +157,9 @@ class UserServiceTest extends TestCase
         $user = User::factory()->create();
         $link = Link::factory()->create(['user_id' => $user->id]);
         LinkHistory::factory()->create(['link_id' => $link->id]);
-        
+
         $result = $this->service->banAccount($user->id);
-        
+
         $this->assertTrue($result);
         $this->assertEquals('banned', $user->fresh()->status);
         $this->assertFalse(false, $link->fresh()->available);
@@ -172,7 +170,7 @@ class UserServiceTest extends TestCase
     {
         $user = User::factory()->create(['status' => 'banned']);
         $result = $this->service->unAccount($user->id);
-        
+
         $this->assertTrue($result);
         $this->assertEquals('active', $user->fresh()->status);
     }
@@ -181,20 +179,20 @@ class UserServiceTest extends TestCase
     {
         $user = User::factory()->create(['name' => 'Test User', 'email' => 'test@example.com']);
         Link::factory()->create(['user_id' => $user->id, 'ip_address' => '192.168.1.1']);
-        
+
         // Search by name
         $result = $this->service->searchUsers('Test User', false);
         $this->assertCount(1, $result);
-        
+
         // Search by email
         $result = $this->service->searchUsers('test@example.com', false);
         $this->assertCount(1, $result);
-        
+
         // Search by IP
         $result = $this->service->searchUsers('192.168.1.1', false);
         $this->assertNotEmpty($result);
     }
-    
+
     public function test_empty_result_in_search_users(): void
     {
         $result = $this->service->searchUsers('nonexistent', false);

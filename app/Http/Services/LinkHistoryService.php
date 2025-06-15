@@ -3,25 +3,25 @@
 namespace App\Http\Services;
 
 use App\Http\Contracts\Interfaces\LinkHistoryServiceInterface;
+use App\Http\Traits\LogsErrors;
 use App\Models\Link;
-use Exception;
 use App\Models\LinkHistory;
 use Carbon\Carbon;
-use InvalidArgumentException;
-use App\Http\Traits\LogsErrors;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Jenssegers\Agent\Agent;
 
 class LinkHistoryService extends LinkService implements LinkHistoryServiceInterface
 {
     use LogsErrors;
+
     /**
      * Get the total number of clicks (LinkHistory records) for links owned by a specific user.
      *
      * This method calculates the total count of LinkHistory entries associated with links
      * belonging to the specified user. If an error occurs, it returns `null`.
      *
-     * @param int $user_id The ID of the user.
+     * @param  int  $user_id  The ID of the user.
      * @return int|null The total number of clicks or null on failure.
      */
     public function getTotalClicksByUserId(int $user_id): ?int
@@ -31,7 +31,8 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
                 $query->where('user_id', $user_id);
             })->count();
         } catch (Exception $e) {
-            $this->logError("Invalid user ID provided", $e, ['user_id' => $user_id]);
+            $this->logError('Invalid user ID provided', $e, ['user_id' => $user_id]);
+
             return null;
         }
     }
@@ -39,10 +40,11 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
     /**
      * Get total clicks count for a specific link within a date range.
      *
-     * @param int $link_id The ID of the link to count clicks for
-     * @param string|null $startDate Start date in Y-m-d format (inclusive)
-     * @param string|null $endDate End date in Y-m-d format (inclusive)
+     * @param  int  $link_id  The ID of the link to count clicks for
+     * @param  string|null  $startDate  Start date in Y-m-d format (inclusive)
+     * @param  string|null  $endDate  End date in Y-m-d format (inclusive)
      * @return int|null Total clicks count or null on error
+     *
      * @throws Exception On database query failure
      */
     public function getTotalClicksByLinkId(int $link_id, ?string $startDate, ?string $endDate): ?int
@@ -52,10 +54,11 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
             $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : now()->endOfDay();
 
             return LinkHistory::where('link_id', $link_id)
-            ->whereBetween('created_at',[$startDate, $endDate])
-            ->count();
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->count();
         } catch (Exception $e) {
-            $this->logError("Invalid user ID provided", $e, ['user_id' => $link_id]);
+            $this->logError('Invalid user ID provided', $e, ['user_id' => $link_id]);
+
             return null;
         }
     }
@@ -63,10 +66,11 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
     /**
      * Get count of unique IP addresses that clicked a specific link within a date range.
      *
-     * @param int $link_id The ID of the link to analyze
-     * @param string|null $startDate Start date in Y-m-d format (inclusive)
-     * @param string|null $endDate End date in Y-m-d format (inclusive)
+     * @param  int  $link_id  The ID of the link to analyze
+     * @param  string|null  $startDate  Start date in Y-m-d format (inclusive)
+     * @param  string|null  $endDate  End date in Y-m-d format (inclusive)
      * @return int|null Count of unique IPs or null on error
+     *
      * @throws Exception On database query failure
      */
     public function getUniqueIpsByLinkId(int $link_id, ?string $startDate, ?string $endDate): ?int
@@ -76,25 +80,24 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
             $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : now()->endOfDay();
 
             return LinkHistory::where('link_id', $link_id)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->distinct('ip_address')
-            ->count('ip_address');
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->distinct('ip_address')
+                ->count('ip_address');
         } catch (Exception $e) {
-            $this->logError("Error fetching unique IPs", $e, ['user_id' => $link_id]);
+            $this->logError('Error fetching unique IPs', $e, ['user_id' => $link_id]);
+
             return null;
         }
     }
-
-
 
     /**
      * Get the total count of unique IP addresses for links owned by a specific user.
      *
      * This method calculates the number of distinct IP addresses in the LinkHistory
-     * records associated with links belonging to the specified user. Returns `null` 
+     * records associated with links belonging to the specified user. Returns `null`
      * if an error occurs.
      *
-     * @param int $user_id The ID of the user.
+     * @param  int  $user_id  The ID of the user.
      * @return int|null The total count of unique IPs or null on failure.
      */
     public function getUniqueIpsByUserId(int $user_id): ?int
@@ -105,19 +108,19 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
                 $query->where('user_id', $user_id);
             })->distinct('ip_address')->count('ip_address');
         } catch (Exception $e) {
-            $this->logError("Error fetching unique IPs", $e, ['user_id' => $user_id]);
+            $this->logError('Error fetching unique IPs', $e, ['user_id' => $user_id]);
+
             return null;
         }
     }
 
-
     /**
      * Get the total clicks for links owned by a specific user on the current day.
      *
-     * This method calculates the total number of LinkHistory records created today, 
+     * This method calculates the total number of LinkHistory records created today,
      * associated with links owned by the specified user.
      *
-     * @param int $user_id The ID of the user.
+     * @param  int  $user_id  The ID of the user.
      * @return int|null The total number of clicks today or null on failure.
      */
     public function getTodayTotalClicksByUserId(int $user_id): ?int
@@ -131,19 +134,19 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
             })->whereBetween('created_at', [$startDate, $endDate])->count();
         } catch (Exception $e) {
             $this->logError("Error fetching today's total clicks", $e, ['user_id' => $user_id]);
+
             return null;
         }
     }
 
-
     /**
      * Get the top links by clicks for a specific user within the last 24 hours.
      *
-     * This method retrieves the top 5 links with the most clicks from the LinkHistory 
-     * records associated with links owned by the specified user. Returns `null` if an 
+     * This method retrieves the top 5 links with the most clicks from the LinkHistory
+     * records associated with links owned by the specified user. Returns `null` if an
      * error occurs.
      *
-     * @param int|null $user_id The ID of the user.
+     * @param  int|null  $user_id  The ID of the user.
      * @return iterable|null The top 5 links with the most clicks or null on failure.
      */
     public function getTopLinksClicksByUserId(int $user_id): ?iterable
@@ -170,27 +173,29 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
                         'click_count' => $item->click_count,
                     ];
                 });
+
             return $topLinks;
         } catch (Exception $e) {
-            $this->logError("Error fetching top links by clicks", $e, ['user_id' => $user_id]);
+            $this->logError('Error fetching top links by clicks', $e, ['user_id' => $user_id]);
+
             return null;
         }
     }
 
-
     /**
      * Get top countries by the number of unique clicks (distinct IPs) for a specific user.
      *
-     * This method returns a list of countries with the count of unique clicks, 
+     * This method returns a list of countries with the count of unique clicks,
      * ordered by the number of unique clicks in descending order.
      *
-     * @param int $user_id The ID of the user for whom to fetch the data
+     * @param  int  $user_id  The ID of the user for whom to fetch the data
      * @return \Illuminate\Support\Collection|null A collection of countries with their unique click counts, or null in case of error
      */
     public function getTopCountriesByUserId(int $user_id): ?iterable
     {
         try {
             $limit = 5;
+
             return LinkHistory::whereHas('link', function ($query) use ($user_id) {
                 $query->where('user_id', $user_id);
             })
@@ -206,20 +211,19 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
                     ];
                 });
         } catch (Exception $e) {
-            $this->logError("Error fetching top countries by unique clicks", $e, ['user_id' => $user_id]);
+            $this->logError('Error fetching top countries by unique clicks', $e, ['user_id' => $user_id]);
+
             return null;
         }
     }
 
-
-
     /**
      * Get top browsers by the number of unique clicks (distinct IPs) for a specific user.
      *
-     * This method returns a list of browsers with the count of unique clicks, 
+     * This method returns a list of browsers with the count of unique clicks,
      * ordered by the number of unique clicks in descending order.
      *
-     * @param int $user_id The ID of the user for whom to fetch the data
+     * @param  int  $user_id  The ID of the user for whom to fetch the data
      * @return \Illuminate\Support\Collection|null A collection of browsers with their unique click counts, or null in case of error
      */
     public function getTopBrowsersByUserId(int $user_id): ?iterable
@@ -239,19 +243,19 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
                     ];
                 });
         } catch (Exception $e) {
-            $this->logError("Error fetching top browsers by unique clicks", $e, ['user_id' => $user_id]);
+            $this->logError('Error fetching top browsers by unique clicks', $e, ['user_id' => $user_id]);
+
             return null;
         }
     }
 
-
     /**
      * Get top operating systems by the number of unique clicks (distinct IPs) for a specific user.
      *
-     * This method returns a list of operating systems with the count of unique clicks, 
+     * This method returns a list of operating systems with the count of unique clicks,
      * ordered by the number of unique clicks in descending order.
      *
-     * @param int $user_id The ID of the user for whom to fetch the data
+     * @param  int  $user_id  The ID of the user for whom to fetch the data
      * @return \Illuminate\Support\Collection|null A collection of operating systems with their unique click counts, or null in case of error
      */
     public function getTopOperatingSystemsByUserId(int $user_id): ?iterable
@@ -271,20 +275,19 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
                     ];
                 });
         } catch (Exception $e) {
-            $this->logError("Error fetching top operating systems by unique clicks", $e, ['user_id' => $user_id]);
+            $this->logError('Error fetching top operating systems by unique clicks', $e, ['user_id' => $user_id]);
+
             return null;
         }
     }
 
-
-
     /**
      * Get the number of clicks per hour for a specific user on the current day, starting from 00:00.
      *
-     * This method returns an array of 24 elements, each representing the number of clicks 
+     * This method returns an array of 24 elements, each representing the number of clicks
      * for the corresponding hour of the day.
      *
-     * @param int $user_id The ID of the user for whom to fetch the hourly click data.
+     * @param  int  $user_id  The ID of the user for whom to fetch the hourly click data.
      * @return array|null An array of click counts per hour or null in case of an error.
      */
     public function getHourlyClicksByUserId(int $user_id): ?array
@@ -304,23 +307,24 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
             foreach ($clicks as $click) {
                 $clicksByHour[$click->hour] = $click->click_count;
             }
+
             return $clicksByHour;
         } catch (Exception $e) {
-            $this->logError("Error fetching hourly clicks", $e, ['user_id' => $user_id]);
+            $this->logError('Error fetching hourly clicks', $e, ['user_id' => $user_id]);
+
             return null;
         }
     }
 
-
     /**
      * Get the number of clicks per hour for a specific link within a specified date range.
      *
-     * This method returns an array of 24 elements (hours), each representing the number of clicks 
+     * This method returns an array of 24 elements (hours), each representing the number of clicks
      * for the corresponding hour of the day, for the specified link within the given date range.
      *
-     * @param int $link_id The ID of the link for which to fetch the hourly click data.
-     * @param string|null $start_date The start date for the range, in Y-m-d format.
-     * @param string|null $end_date The end date for the range, in Y-m-d format.
+     * @param  int  $link_id  The ID of the link for which to fetch the hourly click data.
+     * @param  string|null  $start_date  The start date for the range, in Y-m-d format.
+     * @param  string|null  $end_date  The end date for the range, in Y-m-d format.
      * @return array|null An array of click counts per hour or null in case of error.
      */
     public function getHourlyClicksByLinkId(int $link_id, ?string $start_date, ?string $end_date): ?array
@@ -346,27 +350,27 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
 
             return $clicksByHour;
         } catch (Exception $e) {
-            $this->logError("Error fetching hourly clicks for link", $e, [
+            $this->logError('Error fetching hourly clicks for link', $e, [
                 'link_id' => $link_id,
                 'start_date' => $start_date,
                 'end_date' => $end_date,
             ]);
+
             return null;
         }
     }
 
-
     /**
-     * Get top metrics (e.g., countries, operating systems, browsers) for a specific link 
+     * Get top metrics (e.g., countries, operating systems, browsers) for a specific link
      * within a specified date range, grouped by the provided metric.
      *
-     * This method returns a list of metrics (country, OS, or browser) with the count of unique clicks, 
+     * This method returns a list of metrics (country, OS, or browser) with the count of unique clicks,
      * ordered by the number of unique clicks in descending order.
      *
-     * @param int $link_id The ID of the link for which to fetch the metrics.
-     * @param string|null $start_date The start date for the range, in Y-m-d format.
-     * @param string|null $end_date The end date for the range, in Y-m-d format.
-     * @param string $groupBy The metric by which to group the results (e.g., 'country_name', 'os', 'browser').
+     * @param  int  $link_id  The ID of the link for which to fetch the metrics.
+     * @param  string|null  $start_date  The start date for the range, in Y-m-d format.
+     * @param  string|null  $end_date  The end date for the range, in Y-m-d format.
+     * @param  string  $groupBy  The metric by which to group the results (e.g., 'country_name', 'os', 'browser').
      * @return \Illuminate\Support\Collection|null A collection of metrics with their unique click counts, or null in case of error.
      */
     public function getTopMetricsByLinkId(int $link_id, ?string $start_date, ?string $end_date, string $groupBy): ?iterable
@@ -392,26 +396,26 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
                 ];
             });
         } catch (Exception $e) {
-            $this->logError("Error fetching metrics by link ID", $e, [
+            $this->logError('Error fetching metrics by link ID', $e, [
                 'link_id' => $link_id,
                 'start_date' => $start_date,
                 'end_date' => $end_date,
                 'groupBy' => $groupBy,
             ]);
+
             return null;
         }
     }
 
-
     /**
      * Get the number of clicks per day for a specific link within a given date range.
-     * 
+     *
      * This method returns an associative array where the keys are dates and the values
      * are the total number of clicks for each corresponding day.
      *
-     * @param int $link_id The ID of the link for which to fetch daily clicks.
-     * @param string|null $start_date The start date for the range, in Y-m-d format.
-     * @param string|null $end_date The end date for the range, in Y-m-d format.
+     * @param  int  $link_id  The ID of the link for which to fetch daily clicks.
+     * @param  string|null  $start_date  The start date for the range, in Y-m-d format.
+     * @param  string|null  $end_date  The end date for the range, in Y-m-d format.
      * @return array|null An associative array of daily click counts or null in case of error.
      */
     public function getDailyClicksByLinkId(int $link_id, ?string $start_date, ?string $end_date): ?array
@@ -434,11 +438,11 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
                 $clicksByDate[$date] = $click->count;
             }
 
-            //Fill empty dates with zero
+            // Fill empty dates with zero
             $currentDate = $startDate->copy();
             while ($currentDate->lte($endDate)) { // while less or equal
                 $dateStr = $currentDate->toDateString();
-                if (!isset($clicksByDate[$dateStr])) {
+                if (! isset($clicksByDate[$dateStr])) {
                     $clicksByDate[$dateStr] = 0;
                 }
                 $currentDate->addDay();
@@ -448,36 +452,38 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
 
             return $clicksByDate;
         } catch (Exception $e) {
-            $this->logError("Error fetching daily clicks by link ID", $e, [
+            $this->logError('Error fetching daily clicks by link ID', $e, [
                 'link_id' => $link_id,
                 'start_date' => $start_date,
-                'end_date' => $end_date
+                'end_date' => $end_date,
             ]);
+
             return null;
         }
     }
 
-
     /**
      * Process the redirect by validating and tracking analytics data for a specific link.
-     * 
-     * This method checks if the provided data (host, path, user-agent, IP) matches an existing 
-     * link in the database. It also tracks analytics data, such as the user's browser, platform, 
+     *
+     * This method checks if the provided data (host, path, user-agent, IP) matches an existing
+     * link in the database. It also tracks analytics data, such as the user's browser, platform,
      * and country, before redirecting to the destination link.
      *
-     * @param array $data An array of data containing the host, path, user-agent, and IP address.
-     * @return array|null The destination URL in the form of an associative array with the key 'link', 
-     *         or null if the link could not be found or analytics data is missing.
+     * @param  array  $data  An array of data containing the host, path, user-agent, and IP address.
+     * @return array|null The destination URL in the form of an associative array with the key 'link',
+     *                    or null if the link could not be found or analytics data is missing.
      */
     /**
      * Track and collect analytics data from user request.
      *
      * Extracts browser, platform, device and country information from tracking data.
      *
-     * @param array $trackingData {
-     *     @var string $ip User IP address
-     *     @var string $user-agent User agent string
-     * }
+     * @param  array  $trackingData  {
+     *
+     * @var string $ip User IP address
+     * @var string $user-agent User agent string
+     *             }
+     *
      * @return array Analytics data including:
      *               - country_name
      *               - browser
@@ -485,12 +491,13 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
      *               - device
      *               - ip_address
      *               - user_agent
+     *
      * @throws Exception On analytics processing failure
      */
     private function trackAnalytics(array $trackingData): array
     {
         try {
-            $agent = new Agent();
+            $agent = new Agent;
             $ip = $trackingData['ip'];
             $user_agent = $trackingData['user_agent'];
 
@@ -508,21 +515,21 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
             $this->logError('Error tracking analytics', $e, [
                 'tracking_data' => $trackingData,
             ]);
+
             return [];
         }
     }
 
-
     /**
      * Process the redirect by validating and tracking analytics data for a specific link.
-     * 
-     * This method checks if the provided data (host, path, user-agent, IP) matches an existing 
-     * link in the database. It also tracks analytics data, such as the user's browser, platform, 
+     *
+     * This method checks if the provided data (host, path, user-agent, IP) matches an existing
+     * link in the database. It also tracks analytics data, such as the user's browser, platform,
      * and country, before redirecting to the destination link.
      *
-     * @param array $data An array of data containing the host, path, user-agent, and IP address.
-     * @return array|null The destination URL in the form of an associative array with the key 'link', 
-     *         or null if the link could not be found or analytics data is missing.
+     * @param  array  $data  An array of data containing the host, path, user-agent, and IP address.
+     * @return array|null The destination URL in the form of an associative array with the key 'link',
+     *                    or null if the link could not be found or analytics data is missing.
      */
     public function processRedirect(array $data): ?array
     {
@@ -539,7 +546,7 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
             }
             $link = $this->getLinkByDomainAndShortName($domain, $short_name);
 
-            if (!$link) {
+            if (! $link) {
                 return null;
             }
 
@@ -548,21 +555,21 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
             return ['link' => $link->destination];
         } catch (Exception $e) {
             $this->logError('Error during redirection process', $e, ['data' => $data]);
+
             return null;
         }
     }
 
     /**
      * Create a history record for the given link and analytics data.
-     * 
-     * This method stores a new history record for the provided link, capturing 
+     *
+     * This method stores a new history record for the provided link, capturing
      * information such as the user's IP address, browser, OS, and country name.
      *
-     * @param Link $link The link object to create the history for.
-     * @param array $analytics_data An array containing analytics data like browser, platform, and country.
-     * @param string $ip The IP address of the user.
-     * @param string $user_agent The user agent string of the browser.
-     * @return void
+     * @param  Link  $link  The link object to create the history for.
+     * @param  array  $analytics_data  An array containing analytics data like browser, platform, and country.
+     * @param  string  $ip  The IP address of the user.
+     * @param  string  $user_agent  The user agent string of the browser.
      */
     private function createLinkHistory(Link $link, array $analytics_data, string $ip, string $user_agent): void
     {
@@ -575,25 +582,27 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
         ]);
     }
 
-
     /**
      * Get country name from IP address using external API.
      *
-     * @param string $ip IP address to lookup
+     * @param  string  $ip  IP address to lookup
      * @return string Country name or 'Unknown'/'Other' on failure
+     *
      * @throws Exception On API request failure
      */
     private function getCountryName(string $ip): string
     {
-        #$ip = "195.1.1.1"; //test on localhost
-        $response = Http::get("http://ipinfo.io/" . $ip . "/json");
+        // $ip = "195.1.1.1"; //test on localhost
+        $response = Http::get('http://ipinfo.io/'.$ip.'/json');
 
         if ($response->successful()) {
             $data = $response->json();
             $countryName = $data['country'] ?? 'Unknown';
-            return  $countryName;
+
+            return $countryName;
         } else {
             $countryName = 'Other';
+
             return $countryName;
         }
 
@@ -601,6 +610,6 @@ class LinkHistoryService extends LinkService implements LinkHistoryServiceInterf
             'US' => 'United States',
             'UA' => 'Ukraine',
         ];*/
-        //return $countries[$countryCode] ?? 'Unknown';
+        // return $countries[$countryCode] ?? 'Unknown';
     }
 }

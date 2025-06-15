@@ -2,19 +2,17 @@
 
 namespace Tests\Unit\Controllers\Admin;
 
-use Tests\TestCase;
-use App\Http\Controllers\Admin\DashboardController;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
 use App\Models\Link;
 use App\Models\LinkHistory;
-use Spatie\Permission\Models\Role;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Illuminate\Support\Facades\Bus;
+use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class DashboardControllerTest extends TestCase
 {
@@ -30,17 +28,18 @@ class DashboardControllerTest extends TestCase
         }
 
         // Creating specific users with roles
-        $admin = $this->createUser('John Doe', 'admin@admin.com', 'admin', Hash::make("password"));
+        $admin = $this->createUser('John Doe', 'admin@admin.com', 'admin', Hash::make('password'));
         $admin->assignRole('user');
-        $user = $this->createUser('Test user', 'user@user.com', 'user', Hash::make("password"));
+        $user = $this->createUser('Test user', 'user@user.com', 'user', Hash::make('password'));
         $link = Link::factory()->create(['user_id' => $user->id]);
         LinkHistory::factory()->create(['link_id' => $link->id]);
     }
 
-    private function createUser(string $name = null, string $email = null, string $role = 'user', string $password = null): User
+    private function createUser(?string $name = null, ?string $email = null, string $role = 'user', ?string $password = null): User
     {
-        if ($password == null)
+        if ($password == null) {
             $password = Hash::make(Str::random(16));
+        }
         $user = User::factory()->create([
             'name' => $name ?? fake()->name(),
             'email' => $email ?? fake()->unique()->safeEmail(),
@@ -49,6 +48,7 @@ class DashboardControllerTest extends TestCase
             'remember_token' => Str::random(60),
         ]);
         $user->assignRole($role);
+
         return $user;
     }
 
@@ -100,8 +100,7 @@ class DashboardControllerTest extends TestCase
 
         $response->assertOk()
             ->assertJson(
-                fn(AssertableJson $json) =>
-                $json->hasAll([
+                fn (AssertableJson $json) => $json->hasAll([
                     'total_links_by_date',
                     'total_clicks_by_date',
                     'total_unique_clicks_by_date',
@@ -114,8 +113,6 @@ class DashboardControllerTest extends TestCase
                 ])
             );
     }
-
-
 
     public function test_show_with_empty_dates(): void
     {

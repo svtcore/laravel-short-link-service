@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'status'
+        'status',
     ];
 
     /**
@@ -48,11 +48,13 @@ class User extends Authenticatable
         ];
     }
 
-    public function links(){
+    public function links()
+    {
         return $this->hasMany(Link::class, 'user_id');
     }
 
-    public function requests(){
+    public function requests()
+    {
         return $this->hasMany(AccountRequest::class, 'user_id');
     }
 }

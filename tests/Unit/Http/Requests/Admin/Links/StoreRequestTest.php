@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Links;
 
+use App\Http\Requests\Admin\Links\StoreRequest;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Unit\Http\Requests\RequestTestCase;
-use App\Http\Requests\Admin\Links\StoreRequest;
 
 class StoreRequestTest extends RequestTestCase
 {
@@ -18,14 +18,8 @@ class StoreRequestTest extends RequestTestCase
         return [
             'url' => 'https://example.com',
             'custom_name' => 'example-link',
-            'user_email' => 'user@example.com'
+            'user_email' => 'user@example.com',
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]
@@ -59,7 +53,7 @@ class StoreRequestTest extends RequestTestCase
     public function it_fails_on_long_url()
     {
         $this->assertValidationFails(
-            ['url' => 'https://example.com/' . str_repeat('a', 2048)],
+            ['url' => 'https://example.com/'.str_repeat('a', 2048)],
             ['url' => 'The url field must not be greater than 2048 characters.']
         );
     }

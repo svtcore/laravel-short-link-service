@@ -10,10 +10,9 @@ trait LogsErrors
     /**
      * Log the error with a custom message and exception details.
      *
-     * @param string $message Custom error message.
-     * @param Exception $e The exception instance.
-     * @param array $additionalData Additional data to include in the log.
-     * @return void
+     * @param  string  $message  Custom error message.
+     * @param  Exception  $e  The exception instance.
+     * @param  array  $additionalData  Additional data to include in the log.
      */
     public function logError(string $message, Exception $e, array $additionalData = []): void
     {

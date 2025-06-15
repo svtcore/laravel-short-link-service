@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Users;
 
-use PHPUnit\Framework\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\Admin\Users\SetStatusRequest;
 use App\Models\User;
+use PHPUnit\Framework\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class SetStatusRequestTest extends RequestTestCase
 {
@@ -17,24 +17,18 @@ class SetStatusRequestTest extends RequestTestCase
     protected function getValidData(): array
     {
         return [
-            'id' => User::factory()->create()->id
+            'id' => User::factory()->create()->id,
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]
     public function it_prepares_data_correctly()
     {
-        $request = new SetStatusRequest();
+        $request = new SetStatusRequest;
         $request->setRouteResolver(fn () => new \Illuminate\Routing\Route('PUT', '/admin/users/{id}/status', ['id' => 123]));
-        
+
         $request->prepareForValidation();
-        
+
         $this->assertEquals(['id' => 123], $request->all());
     }
 

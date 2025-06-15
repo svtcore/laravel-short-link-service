@@ -10,7 +10,7 @@ class LinkHistory extends Model
     /** @use HasFactory<\Database\Factories\LinkHistoryFactory> */
     use HasFactory;
 
-    protected $fillable  = [
+    protected $fillable = [
         'link_id',
         'country_name',
         'ip_address',
@@ -19,7 +19,8 @@ class LinkHistory extends Model
         'os',
     ];
 
-    public function link(){
+    public function link()
+    {
         return $this->belongsTo(Link::class, 'link_id');
     }
 }

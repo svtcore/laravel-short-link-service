@@ -2,19 +2,21 @@
 
 namespace Tests\Unit\Controllers\User;
 
-use Tests\TestCase;
+use App\Http\Contracts\Interfaces\UserServiceInterface;
+use App\Http\Controllers\User\UserController;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Http\Controllers\User\UserController;
 use Spatie\Permission\Models\Role;
-use App\Http\Contracts\Interfaces\UserServiceInterface;
+use Tests\TestCase;
 
 class UserControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     private UserController $controller;
+
     private User $user;
+
     private $userService;
 
     protected function setUp(): void
@@ -36,7 +38,7 @@ class UserControllerTest extends TestCase
         $response = $this->actingAs($this->user)
             ->post(route('user.settings.data'), [
                 'name' => 'New Name',
-                'email' => 'new@example.com'
+                'email' => 'new@example.com',
             ]);
 
         $response->assertRedirect(route('user.settings.index'));
@@ -52,7 +54,7 @@ class UserControllerTest extends TestCase
             ->put(route('user.settings.password'), [
                 'password' => 'password',
                 'new_password' => 'NewP@ssw0rd123!',
-                'new_password_confirmation' => 'NewP@ssw0rd123!'
+                'new_password_confirmation' => 'NewP@ssw0rd123!',
             ]);
 
         $response->assertRedirect(route('user.settings.index'));

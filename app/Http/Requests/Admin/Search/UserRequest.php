@@ -26,8 +26,8 @@ class UserRequest extends FormRequest
                 'required',
                 'string',
                 'max:2048',
-                'regex:/^[a-z0-9\-._~:\/?#\[\]@!$&\'()*+,;=]*$/i'
-            ]
+                'regex:/^[a-z0-9\-._~:\/?#\[\]@!$&\'()*+,;=]*$/i',
+            ],
         ];
     }
 }

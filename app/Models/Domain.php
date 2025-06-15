@@ -15,7 +15,8 @@ class Domain extends Model
         'available',
     ];
 
-    public function links(){
+    public function links()
+    {
         return $this->hasMany(Link::class, 'domain_id');
     }
 }

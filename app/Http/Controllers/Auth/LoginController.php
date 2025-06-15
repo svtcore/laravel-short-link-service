@@ -43,8 +43,7 @@ class LoginController extends Controller
     /**
      * Redirect users after successful login based on their role and status.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param mixed $user
+     * @param  mixed  $user
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function authenticated(Request $request, $user)
@@ -52,22 +51,25 @@ class LoginController extends Controller
         if ($user->hasRole('user')) {
             if ($user->status === 'freezed') {
                 Auth::logout();
+
                 return redirect()->route('login')->withErrors([
                     'error' => 'Your account is currently frozen. Please contact support.',
                 ]);
-            }
-            else if ($user->status === 'banned') {
+            } elseif ($user->status === 'banned') {
                 Auth::logout();
+
                 return redirect()->route('login')->withErrors([
                     'error' => 'Your account is banned. Please contact support.',
                 ]);
+            } else {
+                return redirect()->route('home');
             }
-            else return redirect()->route('home');
         }
 
         if ($user->hasRole('admin')) {
             return redirect()->route('home');
         }
+
         return redirect()->route('home');
     }
 }

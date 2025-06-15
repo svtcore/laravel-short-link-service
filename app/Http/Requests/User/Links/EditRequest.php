@@ -8,8 +8,6 @@ class EditRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -28,6 +26,4 @@ class EditRequest extends FormRequest
             'id' => ['required', 'integer', 'min:1', 'exists:links,id'],
         ];
     }
-
-
 }

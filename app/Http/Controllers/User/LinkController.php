@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Http\Controllers\Controller;
 use App\Http\Contracts\Interfaces\LinkHistoryServiceInterface;
-use Illuminate\Http\Request;
 use App\Http\Contracts\Interfaces\LinkServiceInterface;
-use Exception;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Traits\LogsErrors;
-use App\Http\Requests\User\Links\StoreRequest;
-use App\Http\Requests\User\Links\ShowRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\User\Links\DeleteRequest;
 use App\Http\Requests\User\Links\EditRequest;
 use App\Http\Requests\User\Links\RedirectRequest;
+use App\Http\Requests\User\Links\ShowRequest;
+use App\Http\Requests\User\Links\StoreRequest;
 use App\Http\Requests\User\Links\UpdateRequest;
-use Illuminate\Validation\ValidationException;
+use App\Http\Traits\LogsErrors;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\User\Links\DeleteRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LinkController extends Controller
@@ -24,20 +23,20 @@ class LinkController extends Controller
     use LogsErrors;
 
     /**
-     * @var LinkServiceInterface $linkService Links service instance
+     * @var LinkServiceInterface Links service instance
      */
     private $linkService = null;
 
     /**
-     * @var LinkHistoryServiceInterface $linkHistoryService Link histories service instance
+     * @var LinkHistoryServiceInterface Link histories service instance
      */
     private $linkHistoryService = null;
 
     /**
      * Initialize controller with service dependencies
      *
-     * @param LinkServiceInterface $linkService Links service instance
-     * @param LinkHistoryServiceInterface $linkHistoryService Link histories service instance
+     * @param  LinkServiceInterface  $linkService  Links service instance
+     * @param  LinkHistoryServiceInterface  $linkHistoryService  Link histories service instance
      */
     public function __construct(LinkServiceInterface $linkService, LinkHistoryServiceInterface $linkHistoryService)
     {
@@ -46,13 +45,12 @@ class LinkController extends Controller
         $this->linkHistoryService = $linkHistoryService;
     }
 
-
     /**
      * Display list of user's links with statistics
      *
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse Returns:
-     * - View with links data if successful
-     * - Redirect back with error message on failure
+     *                                                                           - View with links data if successful
+     *                                                                           - Redirect back with error message on failure
      *
      * @throws \Exception Logs errors and returns error response
      */
@@ -60,12 +58,14 @@ class LinkController extends Controller
     {
         try {
             $links = $this->linkService->getUserLinksData(Auth::id()) ?? [];
+
             return view('user.links')->with([
                 'links' => $links,
             ]);
 
         } catch (Exception $e) {
-            $this->logError("Error fetching user links", $e, ['user_id' => Auth::id()]);
+            $this->logError('Error fetching user links', $e, ['user_id' => Auth::id()]);
+
             return back()->with('error', 'Failed to load links. Please try again.');
         }
     }
@@ -73,15 +73,14 @@ class LinkController extends Controller
     /**
      * Create new short link
      *
-     * @param StoreRequest $request Contains validated:
-     * - url: Original URL to shorten
-     * - custom_name: Optional custom short name
-     * - from_modal: Flag if request came from modal
-     *
+     * @param  StoreRequest  $request  Contains validated:
+     *                                 - url: Original URL to shorten
+     *                                 - custom_name: Optional custom short name
+     *                                 - from_modal: Flag if request came from modal
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse Returns:
-     * - JSON with short link data if successful
-     * - Redirect to links index with success message if from modal
-     * - JSON error response on failure
+     *                                                                         - JSON with short link data if successful
+     *                                                                         - Redirect to links index with success message if from modal
+     *                                                                         - JSON error response on failure
      *
      * @throws \Exception Logs errors and returns error response
      */
@@ -99,15 +98,17 @@ class LinkController extends Controller
 
             $destinationUrl = $this->linkService->generateShortName($url, $custom_name, $user_id, $ip) ?? null;
             if (empty($destinationUrl['short_name'])) {
-                throw new Exception("Short name generation failed");
+                throw new Exception('Short name generation failed');
             }
 
             if ($from_modal) {
                 return redirect()->route('user.links.index')->with('success', 'Link successfully shortened');
             }
+
             return response()->json($destinationUrl);
         } catch (Exception $e) {
-            $this->logError("Error while creating short link", $e, ['url' => $url, 'user_id' => $user_id ?? 'guest']);
+            $this->logError('Error while creating short link', $e, ['url' => $url, 'user_id' => $user_id ?? 'guest']);
+
             return response()->json(['error' => 'An error occurred while creating the link.'], 500);
         }
     }
@@ -115,14 +116,13 @@ class LinkController extends Controller
     /**
      * Show link statistics
      *
-     * @param ShowRequest $request Contains validated:
-     * - id: Link ID
-     * - startDate: Optional start date filter
-     * - endDate: Optional end date filter
-     *
+     * @param  ShowRequest  $request  Contains validated:
+     *                                - id: Link ID
+     *                                - startDate: Optional start date filter
+     *                                - endDate: Optional end date filter
      * @return \Illuminate\Http\JsonResponse Returns:
-     * - JSON with link metrics data if successful
-     * - JSON error response if invalid date range or access denied
+     *                                       - JSON with link metrics data if successful
+     *                                       - JSON error response if invalid date range or access denied
      *
      * @throws \Exception Logs errors and returns error response
      */
@@ -139,7 +139,7 @@ class LinkController extends Controller
                 return response()->json(['error' => 'Invalid date range.'], 400);
             }
 
-            if (!$this->linkService->isOwnUser($link_id, $user_id)) {
+            if (! $this->linkService->isOwnUser($link_id, $user_id)) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Access forbiden',
@@ -147,10 +147,12 @@ class LinkController extends Controller
             }
 
             $metricsData = $this->getLinkMetrics($link_id, $start_date, $end_date);
+
             return response()->json($metricsData);
 
         } catch (Exception $e) {
             $this->logError('Error fetching link statistics', $e);
+
             return response()->json(['error' => 'An error occurred while processing your request.'], 500);
         }
     }
@@ -158,15 +160,15 @@ class LinkController extends Controller
     /**
      * Fetch link metrics data
      *
-     * @param int $link_id Link ID to get metrics for
-     * @param string|null $start_date Optional start date filter
-     * @param string|null $end_date Optional end date filter
+     * @param  int  $link_id  Link ID to get metrics for
+     * @param  string|null  $start_date  Optional start date filter
+     * @param  string|null  $end_date  Optional end date filter
      * @return array Returns metrics including:
-     * - active_days: Daily click counts
-     * - active_hours: Hourly click counts
-     * - top_countries: Visitor countries
-     * - top_devices: Visitor devices
-     * - top_browsers: Visitor browsers
+     *               - active_days: Daily click counts
+     *               - active_hours: Hourly click counts
+     *               - top_countries: Visitor countries
+     *               - top_devices: Visitor devices
+     *               - top_browsers: Visitor browsers
      *
      * @throws \Exception Logs errors and returns empty array on failure
      */
@@ -182,6 +184,7 @@ class LinkController extends Controller
             ];
         } catch (Exception $e) {
             $this->logError('Error fetching link metrics', $e, ['link_id' => $link_id]);
+
             return [];
         }
     }
@@ -189,10 +192,10 @@ class LinkController extends Controller
     /**
      * Get link data for editing
      *
-     * @param string $id Link ID to edit
+     * @param  string  $id  Link ID to edit
      * @return \Illuminate\Http\JsonResponse Returns:
-     * - JSON with link data if successful
-     * - JSON error response if validation fails or access denied
+     *                                       - JSON with link data if successful
+     *                                       - JSON error response if validation fails or access denied
      *
      * @throws \Exception Logs errors and returns error response
      */
@@ -203,7 +206,7 @@ class LinkController extends Controller
                 'id' => $id,
             ];
 
-            $validator = Validator::make($data, (new EditRequest())->rules());
+            $validator = Validator::make($data, (new EditRequest)->rules());
 
             if ($validator->fails()) {
                 return response()->json([
@@ -216,7 +219,7 @@ class LinkController extends Controller
             $validatedData = $validator->validated();
 
             // Check if the authenticated user owns the link
-            if (!$this->linkService->isOwnUser($validatedData['id'], Auth::id())) {
+            if (! $this->linkService->isOwnUser($validatedData['id'], Auth::id())) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Access forbiden.',
@@ -237,18 +240,17 @@ class LinkController extends Controller
         }
     }
 
-
     /**
      * Update link data
      *
-     * @param Request $request Contains:
-     * - custom_name: New custom short name
-     * - destination: New destination URL
-     * - access: New access level
-     * @param string $id Link ID to update
+     * @param  Request  $request  Contains:
+     *                            - custom_name: New custom short name
+     *                            - destination: New destination URL
+     *                            - access: New access level
+     * @param  string  $id  Link ID to update
      * @return \Illuminate\Http\JsonResponse Returns:
-     * - JSON with update status if successful
-     * - JSON error response if validation fails or access denied
+     *                                       - JSON with update status if successful
+     *                                       - JSON error response if validation fails or access denied
      *
      * @throws \Exception Logs errors and returns error response
      */
@@ -262,20 +264,20 @@ class LinkController extends Controller
                 'access' => $request->input('access'),
             ];
 
-            $validator = Validator::make($data, (new UpdateRequest())->rules());
+            $validator = Validator::make($data, (new UpdateRequest)->rules());
 
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Validation error',
-                    'errors' => $validator->errors()
+                    'errors' => $validator->errors(),
                 ], 422);
             }
 
             $validatedData = $validator->validated();
 
             // Check if the authenticated user owns the link
-            if (!$this->linkService->isOwnUser($validatedData['id'], Auth::id())) {
+            if (! $this->linkService->isOwnUser($validatedData['id'], Auth::id())) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Access forbiden.',
@@ -296,6 +298,7 @@ class LinkController extends Controller
 
         } catch (Exception $e) {
             $this->logError('Error updating link', $e, ['link_id' => $id, 'user_id' => Auth::id()]);
+
             return response()->json([
                 'status' => false,
                 'message' => 'An unexpected error occurred while updating the link.',
@@ -306,10 +309,10 @@ class LinkController extends Controller
     /**
      * Delete link
      *
-     * @param string $id Link ID to delete
+     * @param  string  $id  Link ID to delete
      * @return \Illuminate\Http\RedirectResponse Returns:
-     * - Redirect to links index with success message if successful
-     * - Redirect with error message if fails
+     *                                           - Redirect to links index with success message if successful
+     *                                           - Redirect with error message if fails
      *
      * @throws \Exception Logs errors and redirects on failure
      */
@@ -321,20 +324,20 @@ class LinkController extends Controller
                 'id' => $id,
             ];
 
-            $validator = Validator::make($data, (new DeleteRequest())->rules());
+            $validator = Validator::make($data, (new DeleteRequest)->rules());
 
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Validation error',
-                    'errors' => $validator->errors()
+                    'errors' => $validator->errors(),
                 ], 422);
             }
 
             $validatedData = $validator->validated();
 
             // Check if the authenticated user owns the link
-            if (!$this->linkService->isOwnUser($validatedData['id'], Auth::id())) {
+            if (! $this->linkService->isOwnUser($validatedData['id'], Auth::id())) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Access forbiden.',
@@ -343,7 +346,7 @@ class LinkController extends Controller
 
             $deleted = $this->linkService->destroyLink($id);
 
-            if (!$deleted) {
+            if (! $deleted) {
                 throw new Exception('Failed to delete link');
             }
 
@@ -352,6 +355,7 @@ class LinkController extends Controller
 
         } catch (Exception $e) {
             $this->logError('Error deleting link', $e, ['link_id' => $id, 'user_id' => Auth::id()]);
+
             return redirect()->route('user.links.index')->withErrors(['error' => 'An unexpected error occurred while deleting the link.']);
         }
     }
@@ -359,15 +363,15 @@ class LinkController extends Controller
     /**
      * Handle link redirection
      *
-     * @param RedirectRequest $request Contains:
-     * - host: Request host
-     * - path: Short link path
-     * - user_agent: Visitor's user agent
-     * - ip: Visitor's IP address
+     * @param  RedirectRequest  $request  Contains:
+     *                                    - host: Request host
+     *                                    - path: Short link path
+     *                                    - user_agent: Visitor's user agent
+     *                                    - ip: Visitor's IP address
      * @return \Illuminate\Http\RedirectResponse Returns:
-     * - Redirect to destination URL if found
-     * - 404 if link not found
-     * - 500 on internal error
+     *                                           - Redirect to destination URL if found
+     *                                           - 404 if link not found
+     *                                           - 500 on internal error
      *
      * @throws \Exception Logs errors and returns appropriate HTTP status
      */
@@ -390,7 +394,7 @@ class LinkController extends Controller
             $this->logError('Redirect failed', $e, [
                 'path' => $request->path(),
                 'ip' => $request->ip(),
-                'user_agent' => $request->userAgent()
+                'user_agent' => $request->userAgent(),
             ]);
             abort(500, 'Internal redirect error');
         }

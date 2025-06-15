@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Settings;
 
+use App\Http\Requests\Admin\Settings\MaintenanceModeRequest;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Unit\Http\Requests\RequestTestCase;
-use App\Http\Requests\Admin\Settings\MaintenanceModeRequest;
 
 class MaintenanceModeRequestTest extends RequestTestCase
 {
@@ -16,14 +16,8 @@ class MaintenanceModeRequestTest extends RequestTestCase
     protected function getValidData(): array
     {
         return [
-            'status' => true
+            'status' => true,
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]

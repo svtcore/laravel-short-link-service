@@ -3,19 +3,21 @@
 namespace App\Jobs\Admin\Dashboard;
 
 use App\Http\Services\AdminStatisticsService;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use Carbon\Carbon;
 
 class GetTotalDaysActivityJob implements ShouldQueue
 {
     use Dispatchable, Queueable, SerializesModels;
 
     protected $startDate;
+
     protected $endDate;
+
     protected $statService;
 
     /**
@@ -33,7 +35,7 @@ class GetTotalDaysActivityJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $key = 'total_daily_clicks_' . $this->startDate->toDateString() . '_' . $this->endDate->toDateString();
+        $key = 'total_daily_clicks_'.$this->startDate->toDateString().'_'.$this->endDate->toDateString();
         $data = $this->statService->getDailyClicksByDate($this->startDate, $this->endDate);
 
         if ($this->endDate->isToday()) {

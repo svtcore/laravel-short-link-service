@@ -2,15 +2,15 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
+use App\Models\Domain;
 use App\Models\Link;
 use App\Models\LinkHistory;
-use App\Models\Domain;
+use App\Models\User;
+use Faker\Factory;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Faker\Factory;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -33,9 +33,9 @@ class DatabaseSeeder extends Seeder
         }
 
         // Creating specific users with roles
-        $admin = $this->createUser('John Doe', 'admin@admin.com', 'admin', Hash::make("password"));
+        $admin = $this->createUser('John Doe', 'admin@admin.com', 'admin', Hash::make('password'));
         $admin->assignRole('user');
-        $this->createUser('Test user', 'user@user.com', 'user', Hash::make("password"));
+        $this->createUser('Test user', 'user@user.com', 'user', Hash::make('password'));
 
         // Generating random users and assigning roles
         for ($i = 0; $i < $config['users']; $i++) {
@@ -52,14 +52,14 @@ class DatabaseSeeder extends Seeder
         ]);
         // Create link histories with randomized dates
         $daysRange = 30;
-        
+
         for ($i = 1; $i <= $config['links']; $i++) {
             $entriesPerLink = rand(1, $config['link_history']);
             $interval = $daysRange / $entriesPerLink;
             for ($j = 1; $j <= $entriesPerLink; $j++) {
                 $daysAgo = (int) round($j * $interval);
                 $randomDate = now()->subDays($daysAgo);
-                
+
                 LinkHistory::factory()->create([
                     'link_id' => $i,
                     'created_at' => $randomDate,
@@ -80,9 +80,11 @@ class DatabaseSeeder extends Seeder
     /**
      * Helper function to create a user with a specific role.
      */
-    private function createUser(string $name = null, string $email = null, string $role = 'user', string $password = null): User
+    private function createUser(?string $name = null, ?string $email = null, string $role = 'user', ?string $password = null): User
     {
-        if ($password == null) $password = Hash::make(Str::random(16));
+        if ($password == null) {
+            $password = Hash::make(Str::random(16));
+        }
         $user = User::factory()->create([
             'name' => $name ?? fake()->name(),
             'email' => $email ?? fake()->unique()->safeEmail(),
@@ -91,6 +93,7 @@ class DatabaseSeeder extends Seeder
             'remember_token' => Str::random(60),
         ]);
         $user->assignRole($role);
+
         return $user;
     }
 
@@ -102,14 +105,14 @@ class DatabaseSeeder extends Seeder
         $faker = Factory::create();
         $totalEntries = rand(1, $count * 2); // Random number of entries with bigger range
         $daysRange = 30;
-        
+
         // Create pool of IPs (some will repeat)
-        $ipPool = array_map(function() use ($faker) {
+        $ipPool = array_map(function () use ($faker) {
             return $faker->ipv4();
-        }, range(1, max(5, $totalEntries/10)));
+        }, range(1, max(5, $totalEntries / 10)));
 
         $interval = $daysRange / max(1, $totalEntries);
-        
+
         for ($j = 1; $j <= $totalEntries; $j++) {
             $daysAgo = (int) round($j * $interval);
             // Create random time between 00:00:00 and 23:59:59
@@ -119,9 +122,9 @@ class DatabaseSeeder extends Seeder
             $randomDate = now()
                 ->subDays($daysAgo)
                 ->setTime($randomHours, $randomMinutes, $randomSeconds);
-            
+
             // 20% chance to reuse IP from pool
-            $ip = (rand(1, 5) === 1 && !empty($ipPool)) 
+            $ip = (rand(1, 5) === 1 && ! empty($ipPool))
                 ? $ipPool[array_rand($ipPool)]
                 : $faker->ipv4();
 

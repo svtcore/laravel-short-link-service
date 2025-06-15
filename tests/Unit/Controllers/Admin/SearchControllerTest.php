@@ -2,39 +2,37 @@
 
 namespace Tests\Unit\Controllers\Admin;
 
-use Tests\TestCase;
-use App\Models\Link;
+use App\Http\Controllers\Admin\SearchController;
+use App\Http\Services\DomainService;
+use App\Http\Services\LinkService;
+use App\Http\Services\UserService;
 use App\Models\Domain;
+use App\Models\Link;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use App\Http\Controllers\Admin\SearchController;
-use App\Http\Services\UserService;
-use App\Http\Services\LinkService;
-use App\Http\Services\DomainService;
 use Spatie\Permission\Models\Role;
-use App\Http\Requests\Admin\Search\CountRequest;
-use App\Http\Requests\Admin\Search\DomainRequest;
-use App\Http\Requests\Admin\Search\UserRequest;
-use App\Http\Requests\Admin\Search\LinkByDomainRequest;
-use App\Http\Requests\Admin\Search\LinkByIPRequest;
+use Tests\TestCase;
 
 class SearchControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
     private UserService $userService;
+
     private LinkService $linkService;
+
     private DomainService $domainService;
+
     private SearchController $controller;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->userService = new UserService();
-        $this->linkService = new LinkService();
-        $this->domainService = new DomainService();
+        $this->userService = new UserService;
+        $this->linkService = new LinkService;
+        $this->domainService = new DomainService;
 
         $this->controller = new SearchController(
             $this->userService,
@@ -48,7 +46,7 @@ class SearchControllerTest extends TestCase
         $admin = User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
         $admin->assignRole('admin');
 
@@ -99,10 +97,10 @@ class SearchControllerTest extends TestCase
         $this->actingAs(User::first());
 
         $link = Link::factory()->create([
-            'domain_id' => Domain::first()->id, 
+            'domain_id' => Domain::first()->id,
             'destination' => 'https://example.com',
             'short_name' => 'test123',
-            'ip_address' => '192.168.1.1'
+            'ip_address' => '192.168.1.1',
         ]);
 
         $response = $this->get(route('admin.search.links', ['query' => 'example']));
@@ -130,7 +128,7 @@ class SearchControllerTest extends TestCase
     {
         $this->actingAs(User::first());
 
-        $link = Link::factory()->create(['domain_id' => Domain::first()->id,'ip_address' => '192.168.1.1']);
+        $link = Link::factory()->create(['domain_id' => Domain::first()->id, 'ip_address' => '192.168.1.1']);
 
         $response = $this->get(route('admin.search.links.byUserIP', ['ip' => $link->ip_address]));
 
@@ -143,7 +141,7 @@ class SearchControllerTest extends TestCase
         $this->actingAs(User::first());
 
         $mockService = $this->createMock(LinkService::class);
-        $mockService->method('searchLinks')->willThrowException(new \Exception());
+        $mockService->method('searchLinks')->willThrowException(new \Exception);
 
         $this->app->instance(LinkService::class, $mockService);
 

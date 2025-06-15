@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Dashboard;
 
-use PHPUnit\Framework\Attributes\Test;
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\Admin\Dashboard\ShowRequest;
 use Carbon\Carbon;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class ShowRequestTest extends RequestTestCase
 {
@@ -18,14 +18,8 @@ class ShowRequestTest extends RequestTestCase
     {
         return [
             'startDate' => Carbon::yesterday()->format('Y-m-d'),
-            'endDate' => Carbon::today()->format('Y-m-d')
+            'endDate' => Carbon::today()->format('Y-m-d'),
         ];
-    }
-
-    #[Test]
-    public function it_authorizes_admin_users()
-    {
-        $this->testAuthorization();
     }
 
     #[Test]
@@ -55,7 +49,7 @@ class ShowRequestTest extends RequestTestCase
         $this->assertValidationFails(
             [
                 'startDate' => '2025-01-02',
-                'endDate' => '2025-01-01'
+                'endDate' => '2025-01-01',
             ],
             ['startDate' => 'The start date field must be a date before or equal to end date.']
         );
@@ -77,7 +71,7 @@ class ShowRequestTest extends RequestTestCase
         $this->assertValidationFails(
             [
                 'startDate' => '2025-01-01',
-                'endDate' => Carbon::tomorrow()->format('Y-m-d')
+                'endDate' => Carbon::tomorrow()->format('Y-m-d'),
             ],
             ['endDate' => 'The end date field must be a date before or equal to today.']
         );

@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Http\Requests\User\Profile;
 
+use App\Http\Requests\User\Profile\UpdatePasswordRequest;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Unit\Http\Requests\RequestTestCase;
-use App\Http\Requests\User\Profile\UpdatePasswordRequest;
 
 class UpdatePasswordRequestTest extends RequestTestCase
 {
@@ -18,7 +18,7 @@ class UpdatePasswordRequestTest extends RequestTestCase
         return [
             'password' => 'current_password_123!',
             'new_password' => 'new_password_123!',
-            'new_password_confirmation' => 'new_password_123!'
+            'new_password_confirmation' => 'new_password_123!',
         ];
     }
 
@@ -64,7 +64,7 @@ class UpdatePasswordRequestTest extends RequestTestCase
         $this->assertValidationFails(
             [
                 'new_password' => 'new_password_123!',
-                'new_password_confirmation' => 'different'
+                'new_password_confirmation' => 'different',
             ],
             ['new_password' => 'The new password field confirmation does not match.']
         );

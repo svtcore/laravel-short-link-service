@@ -2,12 +2,11 @@
 
 namespace Tests\Unit\Http\Requests\Admin\Users;
 
-use Tests\Unit\Http\Requests\RequestTestCase;
 use App\Http\Requests\Admin\Users\UpdateRequest;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Validator;
 use PHPUnit\Framework\Attributes\Test;
+use Spatie\Permission\Models\Role;
+use Tests\Unit\Http\Requests\RequestTestCase;
 
 class UpdateRequestTest extends RequestTestCase
 {
@@ -32,11 +31,9 @@ class UpdateRequestTest extends RequestTestCase
             'name' => 'Valid Name',
             'email' => 'valid@example.com',
             'status' => 'active',
-            'roles' => ['admin']
+            'roles' => ['admin'],
         ];
     }
-
-    
 
     #[Test]
     public function it_validates_correct_data()
@@ -52,7 +49,7 @@ class UpdateRequestTest extends RequestTestCase
                 'name' => 'Valid Name',
                 'email' => 'valid@example.com',
                 'status' => 'active',
-                'roles' => ['admin']
+                'roles' => ['admin'],
             ],
             ['id' => 'The id field is required.']
         );
@@ -67,7 +64,7 @@ class UpdateRequestTest extends RequestTestCase
                 'name' => 'Invalid@Name',
                 'email' => 'valid@example.com',
                 'status' => 'active',
-                'roles' => ['admin']
+                'roles' => ['admin'],
             ],
             ['name' => 'The name field format is invalid.']
         );
@@ -81,7 +78,7 @@ class UpdateRequestTest extends RequestTestCase
                 'id' => 1,
                 'name' => 'Valid Name',
                 'status' => 'active',
-                'roles' => ['admin']
+                'roles' => ['admin'],
             ],
             ['email' => 'The email field is required.']
         );
@@ -96,7 +93,7 @@ class UpdateRequestTest extends RequestTestCase
                 'name' => 'Valid Name',
                 'email' => 'valid@example.com',
                 'status' => 'invalid',
-                'roles' => ['admin']
+                'roles' => ['admin'],
             ],
             ['status' => 'The selected status is invalid.']
         );
@@ -110,7 +107,7 @@ class UpdateRequestTest extends RequestTestCase
                 'id' => 1,
                 'name' => 'Valid Name',
                 'email' => 'valid@example.com',
-                'status' => 'active'
+                'status' => 'active',
             ],
             ['roles' => 'The roles field is required.']
         );
@@ -125,7 +122,7 @@ class UpdateRequestTest extends RequestTestCase
                 'name' => 'Valid Name',
                 'email' => 'valid@example.com',
                 'status' => 'active',
-                'roles' => ['invalid-role']
+                'roles' => ['invalid-role'],
             ],
             ['roles.0' => 'The selected roles.0 is invalid.']
         );

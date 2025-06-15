@@ -14,7 +14,7 @@ class AccountRequest extends Model
         'user_id',
         'type',
         'status',
-        'expired'
+        'expired',
     ];
 
     public function user()

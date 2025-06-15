@@ -8,20 +8,21 @@ use App\Models\LinkHistory;
 use App\Models\User;
 use Faker\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Illuminate\Support\Carbon;
+use Tests\TestCase;
 
 class AdminStatisticsServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     private AdminStatisticsService $service;
+
     private \Faker\Generator $faker;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new AdminStatisticsService();
+        $this->service = new AdminStatisticsService;
         $this->faker = Factory::create();
     }
 
@@ -65,7 +66,7 @@ class AdminStatisticsServiceTest extends TestCase
         LinkHistory::factory()->create(['link_id' => $link->id, 'ip_address' => '192.168.1.3']);
         LinkHistory::factory()->count(2)->create([
             'link_id' => $link->id,
-            'ip_address' => '192.168.1.4'
+            'ip_address' => '192.168.1.4',
         ]);
 
         $this->assertEquals(4, $this->service->getTotalUniqueClicks());
@@ -114,7 +115,7 @@ class AdminStatisticsServiceTest extends TestCase
         $expected = [
             '2025-01-01' => 2,
             '2025-01-02' => 1,
-            '2025-01-03' => 0
+            '2025-01-03' => 0,
         ];
 
         $this->assertEquals($expected, $result);
@@ -147,7 +148,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Chrome',
             'os' => 'Windows',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         LinkHistory::factory()->create([
@@ -158,7 +159,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Firefox',
             'os' => 'Linux',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         LinkHistory::factory()->create([
@@ -169,7 +170,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Safari',
             'os' => 'macOS',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         LinkHistory::factory()->create([
@@ -180,7 +181,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Edge',
             'os' => 'Windows',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         LinkHistory::factory()->create([
@@ -191,7 +192,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Chrome',
             'os' => 'Android',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         $startDate = Carbon::now()->subDays(7)->format('Y-m-d');
@@ -212,7 +213,6 @@ class AdminStatisticsServiceTest extends TestCase
         $link = Link::factory()->create();
         $now = now();
 
-
         LinkHistory::factory()->create([
             'link_id' => $link->id,
             'country_name' => 'USA',
@@ -221,7 +221,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Edge',
             'os' => 'Windows',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         LinkHistory::factory()->create([
@@ -232,7 +232,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Edge',
             'os' => 'Windows',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         LinkHistory::factory()->create([
@@ -243,7 +243,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Edge',
             'os' => 'Windows',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         LinkHistory::factory()->create([
@@ -254,7 +254,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Firefox',
             'os' => 'Android',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         LinkHistory::factory()->create([
@@ -265,7 +265,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Firefox',
             'os' => 'Android',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         $startDate = Carbon::now()->subDays(7)->format('Y-m-d');
@@ -295,7 +295,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Edge',
             'os' => 'Windows',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         LinkHistory::factory()->create([
@@ -306,7 +306,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Edge',
             'os' => 'Windows',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         LinkHistory::factory()->create([
@@ -317,7 +317,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Edge',
             'os' => 'Windows',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         LinkHistory::factory()->create([
@@ -328,7 +328,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Firefox',
             'os' => 'Windows',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         LinkHistory::factory()->create([
@@ -339,7 +339,7 @@ class AdminStatisticsServiceTest extends TestCase
             'browser' => 'Firefox',
             'os' => 'macOS',
             'created_at' => $now,
-            'updated_at' => $now
+            'updated_at' => $now,
         ]);
 
         $startDate = Carbon::now()->subDays(7)->format('Y-m-d');
@@ -368,7 +368,7 @@ class AdminStatisticsServiceTest extends TestCase
         $result = $this->service->getDailyClicksByDate('2025-01-01', '2025-01-10');
 
         $expected = array_fill_keys(
-            array_map(fn($d) => date('Y-m-d', strtotime("2025-01-{$d}")), range(1, 10)),
+            array_map(fn ($d) => date('Y-m-d', strtotime("2025-01-{$d}")), range(1, 10)),
             0
         );
 

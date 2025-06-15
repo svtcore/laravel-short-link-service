@@ -2,33 +2,31 @@
 
 namespace Tests\Unit\Controllers\Admin;
 
-use Tests\TestCase;
-use App\Models\Link;
-use App\Models\Domain;
-use App\Models\LinkHistory;
-use App\Http\Services\LinkService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use App\Http\Controllers\Admin\LinkController;
 use App\Http\Contracts\Interfaces\LinkHistoryServiceInterface;
 use App\Http\Contracts\Interfaces\UserServiceInterface;
-use App\Http\Requests\Admin\Links\StoreRequest;
-use App\Http\Requests\Admin\Links\UpdateRequest;
-use App\Http\Requests\Admin\Links\DestroyRequest;
+use App\Http\Controllers\Admin\LinkController;
+use App\Http\Services\LinkService;
+use App\Models\Domain;
+use App\Models\Link;
+use App\Models\LinkHistory;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class LinkControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
     private LinkService $service;
+
     private LinkController $controller;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new LinkService();
+        $this->service = new LinkService;
         $mockLinkHistoryService = $this->createMock(LinkHistoryServiceInterface::class);
         $mockUserService = $this->createMock(UserServiceInterface::class);
         $this->controller = new LinkController($this->service, $mockLinkHistoryService, $mockUserService);
@@ -41,7 +39,7 @@ class LinkControllerTest extends TestCase
         $admin = User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
         $admin->assignRole('admin');
     }
@@ -86,7 +84,6 @@ class LinkControllerTest extends TestCase
         ]);
     }
 
-
     public function test_update_link()
     {
         $this->actingAs(User::first());
@@ -123,7 +120,6 @@ class LinkControllerTest extends TestCase
 
     }
 
-
     public function test_delete_link()
     {
         $this->actingAs(User::first());
@@ -141,7 +137,7 @@ class LinkControllerTest extends TestCase
     public function test_handle_errors_when_fetching_links()
     {
         $mockService = $this->createMock(LinkService::class);
-        $mockService->method('getLinksList')->willThrowException(new \Exception());
+        $mockService->method('getLinksList')->willThrowException(new \Exception);
 
         $mockLinkHistoryService = $this->createMock(LinkHistoryServiceInterface::class);
         $mockUserService = $this->createMock(UserServiceInterface::class);
